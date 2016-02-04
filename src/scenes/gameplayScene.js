@@ -63,7 +63,7 @@ var GamePlayScene = function(game, stage)
       //only continue to play if something has happened in recent-ish past
       resume = false;
       for(var i = 0; !resume && i < earth.quakes.length; i++)
-        if(earth.quakes[i].t > earth.t-(1/quake_rate)) resume = true;
+        if(earth.quakes[i].t > earth.t-(2/quake_rate)) resume = true;
       if(resume) earth.t++;
     }
     earth.tick();
@@ -147,7 +147,7 @@ var GamePlayScene = function(game, stage)
         q = self.quakes[i];
         if(
           self.t < q.t || //in the past
-          (self.t-q.t)*quake_rate > 1 //far enough in future, can guarantee no longer on screen
+          (self.t-q.t)*quake_rate > 2 //far enough in future, can guarantee no longer on screen
         ) continue;
 
         dc.context.beginPath();
@@ -247,8 +247,18 @@ var GamePlayScene = function(game, stage)
       dc.context.fillStyle = "#AAAAAA";
       dc.context.fillRect(self.x,self.y,self.w,self.h);
       var x = Math.round((self.earth.t/self.earth.recorded_t)*dc.width);
-      dc.context.fillStyle = "#000000";
-      dc.context.fillRect(x-10,self.y,20,self.h);
+      dc.context.fillStyle = "#FFFFFF";
+      dc.context.fillRect(x-2,self.y,4,self.h);
+
+      if(self.dragging || self.earth.t == self.earth.recorded_t)
+      {
+        dc.context.fillStyle = "#000000";
+        dc.context.font = "10px Helvetica";
+        dc.context.textAlign = "right";
+        dc.context.fillText(self.earth.t,x,self.y-1);
+      }
+
+      var last_drawn_quake;
 
       var q;
       var l;
@@ -270,7 +280,29 @@ var GamePlayScene = function(game, stage)
               dc.context.fillRect(x-1,self.y,2,self.h);
             }
           }
+
+          last_drawn_quake = q;
         }
+      }
+
+      if(last_drawn_quake)
+      {
+        dc.context.fillStyle = "#000000";
+        dc.context.font = "10px Helvetica";
+        dc.context.textAlign = "right";
+
+        var x = Math.round((q.t/self.earth.recorded_t)*dc.width);
+        dc.context.fillText(q.t,x,self.y-1);
+
+        for(var j = 0; j < self.earth.locations.length; j++)
+        {
+          if(q[QuakeLocNames[j]] < self.earth.t)
+          {
+            var x = Math.round((q[QuakeLocNames[j]]/self.earth.recorded_t)*dc.width);
+            dc.context.fillText(Math.round(q[QuakeLocNames[j]]),x,self.y-1);
+          }
+        }
+
       }
     }
   }
