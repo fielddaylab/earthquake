@@ -3,6 +3,9 @@ var GamePlayScene = function(game, stage)
   var self = this;
   var dc = stage.drawCanv;
 
+  var location_size = 0.1;
+  var quake_rate = 0.01;
+
   var Earth = function()
   {
     var self = this;
@@ -37,10 +40,8 @@ var GamePlayScene = function(game, stage)
       self.quakes.push(q);
     }
 
-    var location_size = 0.1;
     var lw = location_size*dc.width;
     var lh = location_size*dc.height;
-    var quake_rate = 0.01;
     self.draw = function()
     {
       var l;
@@ -93,7 +94,7 @@ var GamePlayScene = function(game, stage)
   var Scrubber = function(earth)
   {
     var self = this;
-    self.w = 10;
+    self.w = dc.width;
     self.h = 20;
     self.x = 0;
     self.y = dc.height-self.h;
@@ -126,10 +127,39 @@ var GamePlayScene = function(game, stage)
 
     self.draw = function()
     {
-      self.x = Math.round((self.earth.t/self.earth.recorded_t)*dc.width)-self.w/2;
-
-      dc.context.fillStyle = "#000000";
+      dc.context.fillStyle = "#AAAAAA";
       dc.context.fillRect(self.x,self.y,self.w,self.h);
+      var x = Math.round((self.earth.t/self.earth.recorded_t)*dc.width);
+      dc.context.fillStyle = "#000000";
+      dc.context.fillRect(x-10,self.y,20,self.h);
+
+      var q;
+      var l;
+      for(var i = 0; i < self.earth.quakes.length; i++)
+      {
+        q = self.earth.quakes[i];
+        if(q.t < self.earth.t)
+        {
+          var x = Math.round((q.t/self.earth.recorded_t)*dc.width);
+          dc.context.fillStyle = "#000000";
+          dc.context.fillRect(x-1,self.y,2,self.h);
+
+          for(var j = 0; j < self.earth.locations.length; j++)
+          {
+            l = self.earth.locations[j];
+            var x = l.ex-q.ex;
+            var y = l.ey-q.ey;
+            var d = Math.sqrt((x*x)+(y*y));
+            var t = q.t+(d/quake_rate);
+            if(t < self.earth.t)
+            {
+              var x = Math.round((t/self.earth.recorded_t)*dc.width);
+              dc.context.fillStyle = "#FF0000";
+              dc.context.fillRect(x-1,self.y,2,self.h);
+            }
+          }
+        }
+      }
     }
   }
 
