@@ -5,6 +5,85 @@ var GamePlayScene = function(game, stage)
 
   var location_size = 0.1;
   var quake_rate = 0.01;
+  var n_locations = 3;
+
+  var clicker;
+  var dragger;
+
+  var state;
+  var ENUM = 0;
+  var STATE_PLAY = ENUM; ENUM++;
+  var STATE_PAUSE = ENUM; ENUM++;
+
+  var earth;
+  var highlit_loc;
+
+  var scrubber;
+  var play_button;
+  var pause_button;
+
+  self.ready = function()
+  {
+    clicker = new Clicker({source:stage.dispCanv.canvas});
+    dragger = new Dragger({source:stage.dispCanv.canvas});
+    hoverer = new Hoverer({source:stage.dispCanv.canvas});
+
+    state = STATE_PLAY;
+
+    earth = new Earth();
+
+    var l;
+    for(var i = 0; i < n_locations; i++)
+    {
+      l = new Location(Math.random(),Math.random());
+      hoverer.register(l);
+      earth.registerLocation(l);
+    }
+
+    scrubber = new Scrubber(earth);
+
+    play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
+    pause_button = new ButtonBox(40,10,20,20,function(){state = STATE_PAUSE;});
+
+    clicker.register(play_button);
+    clicker.register(pause_button);
+    clicker.register(scrubber);
+    dragger.register(scrubber);
+    clicker.register(earth);
+  };
+
+  self.tick = function()
+  {
+    clicker.flush();
+    dragger.flush();
+    hoverer.flush();
+
+    if(state == STATE_PLAY)
+    {
+      //only continue to play if something has happened in recent-ish past
+      resume = false;
+      for(var i = 0; !resume && i < earth.quakes.length; i++)
+        if(earth.quakes[i].t > earth.t-(1/quake_rate)) resume = true;
+      if(resume) earth.t++;
+    }
+    earth.tick();
+  };
+
+  self.draw = function()
+  {
+    earth.draw();
+    scrubber.draw();
+    play_button.draw(dc);
+    pause_button.draw(dc);
+  };
+
+  self.cleanup = function()
+  {
+  };
+
+
+
+//DATA
 
   var Earth = function()
   {
@@ -72,7 +151,8 @@ var GamePlayScene = function(game, stage)
         ) continue;
 
         dc.context.beginPath();
-        dc.context.arc(q.x,q.y,(self.t-q.t)*quake_rate*dc.width,0,2*Math.PI);
+        //dc.context.arc(q.x,q.y,(self.t-q.t)*quake_rate*dc.width,0,2*Math.PI);
+        dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_rate*dc.width, (self.t-q.t)*quake_rate*dc.height, 0, 0, 2 * Math.PI);
         dc.context.stroke();
       }
     }
@@ -117,6 +197,15 @@ var GamePlayScene = function(game, stage)
 
     self.ex = x;
     self.ey = y;
+
+    self.hover = function(evt)
+    {
+
+    }
+    self.unhover = function(evt)
+    {
+
+    }
   }
 
   var Scrubber = function(earth)
@@ -185,73 +274,6 @@ var GamePlayScene = function(game, stage)
       }
     }
   }
-
-  var clicker;
-  var dragger;
-
-  var state;
-  var ENUM = 0;
-  var STATE_PLAY = ENUM; ENUM++;
-  var STATE_PAUSE = ENUM; ENUM++;
-
-  var earth;
-  var A;
-  var B;
-  var C;
-
-  var scrubber;
-  var play_button;
-  var pause_button;
-
-  self.ready = function()
-  {
-    clicker = new Clicker({source:stage.dispCanv.canvas});
-    dragger = new Dragger({source:stage.dispCanv.canvas});
-
-    state = STATE_PLAY;
-
-    earth = new Earth();
-
-    A = new Location(Math.random(),Math.random());
-    B = new Location(Math.random(),Math.random());
-    C = new Location(Math.random(),Math.random());
-    earth.registerLocation(A);
-    earth.registerLocation(B);
-    earth.registerLocation(C);
-
-    scrubber = new Scrubber(earth);
-
-    play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
-    pause_button = new ButtonBox(40,10,20,20,function(){state = STATE_PAUSE;});
-
-    clicker.register(play_button);
-    clicker.register(pause_button);
-    clicker.register(scrubber);
-    dragger.register(scrubber);
-    clicker.register(earth);
-  };
-
-  self.tick = function()
-  {
-    clicker.flush();
-    dragger.flush();
-
-    if(state == STATE_PLAY)
-      earth.t++;
-    earth.tick();
-  };
-
-  self.draw = function()
-  {
-    earth.draw();
-    scrubber.draw();
-    play_button.draw(dc);
-    pause_button.draw(dc);
-  };
-
-  self.cleanup = function()
-  {
-  };
 
 };
 
