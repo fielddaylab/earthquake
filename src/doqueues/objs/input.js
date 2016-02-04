@@ -70,6 +70,7 @@ function NumberBox(x,y,w,h,val,delta,callback)
   self.offY = 0;
   self.dragStart = function(evt)
   {
+    evt.hit_ui = true;
     self.focused = true;
     self.down = true;
 
@@ -78,6 +79,7 @@ function NumberBox(x,y,w,h,val,delta,callback)
   }
   self.drag = function(evt)
   {
+    evt.hit_ui = true;
     self.deltaX = ((evt.doX-self.x)-self.offX);
     self.deltaY = ((evt.doY-self.y)-self.offY);
     self.offX = evt.doX - self.x;
@@ -90,6 +92,7 @@ function NumberBox(x,y,w,h,val,delta,callback)
   }
   self.dragFinish = function()
   {
+    evt.hit_ui = true;
     if(self.down) self.highlit = !self.highlit;
     self.down = false;
   }
@@ -149,15 +152,18 @@ function ButtonBox(x,y,w,h,callback)
 
   self.press = function(evt)
   {
+    evt.hit_ui = true;
     self.down = true;
   }
   self.unpress = function(evt)
   {
+    evt.hit_ui = true;
     self.down = false;
   }
 
   self.click = function(evt)
   {
+    evt.hit_ui = true;
     self.hit();
   }
 
@@ -197,16 +203,19 @@ function ToggleBox(x,y,w,h,val,callback)
 
   self.press = function(evt)
   {
+    evt.hit_ui = true;
     self.down = true;
   }
   self.unpress = function(evt)
   {
+    evt.hit_ui = true;
     self.down = false;
     self.toggle();
   }
 
   self.click = function(evt)
   {
+    evt.hit_ui = true;
     self.toggle();
   }
 
@@ -258,11 +267,13 @@ function SliderBox(x,y,w,h,min_val,max_val,val,callback)
   self.dragging = false;
   self.dragStart = function(evt)
   {
+    evt.hit_ui = true;
     self.dragging = true;
     self.drag(evt);
   }
   self.drag = function(evt)
   {
+    evt.hit_ui = true;
     if(evt.doX < self.slit_x) evt.doX = self.slit_x;
     if(evt.doX > self.slit_x+self.maxPixel()) evt.doX = self.slit_x+self.maxPixel();
     self.val = self.valAtPixel(evt.doX-self.slit_x);
@@ -332,11 +343,13 @@ function SmoothSliderBox(x,y,w,h,min_val,max_val,val,callback)
   self.dragging = false;
   self.dragStart = function(evt)
   {
+    evt.hit_ui = true;
     self.dragging = true;
     self.drag(evt);
   }
   self.drag = function(evt)
   {
+    evt.hit_ui = true;
     if(evt.doX < self.slit_x) evt.doX = self.slit_x;
     if(evt.doX > self.slit_x+self.maxPixel()) evt.doX = self.slit_x+self.maxPixel();
     self.desired_val = self.valAtPixel(evt.doX-self.slit_x);
@@ -414,11 +427,13 @@ function SmoothSliderSqrtBox(x,y,w,h,min_val,max_val,val,callback)
   self.dragging = false;
   self.dragStart = function(evt)
   {
+    evt.hit_ui = true;
     self.dragging = true;
     self.drag(evt);
   }
   self.drag = function(evt)
   {
+    evt.hit_ui = true;
     if(evt.doX < self.slit_x) evt.doX = self.slit_x;
     if(evt.doX > self.slit_x+self.maxPixel()) evt.doX = self.slit_x+self.maxPixel();
     self.desired_val = self.valAtPixel(evt.doX-self.slit_x);
@@ -496,6 +511,7 @@ function BinBox(x,y,w,h,drag_start_callback,drag_callback,drag_finish_callback,p
 
   self.press = function(evt)
   {
+    evt.hit_ui = true;
     self.pressed = true;
     if(self.dragging && self.genable)
     {
@@ -506,6 +522,7 @@ function BinBox(x,y,w,h,drag_start_callback,drag_callback,drag_finish_callback,p
   }
   self.unpress = function(evt)
   {
+    evt.hit_ui = true;
     self.pressed = false;
     if(ptWithin(evt.doX, evt.doY, self.x, self.y, self.w, self.h))
       release_callback();
@@ -514,6 +531,7 @@ function BinBox(x,y,w,h,drag_start_callback,drag_callback,drag_finish_callback,p
   //holds drag position in queue and forwards events
   self.dragStart = function(evt)
   {
+    evt.hit_ui = true;
     self.dragging = true;
     if(self.pressed && self.genable)
     {
@@ -524,6 +542,7 @@ function BinBox(x,y,w,h,drag_start_callback,drag_callback,drag_finish_callback,p
   }
   self.drag = function(evt)
   {
+    evt.hit_ui = true;
     drag_callback(evt);
   }
   self.dragFinish = function()
