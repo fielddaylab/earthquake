@@ -21,6 +21,7 @@ var GamePlayScene = function(game, stage)
   var scrubber;
   var play_button;
   var pause_button;
+  var reset_button;
 
   self.ready = function()
   {
@@ -44,9 +45,11 @@ var GamePlayScene = function(game, stage)
 
     play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
     pause_button = new ButtonBox(40,10,20,20,function(){state = STATE_PAUSE;});
+    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){earth.reset();});
 
     clicker.register(play_button);
     clicker.register(pause_button);
+    clicker.register(reset_button);
     clicker.register(scrubber);
     dragger.register(scrubber);
     clicker.register(earth);
@@ -75,6 +78,7 @@ var GamePlayScene = function(game, stage)
     scrubber.draw();
     play_button.draw(dc);
     pause_button.draw(dc);
+    reset_button.draw(dc);
   };
 
   self.cleanup = function()
@@ -104,6 +108,15 @@ var GamePlayScene = function(game, stage)
     self.registerLocation = function(l)
     {
       self.locations.push(l);
+    }
+
+    self.reset = function()
+    {
+      //start at 1 to avoid div/0
+      self.t = 1;
+      self.recorded_t = 1;
+
+      self.quakes = [];
     }
 
     self.tick = function()
