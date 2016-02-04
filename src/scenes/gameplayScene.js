@@ -37,6 +37,16 @@ var GamePlayScene = function(game, stage)
       if(evt.hit_ui) return; //only "hit" if unobtruded
       evt.hit_ui = true;
       var q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t);
+
+      var l;
+      for(var i = 0; i < self.locations.length; i++)
+      {
+        l = self.locations[i];
+        var x = l.ex-q.ex;
+        var y = l.ey-q.ey;
+        var d = Math.sqrt((x*x)+(y*y));
+        q[QuakeLocNames[i]] = q.t+(d/quake_rate);
+      }
       self.quakes.push(q);
     }
 
@@ -68,6 +78,15 @@ var GamePlayScene = function(game, stage)
     }
   }
 
+  //javascript amirite
+  var QuakeLocNames = [];
+  QuakeLocNames[0] = "location_a_t";
+  QuakeLocNames[1] = "location_b_t";
+  QuakeLocNames[2] = "location_c_t";
+  QuakeLocNames[3] = "location_d_t";
+  QuakeLocNames[4] = "location_e_t";
+  QuakeLocNames[5] = "location_f_t";
+  QuakeLocNames[6] = "location_g_t";
   var Quake = function(x,y,t)
   {
     var self = this;
@@ -78,6 +97,15 @@ var GamePlayScene = function(game, stage)
     self.ex = x;
     self.ey = y;
     self.t = t;
+
+    //pre-populate because dynamic population = non-packed array
+    self.location_a_t = 0;
+    self.location_b_t = 0;
+    self.location_c_t = 0;
+    self.location_d_t = 0;
+    self.location_e_t = 0;
+    self.location_f_t = 0;
+    self.location_g_t = 0;
   }
 
   var Location = function(x,y)
@@ -146,14 +174,9 @@ var GamePlayScene = function(game, stage)
 
           for(var j = 0; j < self.earth.locations.length; j++)
           {
-            l = self.earth.locations[j];
-            var x = l.ex-q.ex;
-            var y = l.ey-q.ey;
-            var d = Math.sqrt((x*x)+(y*y));
-            var t = q.t+(d/quake_rate);
-            if(t < self.earth.t)
+            if(q[QuakeLocNames[j]] < self.earth.t)
             {
-              var x = Math.round((t/self.earth.recorded_t)*dc.width);
+              var x = Math.round((q[QuakeLocNames[j]]/self.earth.recorded_t)*dc.width);
               dc.context.fillStyle = "#FF0000";
               dc.context.fillRect(x-1,self.y,2,self.h);
             }
