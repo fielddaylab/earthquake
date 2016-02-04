@@ -129,17 +129,25 @@ var GamePlayScene = function(game, stage)
       self.quakes.push(q);
     }
 
-    var lw = location_size*dc.width;
-    var lh = location_size*dc.height;
     self.draw = function()
     {
+      //draw locations
       var l;
       dc.context.fillStyle = "#000000";
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
-        dc.context.fillRect(l.x-lw/2,l.y-lh/2,lw,lh);
+        dc.context.fillRect(l.x,l.y,l.w,l.h);
+        if(l == highlit_loc)
+        {
+          dc.context.fillStyle = "#000000";
+          dc.context.font = "10px Helvetica";
+          dc.context.textAlign = "right";
+          dc.context.fillText("("+l.rx+","+l.ry+")",l.x,l.y-1);
+        }
       }
+
+      //draw quakes
       var q;
       dc.context.strokeStyle = "#000000";
       for(var i = 0; i < self.quakes.length; i++)
@@ -176,6 +184,8 @@ var GamePlayScene = function(game, stage)
 
     self.ex = x;
     self.ey = y;
+    self.rx = Math.round(x*100)/100;
+    self.ry = Math.round(y*100)/100;
     self.t = t;
 
     //pre-populate because dynamic population = non-packed array
@@ -192,19 +202,23 @@ var GamePlayScene = function(game, stage)
   {
     var self = this;
 
-    self.x = dc.width*x;
-    self.y = dc.height*y;
+    self.w = location_size*dc.width;
+    self.h = location_size*dc.height;
+    self.x = dc.width*x-self.w/2;
+    self.y = dc.height*y-self.h/2;
 
     self.ex = x;
     self.ey = y;
+    self.rx = Math.round(x*100)/100;
+    self.ry = Math.round(y*100)/100;
 
     self.hover = function(evt)
     {
-
+      highlit_loc = self;
     }
     self.unhover = function(evt)
     {
-
+      if(highlit_loc == self) highlit_loc = undefined;
     }
   }
 
@@ -244,12 +258,14 @@ var GamePlayScene = function(game, stage)
 
     self.draw = function()
     {
+      //draw self
       dc.context.fillStyle = "#AAAAAA";
       dc.context.fillRect(self.x,self.y,self.w,self.h);
       var x = Math.round((self.earth.t/self.earth.recorded_t)*dc.width);
       dc.context.fillStyle = "#FFFFFF";
       dc.context.fillRect(x-2,self.y,4,self.h);
 
+      //draw self t
       if(self.dragging || self.earth.t == self.earth.recorded_t)
       {
         dc.context.fillStyle = "#000000";
@@ -260,6 +276,7 @@ var GamePlayScene = function(game, stage)
 
       var last_drawn_quake;
 
+      //draw quake/loc blips
       var q;
       var l;
       for(var i = 0; i < self.earth.quakes.length; i++)
@@ -285,8 +302,10 @@ var GamePlayScene = function(game, stage)
         }
       }
 
+      //label most recent blips
       if(last_drawn_quake)
       {
+        var q = last_drawn_quake;
         dc.context.fillStyle = "#000000";
         dc.context.font = "10px Helvetica";
         dc.context.textAlign = "right";
@@ -302,8 +321,40 @@ var GamePlayScene = function(game, stage)
             dc.context.fillText(Math.round(q[QuakeLocNames[j]]),x,self.y-1);
           }
         }
-
       }
+
+      //label highlit blips
+      if(highlit_loc)
+      {
+        var highlit_loc_i = 0;
+        for(var i = 0; i < self.earth.locations.length; i++)
+        {
+          if(highlit_loc == self.earth.locations[i]) highlit_loc_i = i;
+        }
+
+        var q;
+        for(var i = 0; i < self.earth.quakes.length; i++)
+        {
+          q = self.earth.quakes[i];
+          if(q.t < self.earth.t)
+          {
+            dc.context.font = "10px Helvetica";
+            dc.context.textAlign = "right";
+
+            var x = Math.round((q.t/self.earth.recorded_t)*dc.width);
+            dc.context.fillStyle = "#000000";
+            dc.context.fillText(q.t,x,self.y-1);
+
+            if(q[QuakeLocNames[highlit_loc_i]] < self.earth.t)
+            {
+              var x = Math.round((q[QuakeLocNames[highlit_loc_i]]/self.earth.recorded_t)*dc.width);
+              dc.context.fillStyle = "#FF0000";
+              dc.context.fillText(Math.round(q[QuakeLocNames[highlit_loc_i]]),x,self.y-1);
+            }
+          }
+        }
+      }
+
     }
   }
 
