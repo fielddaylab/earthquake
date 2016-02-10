@@ -7,8 +7,9 @@ var GamePlayScene = function(game, stage)
   var quake_rate = 0.01;
   var n_locations = 3;
 
-  var clicker;
+  var hoverer;
   var dragger;
+  var clicker;
 
   var state;
   var ENUM = 0;
@@ -25,9 +26,9 @@ var GamePlayScene = function(game, stage)
 
   self.ready = function()
   {
-    clicker = new Clicker({source:stage.dispCanv.canvas});
-    dragger = new Dragger({source:stage.dispCanv.canvas});
     hoverer = new Hoverer({source:stage.dispCanv.canvas});
+    dragger = new Dragger({source:stage.dispCanv.canvas});
+    clicker = new Clicker({source:stage.dispCanv.canvas});
 
     state = STATE_PLAY;
 
@@ -38,6 +39,7 @@ var GamePlayScene = function(game, stage)
     {
       l = new Location(Math.random(),Math.random());
       hoverer.register(l);
+      dragger.register(l);
       earth.registerLocation(l);
     }
 
@@ -57,9 +59,9 @@ var GamePlayScene = function(game, stage)
 
   self.tick = function()
   {
-    clicker.flush();
-    dragger.flush();
     hoverer.flush();
+    dragger.flush();
+    clicker.flush();
 
     if(state == STATE_PLAY)
     {
@@ -134,8 +136,8 @@ var GamePlayScene = function(game, stage)
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
-        var x = l.ex-q.ex;
-        var y = l.ey-q.ey;
+        var x = l.wx-q.wx;
+        var y = l.wy-q.wy;
         var d = Math.sqrt((x*x)+(y*y));
         q[QuakeLocNames[i]] = q.t+(d/quake_rate);
       }
@@ -156,7 +158,7 @@ var GamePlayScene = function(game, stage)
           dc.context.fillStyle = "#000000";
           dc.context.font = "10px Helvetica";
           dc.context.textAlign = "right";
-          dc.context.fillText("("+l.rx+","+l.ry+")",l.x,l.y-1);
+          dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
         }
       }
 
@@ -195,10 +197,8 @@ var GamePlayScene = function(game, stage)
     self.x = dc.width*x;
     self.y = dc.height*y;
 
-    self.ex = x;
-    self.ey = y;
-    self.rx = Math.round(x*100)/100;
-    self.ry = Math.round(y*100)/100;
+    self.wx = x;
+    self.wy = y;
     self.t = t;
 
     //pre-populate because dynamic population = non-packed array
@@ -220,10 +220,8 @@ var GamePlayScene = function(game, stage)
     self.x = dc.width*x-self.w/2;
     self.y = dc.height*y-self.h/2;
 
-    self.ex = x;
-    self.ey = y;
-    self.rx = Math.round(x*100)/100;
-    self.ry = Math.round(y*100)/100;
+    self.wx = x;
+    self.wy = y;
 
     self.hover = function(evt)
     {
@@ -232,6 +230,34 @@ var GamePlayScene = function(game, stage)
     self.unhover = function(evt)
     {
       if(highlit_loc == self) highlit_loc = undefined;
+    }
+
+    self.dragging = false;
+    self.offX = 0;
+    self.offY = 0;
+    self.dragStart = function(evt)
+    {
+      self.offX = evt.doX-self.x;
+      self.offY = evt.doY-self.y;
+      self.drag(evt);
+    }
+    self.drag = function(evt)
+    {
+      self.deltaX = ((evt.doX-self.x)-self.offX);
+      self.deltaY = ((evt.doY-self.y)-self.offY);
+      self.x = self.x + self.deltaX;
+      self.y = self.y + self.deltaY;
+      self.offX = evt.doX - self.x;
+      self.offY = evt.doY - self.y;
+      self.wx = (self.x+self.w/2)/dc.width;
+      self.wy = (self.y+self.h/2)/dc.height;
+      highlit_loc = self;
+      self.dragging = true;
+      evt.hit_ui = true;
+    }
+    self.dragFinish = function()
+    {
+      self.dragging = false;
     }
   }
 

@@ -220,6 +220,13 @@ var polarToCart = function(polar,cart)
   cart.y = Math.sin(polar.dir)*polar.len;
 }
 
+var fviz = function(f,n)
+{
+  if(n == undefined) n = 2;
+  n = Math.pow(10,n);
+  return Math.round(f*n)/n;
+}
+
 //short name- will be used often to place elements by percent, while guaranteeing integer results
 var p    = function(percent, of) { return Math.floor(percent * of); }
 var invp = function(      n, of) { return n/of; }
