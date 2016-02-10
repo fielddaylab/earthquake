@@ -274,11 +274,46 @@ var GamePlayScene = function(game, stage)
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
+
+        //quake-shakes
+        var qx = 0;
+        var qy = 0;
+        var td = 0;
+        var qn = 50;
+        for(var j = 0; j < self.quakes.length; j++)
+        {
+          td = self.t - self.quakes[j].location_s_ts[i];
+          if(td > 0 && td < qn)
+          {
+            qx += Math.random()*(qn-td)
+            qy += Math.random()*(qn-td)
+          }
+          td = self.t - self.quakes[j].location_p_ts[i];
+          if(td > 0 && td < qn)
+          {
+            qx += Math.random()*(qn-td)/2
+            qy += Math.random()*(qn-td)/2
+          }
+        }
+        //ghost-quake-shake
+        td = self.t - self.ghost_quake.location_s_ts[i];
+        if(td > 0 && td < qn)
+        {
+          qx += Math.random()*(qn-td)
+          qy += Math.random()*(qn-td)
+        }
+        td = self.t - self.ghost_quake.location_p_ts[i];
+        if(td > 0 && td < qn)
+        {
+          qx += Math.random()*(qn-td)/2
+          qy += Math.random()*(qn-td)/2
+        }
+
         //dc.context.fillRect(l.x,l.y,l.w,l.h);
         dc.context.beginPath();
-        dc.context.ellipse(l.cx,l.cy,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
+        dc.context.ellipse(l.cx+qx,l.cy+qy,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
         dc.context.stroke();
-        dc.context.drawImage(l.shape,l.cx-l.shape.width/2,l.cy-l.shape.height/2,l.shape.width,l.shape.height);
+        dc.context.drawImage(l.shape,l.cx+qx-l.shape.width/2,l.cy+qy-l.shape.height/2,l.shape.width,l.shape.height);
         if(l == hloc)
         {
           dc.context.fillStyle = "#000000";
