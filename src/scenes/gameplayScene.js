@@ -4,9 +4,9 @@ var GamePlayScene = function(game, stage)
   var dc = stage.drawCanv;
 
   var location_size = 0.1;
-  var quake_rate = 0.01;
+  var quake_rate = 0.001;
   var n_locations = 3;
-  var n_quakes = 3;
+  var n_quakes = 1;
 
   var hoverer;
   var dragger;
@@ -99,7 +99,7 @@ var GamePlayScene = function(game, stage)
     self.h = dc.height;
 
     self.t = 0;
-    self.recordable_t = 2/quake_rate;
+    self.recordable_t = 1.5/quake_rate;
 
     self.quakes = [];
     self.locations = [];
@@ -164,25 +164,52 @@ var GamePlayScene = function(game, stage)
     {
       //draw distance viz
       var l;
-      dc.context.strokeStyle = "#000000";
+      dc.context.strokeStyle = "rgba(0,0,0,0.2)";
       var mouse = { wx:self.hovering_wx, wy:self.hovering_wy };
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
-        var d = wdist(mouse, l);
+
+        var x = l.wx-mouse.wx;
+        var y = l.wy-mouse.wy;
+        var d = Math.sqrt(x*x+y*y);
+
         dc.context.beginPath();
+        //circles around mouse
         //dc.context.arc(mouse.wx*dc.width,mouse.wy*dc.height,d*dc.width,0,2*Math.PI);
-        dc.context.ellipse(mouse.wx*dc.width,mouse.wy*dc.height,d*dc.width,d*dc.height,0,0,2*Math.PI);
+        //dc.context.ellipse(mouse.wx*dc.width,mouse.wy*dc.height,d*dc.width,d*dc.height,0,0,2*Math.PI);
+
+        //circles between mouse/location
+        //dc.context.arc((mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height,d/2*dc.width,0,2*Math.PI);
+        //dc.context.ellipse((mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height,d/2*dc.width,d/2*dc.height,0,0,2*Math.PI);
+
+        //circles around locs
+        //dc.context.arc(l.wx*dc.width,l.wy*dc.height,d*dc.width,0,2*Math.PI);
+        dc.context.ellipse(l.wx*dc.width,l.wy*dc.height,d*dc.width,d*dc.height,0,0,2*Math.PI);
+
+        //draw lines
+        dc.context.moveTo(l.wx*dc.width,l.wy*dc.height);
+        dc.context.lineTo(mouse.wx*dc.width,mouse.wy*dc.height);
+
         dc.context.stroke();
+
+        //line annotations
+        dc.context.fillStyle = "#000000";
+        dc.context.font = "10px Helvetica";
+        dc.context.textAlign = "right";
+        dc.context.fillText("("+Math.round(d/quake_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height);
       }
 
       //draw locations
       var l;
-      dc.context.fillStyle = "#000000";
+      dc.context.strokeStyle = "#000000";
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
-        dc.context.fillRect(l.x,l.y,l.w,l.h);
+        //dc.context.fillRect(l.x,l.y,l.w,l.h);
+        dc.context.beginPath();
+        dc.context.ellipse(l.wx*dc.width,l.wy*dc.height,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
+        dc.context.stroke();
         if(l == highlit_loc)
         {
           dc.context.fillStyle = "#000000";
