@@ -196,7 +196,7 @@ var GamePlayScene = function(game, stage)
     self.draw = function()
     {
       dc.context.font = "10px Helvetica";
-      dc.context.textAlign = "right";
+      dc.context.textAlign = "center";
 
       //draw distance viz
       var l;
@@ -440,10 +440,15 @@ var GamePlayScene = function(game, stage)
       var x = Math.round((t/self.earth.recordable_t)*dc.width);
       dc.context.fillText(Math.round(t),x,self.y-1);
     }
+    self.shapeBlip = function(t,shape)
+    {
+      var x = Math.round((t/self.earth.recordable_t)*dc.width);
+      dc.context.drawImage(shape,x-shape.width/2,self.y-5-shape.height);
+    }
     self.draw = function()
     {
       dc.context.font = "10px Helvetica";
-      dc.context.textAlign = "right";
+      dc.context.textAlign = "center";
 
       var highlit_loc_i = -1;
       for(var i = 0; i < self.earth.locations.length; i++)
@@ -471,7 +476,11 @@ var GamePlayScene = function(game, stage)
           self.labelBlip(q.location_p_ts[j]);
         }
         else
+        {
           dc.context.globalAlpha=0.2;
+          self.shapeBlip(q.location_s_ts[j],self.earth.locations[j].shape);
+          self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape);
+        }
         dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[j],0);
         dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[j],0);
       }
@@ -493,7 +502,11 @@ var GamePlayScene = function(game, stage)
             if(self.earth.t > q.location_p_ts[j]) self.labelBlip(q.location_p_ts[j]);
           }
           else
+          {
             dc.context.globalAlpha=0.2;
+            self.shapeBlip(q.location_s_ts[j],self.earth.locations[j].shape);
+            if(self.earth.t > q.location_p_ts[j]) self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape);
+          }
           dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[j],1);
           if(self.earth.t > q.location_p_ts[j])
           {
