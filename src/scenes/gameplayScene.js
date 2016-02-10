@@ -195,30 +195,44 @@ var GamePlayScene = function(game, stage)
     }
     self.draw = function()
     {
+      dc.context.font = "10px Helvetica";
+      dc.context.textAlign = "right";
+
       //draw distance viz
       var l;
       dc.context.strokeStyle = "rgba(0,0,0,0.1)";
+      dc.context.fillStyle = "rgba(0,0,0,0.1)";
       var mouse = { wx:self.hovering_wx, wy:self.hovering_wy, cx:self.hovering_wx*dc.width, cy:self.hovering_wy*dc.height };
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
 
-        var x = l.wx-mouse.wx;
-        var y = l.wy-mouse.wy;
-        var d = Math.sqrt(x*x+y*y);
+        if(!l.drag_rad)
+        {
+          var x = l.wx-mouse.wx;
+          var y = l.wy-mouse.wy;
+          var d = Math.sqrt(x*x+y*y);
 
-        dc.context.beginPath();
-        //dc.context.ellipse(mouse.cx,mouse.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around mouse
-        //dc.context.ellipse((mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height,d/2*dc.width,d/2*dc.height,0,0,2*Math.PI); //circles between mouse/location
-        dc.context.ellipse(l.cx,l.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around locs
-        dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(mouse.cx,mouse.cy); //line
-        dc.context.stroke();
+          dc.context.beginPath();
+          dc.context.ellipse(mouse.cx,mouse.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around mouse
+          dc.context.ellipse((mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height,d/2*dc.width,d/2*dc.height,0,0,2*Math.PI); //circles between mouse/location
+          dc.context.ellipse(l.cx,l.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around locs
+          dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(mouse.cx,mouse.cy); //line
+          dc.context.stroke();
+          dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height); //line annotations
+        }
+        else
+        {
+          var x = l.wx-l.mx;
+          var y = l.wy-l.my;
+          var d = Math.sqrt(x*x+y*y);
 
-        //line annotations
-        dc.context.fillStyle = "#000000";
-        dc.context.font = "10px Helvetica";
-        dc.context.textAlign = "right";
-        dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height);
+          dc.context.beginPath();
+          dc.context.ellipse(l.cx,l.cy,l.rad*dc.width,l.rad*dc.height,0,0,2*Math.PI); //circles around locs
+          dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(l.mx*dc.width,l.my*dc.height); //line
+          dc.context.stroke();
+          dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height); //line annotations
+        }
       }
 
       //draw locations
@@ -235,8 +249,6 @@ var GamePlayScene = function(game, stage)
         if(l == highlit_loc)
         {
           dc.context.fillStyle = "#000000";
-          dc.context.font = "10px Helvetica";
-          dc.context.textAlign = "right";
           dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
         }
       }
@@ -315,37 +327,66 @@ var GamePlayScene = function(game, stage)
       if(highlit_loc == self) highlit_loc = undefined;
     }
 
+    self.move_locs = false;
+    self.drag_rad = true;
+
     self.dragging = false;
-    self.offX = 0;
-    self.offY = 0;
+    if(self.move_locs)
+    {
+      self.offX = 0;
+      self.offY = 0;
+    }
+    if(self.drag_rad)
+    {
+      self.rad = 0;
+      self.mx = self.wx;
+      self.my = self.wy;
+    }
     self.dragStart = function(evt)
     {
-      self.offX = evt.doX-self.x;
-      self.offY = evt.doY-self.y;
+      if(self.move_locs)
+      {
+        self.offX = evt.doX-self.x;
+        self.offY = evt.doY-self.y;
+      }
       self.drag(evt);
     }
     self.drag = function(evt)
     {
-      self.deltaX = ((evt.doX-self.x)-self.offX);
-      self.deltaY = ((evt.doY-self.y)-self.offY);
-      self.x = self.x + self.deltaX;
-      self.y = self.y + self.deltaY;
-      self.offX = evt.doX - self.x;
-      self.offY = evt.doY - self.y;
-      self.wx = (self.x+self.w/2)/dc.width;
-      self.wy = (self.y+self.h/2)/dc.height;
-      self.cx = dc.width*self.wx;
-      self.cy = dc.height*self.wy;
-      highlit_loc = self;
       self.dragging = true;
       evt.hit_ui = true;
+      if(self.move_locs)
+      {
+        self.deltaX = ((evt.doX-self.x)-self.offX);
+        self.deltaY = ((evt.doY-self.y)-self.offY);
+        self.x = self.x + self.deltaX;
+        self.y = self.y + self.deltaY;
+        self.offX = evt.doX - self.x;
+        self.offY = evt.doY - self.y;
+        self.wx = (self.x+self.w/2)/dc.width;
+        self.wy = (self.y+self.h/2)/dc.height;
+        self.cx = dc.width*self.wx;
+        self.cy = dc.height*self.wy;
+        highlit_loc = self;
+      }
+      if(self.drag_rad)
+      {
+        self.mx = evt.doX/dc.width;
+        self.my = evt.doY/dc.height;
+        var x = self.mx-self.wx;
+        var y = self.my-self.wy;
+        self.rad = Math.sqrt(x*x+y*y);
+      }
     }
     self.dragFinish = function()
     {
       self.dragging = false;
-      for(var i = 0; i < n_quakes; i++)
-        earth.quakes[i].eval_loc_ts(earth.locations);
-      earth.ghost_quake.eval_loc_ts(earth.locations);
+      if(self.move_locs)
+      {
+        for(var i = 0; i < n_quakes; i++)
+          earth.quakes[i].eval_loc_ts(earth.locations);
+        earth.ghost_quake.eval_loc_ts(earth.locations);
+      }
     }
   }
 
