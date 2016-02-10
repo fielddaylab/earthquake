@@ -43,6 +43,7 @@ var GamePlayScene = function(game, stage)
       dragger.register(l);
       earth.registerLocation(l);
     }
+    earth.reset();
 
     scrubber = new Scrubber(earth);
 
@@ -101,8 +102,9 @@ var GamePlayScene = function(game, stage)
     self.t = 0;
     self.recordable_t = 1.5/quake_rate;
 
-    self.quakes = [];
     self.locations = [];
+    self.quakes; //gets allocated on immediate reset
+    self.ghost_quake;
 
     self.registerLocation = function(l)
     {
@@ -114,9 +116,17 @@ var GamePlayScene = function(game, stage)
       self.t = 0;
       self.quakes = [];
       for(var i = 0; i < n_quakes; i++)
-        self.quakes.push(new Quake(999,999,0));
+        self.quakes.push(new Quake(9999,9999,0));
+
+      self.ghost_quake = new Quake(Math.random(),Math.random(),0);
+      var l;
+      for(var i = 0; i < self.locations.length; i++)
+      {
+        l = self.locations[i];
+        q = self.ghost_quake;
+        q.location_ts[i] = q.t+(wdist(l,q)/quake_rate);
+      }
     }
-    self.reset();
 
     self.tick = function()
     {
@@ -133,10 +143,7 @@ var GamePlayScene = function(game, stage)
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
-        var x = l.wx-q.wx;
-        var y = l.wy-q.wy;
-        var d = Math.sqrt((x*x)+(y*y));
-        q.location_ts[i] = q.t+(d/quake_rate);
+        q.location_ts[i] = q.t+(wdist(l,q)/quake_rate);
       }
       self.quakes.push(q);
       if(self.quakes.length > n_quakes) self.quakes.splice(0,1);
@@ -251,7 +258,7 @@ var GamePlayScene = function(game, stage)
 
     self.location_ts = [];
     for(var i = 0; i < n_locations; i++)
-      self.location_ts[i] = 0;
+      self.location_ts[i] = 9999;
   }
 
   var Location = function(x,y)
@@ -338,6 +345,17 @@ var GamePlayScene = function(game, stage)
       self.dragging = false;
     }
 
+    self.drawBlip = function(t,alpha)
+    {
+      var x = Math.round((t/self.earth.recordable_t)*dc.width);
+      dc.context.fillStyle = "rgba(255,0,0,"+alpha+")";
+      dc.context.fillRect(x-1,self.y,2,self.h);
+    }
+    self.labelBlip = function(t)
+    {
+      var x = Math.round((t/self.earth.recordable_t)*dc.width);
+      dc.context.fillText(Math.round(t),x,self.y-1);
+    }
     self.draw = function()
     {
       //draw self
@@ -348,7 +366,7 @@ var GamePlayScene = function(game, stage)
       dc.context.fillRect(x-2,self.y,4,self.h);
 
       //draw self t
-      if(self.dragging || self.earth.t == self.earth.recordable_t)
+      if(true)//self.dragging || self.earth.t == self.earth.recordable_t)
       {
         dc.context.fillStyle = "#000000";
         dc.context.font = "10px Helvetica";
@@ -356,7 +374,17 @@ var GamePlayScene = function(game, stage)
         dc.context.fillText(self.earth.t,x,self.y-1);
       }
 
-      var last_drawn_quake;
+      //draw ghost quake/loc blips
+      var q;
+      var l;
+      q = self.earth.ghost_quake;
+      for(var j = 0; j < self.earth.locations.length; j++)
+      {
+        self.drawBlip(q.location_ts[j],1);
+        if(highlit_loc == self.earth.locations[j]) dc.context.fillStyle = "#000000"
+        else                                       dc.context.fillStyle = "#FF0000"
+        self.labelBlip(q.location_ts[j]);
+      }
 
       //draw quake/loc blips
       var q;
@@ -364,41 +392,26 @@ var GamePlayScene = function(game, stage)
       for(var i = 0; i < self.earth.quakes.length; i++)
       {
         q = self.earth.quakes[i];
-        if(q.t < self.earth.t)
+        for(var j = 0; j < self.earth.locations.length; j++)
         {
-          for(var j = 0; j < self.earth.locations.length; j++)
-          {
-            if(q.location_ts[j] < self.earth.t)
-            {
-              var x = Math.round((q.location_ts[j]/self.earth.recordable_t)*dc.width);
-              dc.context.fillStyle = "rgba(255,0,0,"+Math.pow(((i+1)/n_quakes),2)+")";
-              dc.context.fillRect(x-1,self.y,2,self.h);
-            }
-          }
-
-          last_drawn_quake = q;
+          if(q.location_ts[j] < self.earth.t)
+            self.drawBlip(q.location_ts[j],Math.pow(((i+1)/n_quakes),2));
         }
       }
 
       //label most recent blips
-      if(last_drawn_quake)
+      var q = self.earth.quakes[n_quakes-1];
+      dc.context.fillStyle = "#000000";
+      dc.context.font = "10px Helvetica";
+      dc.context.textAlign = "right";
+
+      var x = Math.round((q.t/self.earth.recordable_t)*dc.width);
+      dc.context.fillText(q.t,x,self.y-1);
+
+      for(var j = 0; j < self.earth.locations.length; j++)
       {
-        var q = last_drawn_quake;
-        dc.context.fillStyle = "#000000";
-        dc.context.font = "10px Helvetica";
-        dc.context.textAlign = "right";
-
-        var x = Math.round((q.t/self.earth.recordable_t)*dc.width);
-        dc.context.fillText(q.t,x,self.y-1);
-
-        for(var j = 0; j < self.earth.locations.length; j++)
-        {
-          if(q.location_ts[j] < self.earth.t)
-          {
-            var x = Math.round((q.location_ts[j]/self.earth.recordable_t)*dc.width);
-            dc.context.fillText(Math.round(q.location_ts[j]),x,self.y-1);
-          }
-        }
+        if(q.location_ts[j] < self.earth.t)
+          self.labelBlip(q.location_ts[j]);
       }
 
       //label highlit blips
@@ -406,9 +419,7 @@ var GamePlayScene = function(game, stage)
       {
         var highlit_loc_i = 0;
         for(var i = 0; i < self.earth.locations.length; i++)
-        {
           if(highlit_loc == self.earth.locations[i]) highlit_loc_i = i;
-        }
 
         var q;
         for(var i = 0; i < self.earth.quakes.length; i++)
@@ -424,11 +435,7 @@ var GamePlayScene = function(game, stage)
             dc.context.fillText(q.t,x,self.y-1);
 
             if(q.location_ts[highlit_loc_i] < self.earth.t)
-            {
-              var x = Math.round((q.location_ts[highlit_loc_i]/self.earth.recordable_t)*dc.width);
-              dc.context.fillStyle = "#FF0000";
-              dc.context.fillText(Math.round(q.location_ts[highlit_loc_i]),x,self.y-1);
-            }
+              self.labelBlip(q.location_ts[highlit_loc_i]);
           }
         }
       }
