@@ -200,8 +200,9 @@ var GamePlayScene = function(game, stage)
 
       //draw distance viz
       var l;
-      dc.context.strokeStyle = "rgba(0,0,0,0.1)";
-      dc.context.fillStyle = "rgba(0,0,0,0.1)";
+      dc.context.strokeStyle = "#000000";
+      dc.context.fillStyle = "#000000";
+      dc.context.globalAlpha=0.1;
       var mouse = { wx:self.hovering_wx, wy:self.hovering_wy, cx:self.hovering_wx*dc.width, cy:self.hovering_wy*dc.height };
       for(var i = 0; i < self.locations.length; i++)
       {
@@ -219,7 +220,13 @@ var GamePlayScene = function(game, stage)
           dc.context.ellipse(l.cx,l.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around locs
           dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(mouse.cx,mouse.cy); //line
           dc.context.stroke();
-          dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height); //line annotations
+          if(l.dragging || l.hovering)
+          {
+            dc.context.fillStyle = s_color;
+            dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-10); //line annotations
+            dc.context.fillStyle = p_color;
+            dc.context.fillText("("+Math.round(d/quake_p_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-20); //line annotations
+          }
         }
         else
         {
@@ -231,9 +238,16 @@ var GamePlayScene = function(game, stage)
           dc.context.ellipse(l.cx,l.cy,l.rad*dc.width,l.rad*dc.height,0,0,2*Math.PI); //circles around locs
           dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(l.mx*dc.width,l.my*dc.height); //line
           dc.context.stroke();
-          dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height); //line annotations
+          if(l.dragging || l.hovering)
+          {
+            dc.context.fillStyle = s_color;
+            dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
+            dc.context.fillStyle = p_color;
+            dc.context.fillText("("+Math.round(l.rad/quake_p_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
+          }
         }
       }
+      dc.context.globalAlpha=1;
 
       //draw locations
       var l;
@@ -249,7 +263,7 @@ var GamePlayScene = function(game, stage)
         if(l == highlit_loc)
         {
           dc.context.fillStyle = "#000000";
-          dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
+          //dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
         }
       }
 
@@ -318,12 +332,15 @@ var GamePlayScene = function(game, stage)
 
     self.shape; //sets externally
 
+    self.hovering = false;
     self.hover = function(evt)
     {
+      self.hovering = true;
       highlit_loc = self;
     }
     self.unhover = function(evt)
     {
+      self.hovering = false;
       if(highlit_loc == self) highlit_loc = undefined;
     }
 
