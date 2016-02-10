@@ -21,7 +21,7 @@ var GamePlayScene = function(game, stage)
   var STATE_PAUSE = ENUM; ENUM++;
 
   var earth;
-  var highlit_loc;
+  var hloc;
 
   var scrubber;
   var play_button;
@@ -102,9 +102,27 @@ var GamePlayScene = function(game, stage)
   self.draw = function()
   {
     earth.draw();
+    if(state != STATE_PLAY)
+    {
+      dc.context.globalAlpha=0.5;
+      dc.context.fillStyle = "#FFFFFF";
+      dc.context.fillRect(0,0,dc.width,dc.height);
+      dc.context.globalAlpha=1.0;
+    }
     scrubber.draw();
-    play_button.draw(dc);
-    pause_button.draw(dc);
+    //play_button.draw(dc);
+    dc.context.fillStyle = "#000000";
+    dc.context.strokeStyle = "#000000";
+    dc.context.beginPath();
+    dc.context.moveTo(play_button.x,play_button.y);
+    dc.context.lineTo(play_button.x+play_button.w,play_button.y+play_button.h/2);
+    dc.context.lineTo(play_button.x,play_button.y+play_button.h);
+    dc.context.fill();
+    //pause_button.draw(dc);
+    dc.context.fillStyle = "#000000";
+    dc.context.strokeStyle = "#000000";
+    dc.context.fillRect(pause_button.x,pause_button.y,8,pause_button.h);
+    dc.context.fillRect(pause_button.x+pause_button.w-8,pause_button.y,8,pause_button.h);
     reset_button.draw(dc);
   };
 
@@ -161,6 +179,7 @@ var GamePlayScene = function(game, stage)
       q.eval_loc_ts(self.locations);
       self.quakes.push(q);
       if(self.quakes.length > n_quakes) self.quakes.splice(0,1);
+      state = STATE_PLAY;
     }
 
     self.hovering = false;
@@ -260,7 +279,7 @@ var GamePlayScene = function(game, stage)
         dc.context.ellipse(l.cx,l.cy,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
         dc.context.stroke();
         dc.context.drawImage(l.shape,l.cx-l.shape.width/2,l.cy-l.shape.height/2,l.shape.width,l.shape.height);
-        if(l == highlit_loc)
+        if(l == hloc)
         {
           dc.context.fillStyle = "#000000";
           //dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
@@ -336,12 +355,12 @@ var GamePlayScene = function(game, stage)
     self.hover = function(evt)
     {
       self.hovering = true;
-      highlit_loc = self;
+      hloc = self;
     }
     self.unhover = function(evt)
     {
       self.hovering = false;
-      if(highlit_loc == self) highlit_loc = undefined;
+      if(hloc == self) hloc = undefined;
     }
 
     self.move_locs = false;
@@ -372,6 +391,7 @@ var GamePlayScene = function(game, stage)
     {
       self.dragging = true;
       evt.hit_ui = true;
+      hloc = self;
       if(self.move_locs)
       {
         self.deltaX = ((evt.doX-self.x)-self.offX);
@@ -384,7 +404,6 @@ var GamePlayScene = function(game, stage)
         self.wy = (self.y+self.h/2)/dc.height;
         self.cx = dc.width*self.wx;
         self.cy = dc.height*self.wy;
-        highlit_loc = self;
       }
       if(self.drag_rad)
       {
@@ -398,6 +417,7 @@ var GamePlayScene = function(game, stage)
     self.dragFinish = function()
     {
       self.dragging = false;
+      hloc = undefined;
       if(self.move_locs)
       {
         for(var i = 0; i < n_quakes; i++)
@@ -467,9 +487,9 @@ var GamePlayScene = function(game, stage)
       dc.context.font = "10px Helvetica";
       dc.context.textAlign = "center";
 
-      var highlit_loc_i = -1;
+      var hloc_i = -1;
       for(var i = 0; i < self.earth.locations.length; i++)
-        if(highlit_loc == self.earth.locations[i]) highlit_loc_i = i;
+        if(hloc == self.earth.locations[i]) hloc_i = i;
 
       //draw self
       dc.context.fillStyle = "#AAAAAA";
@@ -485,7 +505,7 @@ var GamePlayScene = function(game, stage)
       q = self.earth.ghost_quake;
       for(var j = 0; j < self.earth.locations.length; j++)
       {
-        if(j == highlit_loc_i)
+        if(j == hloc_i)
         {
           dc.context.globalAlpha=1;
           dc.context.fillStyle = "#000000";
@@ -511,7 +531,7 @@ var GamePlayScene = function(game, stage)
         for(var j = 0; j < self.earth.locations.length; j++)
         {
           if(self.earth.t < q.location_s_ts[j]) continue;
-          if(j == highlit_loc_i)
+          if(j == hloc_i)
           {
             dc.context.globalAlpha=1;
             dc.context.fillStyle = "#000000";
