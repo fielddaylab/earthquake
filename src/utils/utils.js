@@ -86,6 +86,13 @@ function clerp(s,e,t)
   return lerp(s,e,t)%(Math.PI*2);
 }
 
+function dist(a,b)
+{
+  var x = b.x-a.x;
+  var y = b.y-a.y;
+  return Math.sqrt(x*x+y*y);
+}
+
 function cdist(a,b)
 {
   while(a < 0) a += Math.PI*2;
@@ -238,3 +245,9 @@ var setBox = function(obj, x,y,w,h)
   obj.h = h;
 }
 
+function wdist(a,b)
+{
+  var x = b.wx-a.wx;
+  var y = b.wy-a.wy;
+  return Math.sqrt(x*x+y*y);
+}

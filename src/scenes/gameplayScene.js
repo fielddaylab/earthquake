@@ -6,6 +6,7 @@ var GamePlayScene = function(game, stage)
   var location_size = 0.1;
   var quake_rate = 0.01;
   var n_locations = 3;
+  var n_quakes = 3;
 
   var hoverer;
   var dragger;
@@ -26,7 +27,7 @@ var GamePlayScene = function(game, stage)
 
   self.ready = function()
   {
-    hoverer = new Hoverer({source:stage.dispCanv.canvas});
+    hoverer = new PersistentHoverer({source:stage.dispCanv.canvas});
     dragger = new Dragger({source:stage.dispCanv.canvas});
     clicker = new Clicker({source:stage.dispCanv.canvas});
 
@@ -52,8 +53,9 @@ var GamePlayScene = function(game, stage)
     clicker.register(play_button);
     clicker.register(pause_button);
     clicker.register(reset_button);
-    clicker.register(scrubber);
     dragger.register(scrubber);
+    clicker.register(scrubber);
+    hoverer.register(earth);
     clicker.register(earth);
   };
 
@@ -65,11 +67,7 @@ var GamePlayScene = function(game, stage)
 
     if(state == STATE_PLAY)
     {
-      //only continue to play if something has happened in recent-ish past
-      resume = false;
-      for(var i = 0; !resume && i < earth.quakes.length; i++)
-        if(earth.quakes[i].t > earth.t-(2/quake_rate)) resume = true;
-      if(resume) earth.t++;
+      if(earth.t < earth.recordable_t) earth.t++;
     }
     earth.tick();
   };
@@ -100,9 +98,8 @@ var GamePlayScene = function(game, stage)
     self.w = dc.width;
     self.h = dc.height;
 
-    //start at 1 to avoid div/0
-    self.t = 1;
-    self.recorded_t = 1;
+    self.t = 0;
+    self.recordable_t = 2/quake_rate;
 
     self.quakes = [];
     self.locations = [];
@@ -114,22 +111,22 @@ var GamePlayScene = function(game, stage)
 
     self.reset = function()
     {
-      //start at 1 to avoid div/0
-      self.t = 1;
-      self.recorded_t = 1;
-
+      self.t = 0;
       self.quakes = [];
+      for(var i = 0; i < n_quakes; i++)
+        self.quakes.push(new Quake(999,999,0));
     }
+    self.reset();
 
     self.tick = function()
     {
-      if(self.t > self.recorded_t) self.recorded_t = self.t;
     }
 
     self.click = function(evt)
     {
       if(evt.hit_ui) return; //only "hit" if unobtruded
       evt.hit_ui = true;
+      self.t = 0;
       var q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t);
 
       var l;
@@ -139,13 +136,46 @@ var GamePlayScene = function(game, stage)
         var x = l.wx-q.wx;
         var y = l.wy-q.wy;
         var d = Math.sqrt((x*x)+(y*y));
-        q[QuakeLocNames[i]] = q.t+(d/quake_rate);
+        q.location_ts[i] = q.t+(d/quake_rate);
       }
       self.quakes.push(q);
+      if(self.quakes.length > n_quakes) self.quakes.splice(0,1);
+    }
+
+    self.hovering = false;
+    self.hoveringX = 0;
+    self.hoveringY = 0;
+    self.hovering_wx = 0;
+    self.hovering_wy = 0;
+    self.hover = function(evt)
+    {
+      self.hovering = true;
+      self.hoveringX = evt.doX;
+      self.hoveringY = evt.doY;
+      self.hovering_wx = self.hoveringX/dc.width;
+      self.hovering_wy = self.hoveringY/dc.height;
+    }
+    self.unhover = function()
+    {
+      self.hovering = false;
     }
 
     self.draw = function()
     {
+      //draw distance viz
+      var l;
+      dc.context.strokeStyle = "#000000";
+      var mouse = { wx:self.hovering_wx, wy:self.hovering_wy };
+      for(var i = 0; i < self.locations.length; i++)
+      {
+        l = self.locations[i];
+        var d = wdist(mouse, l);
+        dc.context.beginPath();
+        //dc.context.arc(mouse.wx*dc.width,mouse.wy*dc.height,d*dc.width,0,2*Math.PI);
+        dc.context.ellipse(mouse.wx*dc.width,mouse.wy*dc.height,d*dc.width,d*dc.height,0,0,2*Math.PI);
+        dc.context.stroke();
+      }
+
       //draw locations
       var l;
       dc.context.fillStyle = "#000000";
@@ -164,7 +194,6 @@ var GamePlayScene = function(game, stage)
 
       //draw quakes
       var q;
-      dc.context.strokeStyle = "#000000";
       for(var i = 0; i < self.quakes.length; i++)
       {
         q = self.quakes[i];
@@ -173,6 +202,7 @@ var GamePlayScene = function(game, stage)
           (self.t-q.t)*quake_rate > 2 //far enough in future, can guarantee no longer on screen
         ) continue;
 
+        dc.context.strokeStyle = "rgba(0,0,0,"+Math.pow(((i+1)/n_quakes),2)+")";
         dc.context.beginPath();
         //dc.context.arc(q.x,q.y,(self.t-q.t)*quake_rate*dc.width,0,2*Math.PI);
         dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_rate*dc.width, (self.t-q.t)*quake_rate*dc.height, 0, 0, 2 * Math.PI);
@@ -181,15 +211,6 @@ var GamePlayScene = function(game, stage)
     }
   }
 
-  //javascript amirite
-  var QuakeLocNames = [];
-  QuakeLocNames[0] = "location_a_t";
-  QuakeLocNames[1] = "location_b_t";
-  QuakeLocNames[2] = "location_c_t";
-  QuakeLocNames[3] = "location_d_t";
-  QuakeLocNames[4] = "location_e_t";
-  QuakeLocNames[5] = "location_f_t";
-  QuakeLocNames[6] = "location_g_t";
   var Quake = function(x,y,t)
   {
     var self = this;
@@ -201,14 +222,9 @@ var GamePlayScene = function(game, stage)
     self.wy = y;
     self.t = t;
 
-    //pre-populate because dynamic population = non-packed array
-    self.location_a_t = 0;
-    self.location_b_t = 0;
-    self.location_c_t = 0;
-    self.location_d_t = 0;
-    self.location_e_t = 0;
-    self.location_f_t = 0;
-    self.location_g_t = 0;
+    self.location_ts = [];
+    for(var i = 0; i < n_locations; i++)
+      self.location_ts[i] = 0;
   }
 
   var Location = function(x,y)
@@ -288,7 +304,7 @@ var GamePlayScene = function(game, stage)
     {
       evt.hit_ui = true;
       if(!self.dragging) return;
-      self.earth.t = Math.round((evt.doX/dc.width)*self.earth.recorded_t);
+      self.earth.t = Math.round((evt.doX/dc.width)*self.earth.recordable_t);
     }
     self.dragFinish = function(evt)
     {
@@ -300,12 +316,12 @@ var GamePlayScene = function(game, stage)
       //draw self
       dc.context.fillStyle = "#AAAAAA";
       dc.context.fillRect(self.x,self.y,self.w,self.h);
-      var x = Math.round((self.earth.t/self.earth.recorded_t)*dc.width);
+      var x = Math.round((self.earth.t/self.earth.recordable_t)*dc.width);
       dc.context.fillStyle = "#FFFFFF";
       dc.context.fillRect(x-2,self.y,4,self.h);
 
       //draw self t
-      if(self.dragging || self.earth.t == self.earth.recorded_t)
+      if(self.dragging || self.earth.t == self.earth.recordable_t)
       {
         dc.context.fillStyle = "#000000";
         dc.context.font = "10px Helvetica";
@@ -323,16 +339,12 @@ var GamePlayScene = function(game, stage)
         q = self.earth.quakes[i];
         if(q.t < self.earth.t)
         {
-          var x = Math.round((q.t/self.earth.recorded_t)*dc.width);
-          dc.context.fillStyle = "#000000";
-          dc.context.fillRect(x-1,self.y,2,self.h);
-
           for(var j = 0; j < self.earth.locations.length; j++)
           {
-            if(q[QuakeLocNames[j]] < self.earth.t)
+            if(q.location_ts[j] < self.earth.t)
             {
-              var x = Math.round((q[QuakeLocNames[j]]/self.earth.recorded_t)*dc.width);
-              dc.context.fillStyle = "#FF0000";
+              var x = Math.round((q.location_ts[j]/self.earth.recordable_t)*dc.width);
+              dc.context.fillStyle = "rgba(255,0,0,"+Math.pow(((i+1)/n_quakes),2)+")";
               dc.context.fillRect(x-1,self.y,2,self.h);
             }
           }
@@ -349,15 +361,15 @@ var GamePlayScene = function(game, stage)
         dc.context.font = "10px Helvetica";
         dc.context.textAlign = "right";
 
-        var x = Math.round((q.t/self.earth.recorded_t)*dc.width);
+        var x = Math.round((q.t/self.earth.recordable_t)*dc.width);
         dc.context.fillText(q.t,x,self.y-1);
 
         for(var j = 0; j < self.earth.locations.length; j++)
         {
-          if(q[QuakeLocNames[j]] < self.earth.t)
+          if(q.location_ts[j] < self.earth.t)
           {
-            var x = Math.round((q[QuakeLocNames[j]]/self.earth.recorded_t)*dc.width);
-            dc.context.fillText(Math.round(q[QuakeLocNames[j]]),x,self.y-1);
+            var x = Math.round((q.location_ts[j]/self.earth.recordable_t)*dc.width);
+            dc.context.fillText(Math.round(q.location_ts[j]),x,self.y-1);
           }
         }
       }
@@ -380,15 +392,15 @@ var GamePlayScene = function(game, stage)
             dc.context.font = "10px Helvetica";
             dc.context.textAlign = "right";
 
-            var x = Math.round((q.t/self.earth.recorded_t)*dc.width);
+            var x = Math.round((q.t/self.earth.recordable_t)*dc.width);
             dc.context.fillStyle = "#000000";
             dc.context.fillText(q.t,x,self.y-1);
 
-            if(q[QuakeLocNames[highlit_loc_i]] < self.earth.t)
+            if(q.location_ts[highlit_loc_i] < self.earth.t)
             {
-              var x = Math.round((q[QuakeLocNames[highlit_loc_i]]/self.earth.recorded_t)*dc.width);
+              var x = Math.round((q.location_ts[highlit_loc_i]/self.earth.recordable_t)*dc.width);
               dc.context.fillStyle = "#FF0000";
-              dc.context.fillText(Math.round(q[QuakeLocNames[highlit_loc_i]]),x,self.y-1);
+              dc.context.fillText(Math.round(q.location_ts[highlit_loc_i]),x,self.y-1);
             }
           }
         }
