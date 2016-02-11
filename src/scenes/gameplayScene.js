@@ -87,13 +87,7 @@ var GamePlayScene = function(game, stage)
   self.draw = function()
   {
     earth.draw();
-    if(state != STATE_PLAY)
-    {
-      dc.context.globalAlpha=0.5;
-      dc.context.fillStyle = "#FFFFFF";
-      dc.context.fillRect(0,0,dc.width,dc.height);
-      dc.context.globalAlpha=1.0;
-    }
+
     scrubber.draw();
     speed_1x_button.draw(dc);
     speed_2x_button.draw(dc);
@@ -554,10 +548,13 @@ var GamePlayScene = function(game, stage)
     }
 
     self.dragging = false;
+    var saved_stagte = STATE_PLAY;
     self.dragStart = function(evt)
     {
       evt.hit_ui = true;
       self.dragging = true;
+      saved_state = state;
+      state = STATE_PAUSE;
       self.drag(evt);
     }
     self.drag = function(evt)
@@ -569,6 +566,7 @@ var GamePlayScene = function(game, stage)
     self.dragFinish = function(evt)
     {
       self.dragging = false;
+      state = saved_state;
     }
 
     self.drawBlip = function(t,ghost,correct)
