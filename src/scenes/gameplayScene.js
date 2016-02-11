@@ -4,7 +4,7 @@ var GamePlayScene = function(game, stage)
   var dc = stage.drawCanv;
 
   var location_size = 0.1;
-  var quake_size = 0.05;
+  var quake_size = 0.03;
   var quake_s_rate = 0.001;
   var quake_p_rate = 0.0005;
   var s_color = "#FF0000";
@@ -149,7 +149,7 @@ var GamePlayScene = function(game, stage)
       var l;
       for(var i = 0; i < n_locations; i++)
       {
-        l = new Location(Math.random(),Math.random(),i);
+        l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
              if(i == 0) l.shape = square;
         else if(i == 1) l.shape = circle;
         else if(i == 2) l.shape = triangle;
@@ -165,7 +165,7 @@ var GamePlayScene = function(game, stage)
       hquak = undefined;
       hquak_i = -1;
       self.quakes = [];
-      self.ghost_quake = new Quake(Math.random(),Math.random(),0);
+      self.ghost_quake = new Quake(randR(0.2,0.8),randR(0.2,0.8),0);
       self.ghost_quake.eval_loc_ts(self.locations);
     }
     self.reset();

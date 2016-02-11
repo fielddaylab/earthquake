@@ -234,6 +234,11 @@ var fviz = function(f,n)
   return Math.round(f*n)/n;
 }
 
+var randR = function(f,t)
+{
+  return lerp(f,t,Math.random());
+}
+
 //short name- will be used often to place elements by percent, while guaranteeing integer results
 var p    = function(percent, of) { return Math.floor(percent * of); }
 var invp = function(      n, of) { return n/of; }
