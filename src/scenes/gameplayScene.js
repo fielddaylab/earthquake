@@ -507,7 +507,7 @@ var GamePlayScene = function(game, stage)
       self.dragging = false;
     }
 
-    self.drawBlip = function(t,ghost)
+    self.drawBlip = function(t,ghost,correct)
     {
       var x = Math.round((t/self.earth.recordable_t)*dc.width);
       if(ghost)
@@ -516,7 +516,13 @@ var GamePlayScene = function(game, stage)
         dc.context.fillRect(x-2,self.y+self.h*0.8,4,self.h*0.2);
       }
       else
+      {
         dc.context.fillRect(x-1,self.y,2,self.h);
+        if(correct)
+          dc.context.drawImage(cmark,x-cmark.width/2,self.y+self.h/2-cmark.height/2);
+        else
+          dc.context.drawImage(xmark,x-xmark.width/2,self.y+self.h/2-xmark.height/2);
+      }
     }
     self.labelBlip = function(t)
     {
@@ -532,38 +538,25 @@ var GamePlayScene = function(game, stage)
     {
       for(var i = 0; i < self.earth.locations.length; i++)
       {
-        if(!ghost && self.earth.t < q.location_s_ts[i]) continue;
+        var draw_s =             (ghost || self.earth.t > q.location_s_ts[i]);
+        var draw_p = (p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
+        var s_correct = (!ghost && draw_s && Math.abs(q.location_s_ts[i]-self.earth.ghost_quake.location_s_ts[i]) < 10);
+        var p_correct = (!ghost && draw_p && Math.abs(q.location_p_ts[i]-self.earth.ghost_quake.location_p_ts[i]) < 10);
         if(i == hloc_i)
         {
           dc.context.globalAlpha=1;
           dc.context.fillStyle = "#000000";
-          self.labelBlip(q.location_s_ts[i]);
-          if(p_waves)
-          {
-            if(ghost || self.earth.t > q.location_p_ts[i])
-              self.labelBlip(q.location_p_ts[i]);
-          }
+          if(draw_s) self.labelBlip(q.location_s_ts[i]);
+          if(draw_p) self.labelBlip(q.location_p_ts[i]);
         }
         else
         {
           dc.context.globalAlpha=0.2;
-          self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
-          if(p_waves)
-          {
-            if(ghost || self.earth.t > q.location_p_ts[i])
-              self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
-          }
+          if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
+          if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
         }
-        dc.context.fillStyle = s_color;
-        self.drawBlip(q.location_s_ts[i],ghost);
-        if(p_waves)
-        {
-          if(ghost || self.earth.t > q.location_p_ts[i])
-          {
-            dc.context.fillStyle = p_color;
-            self.drawBlip(q.location_p_ts[i],ghost);
-          }
-        }
+        if(draw_s) { dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[i],ghost,s_correct); }
+        if(draw_p) { dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[i],ghost,p_correct); }
       }
     }
     self.draw = function()
@@ -608,4 +601,10 @@ triangle.context.fill();
 
 var qmark = GenIcon();
 qmark.context.fillText("?",qmark.width/2,qmark.height-2);
+
+var xmark = GenIcon();
+xmark.context.fillText("x",xmark.width/2,xmark.height-2);
+
+var cmark = GenIcon();
+cmark.context.fillText("c",cmark.width/2,cmark.height-2);
 
