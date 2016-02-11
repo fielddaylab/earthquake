@@ -165,8 +165,16 @@ var GamePlayScene = function(game, stage)
       hquak = undefined;
       hquak_i = -1;
       self.quakes = [];
-      self.ghost_quake = new Quake(randR(0.2,0.8),randR(0.2,0.8),0);
-      self.ghost_quake.eval_loc_ts(self.locations);
+      var min_dist = location_size+quake_size;
+      var accomplished = false;
+      while(!accomplished)
+      {
+        self.ghost_quake = new Quake(randR(0.2,0.8),randR(0.2,0.8),0);
+        accomplished = true;
+        for(var i = 0; accomplished && i < self.locations.length; i++)
+          accomplished = (wdist(self.locations[i],self.ghost_quake) > min_dist);
+        if(accomplished) self.ghost_quake.eval_loc_ts(self.locations);
+      }
     }
     self.reset();
 
