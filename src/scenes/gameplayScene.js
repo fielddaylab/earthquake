@@ -10,6 +10,7 @@ var GamePlayScene = function(game, stage)
   var p_color = "#0000FF";
   var n_locations = 3;
   var n_quakes = 1;
+  var p_waves = true;
 
   var hoverer;
   var dragger;
@@ -96,7 +97,6 @@ var GamePlayScene = function(game, stage)
     {
       if(earth.t < earth.recordable_t) earth.t++;
     }
-    earth.tick();
   };
 
   self.draw = function()
@@ -166,10 +166,6 @@ var GamePlayScene = function(game, stage)
       self.ghost_quake.eval_loc_ts(self.locations);
     }
 
-    self.tick = function()
-    {
-    }
-
     self.click = function(evt)
     {
       if(evt.hit_ui) return; //only "hit" if unobtruded
@@ -207,10 +203,25 @@ var GamePlayScene = function(game, stage)
       dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_s_rate*dc.width, (self.t-q.t)*quake_s_rate*dc.height, 0, 0, 2 * Math.PI);
       dc.context.stroke();
 
-      dc.context.strokeStyle = p_color;
+      if(p_waves)
+      {
+        dc.context.strokeStyle = p_color;
+        dc.context.beginPath();
+        dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_p_rate*dc.width, (self.t-q.t)*quake_p_rate*dc.height, 0, 0, 2 * Math.PI);
+        dc.context.stroke();
+      }
+    }
+    self.drawLoc = function(l,qx,qy)
+    {
       dc.context.beginPath();
-      dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_p_rate*dc.width, (self.t-q.t)*quake_p_rate*dc.height, 0, 0, 2 * Math.PI);
+      dc.context.ellipse(l.cx+qx*dc.width,l.cy+qy*dc.height,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
       dc.context.stroke();
+      dc.context.drawImage(l.shape,l.cx+qx*dc.width-l.shape.width/2,l.cy+qy*dc.height-l.shape.height/2,l.shape.width,l.shape.height);
+      if(l == hloc)
+      {
+        dc.context.fillStyle = "#000000";
+        //dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
+      }
     }
     self.draw = function()
     {
@@ -243,8 +254,11 @@ var GamePlayScene = function(game, stage)
           {
             dc.context.fillStyle = s_color;
             dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-10); //line annotations
-            dc.context.fillStyle = p_color;
-            dc.context.fillText("("+Math.round(d/quake_p_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-20); //line annotations
+            if(p_waves)
+            {
+              dc.context.fillStyle = p_color;
+              dc.context.fillText("("+Math.round(d/quake_p_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-20); //line annotations
+            }
           }
         }
         else
@@ -261,8 +275,11 @@ var GamePlayScene = function(game, stage)
           {
             dc.context.fillStyle = s_color;
             dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
-            dc.context.fillStyle = p_color;
-            dc.context.fillText("("+Math.round(l.rad/quake_p_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
+            if(p_waves)
+            {
+              dc.context.fillStyle = p_color;
+              dc.context.fillText("("+Math.round(l.rad/quake_p_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
+            }
           }
         }
       }
@@ -289,11 +306,14 @@ var GamePlayScene = function(game, stage)
             qx += Math.random()*(qn-td)/qn*wd;
             qy += Math.random()*(qn-td)/qn*wd;
           }
-          td = self.t - self.quakes[j].location_p_ts[i];
-          if(td > 0 && td < qn)
+          if(p_waves)
           {
-            qx += Math.random()*(qn-td)/qn*wd/2;
-            qy += Math.random()*(qn-td)/qn*wd/2;
+            td = self.t - self.quakes[j].location_p_ts[i];
+            if(td > 0 && td < qn)
+            {
+              qx += Math.random()*(qn-td)/qn*wd/2;
+              qy += Math.random()*(qn-td)/qn*wd/2;
+            }
           }
         }
         //ghost-quake-shake
@@ -303,23 +323,17 @@ var GamePlayScene = function(game, stage)
           qx += Math.random()*(qn-td)/qn*wd;
           qy += Math.random()*(qn-td)/qn*wd;
         }
-        td = self.t - self.ghost_quake.location_p_ts[i];
-        if(td > 0 && td < qn)
+        if(p_waves)
         {
-          qx += Math.random()*(qn-td)/qn*wd/2;
-          qy += Math.random()*(qn-td)/qn*wd/2;
+          td = self.t - self.ghost_quake.location_p_ts[i];
+          if(td > 0 && td < qn)
+          {
+            qx += Math.random()*(qn-td)/qn*wd/2;
+            qy += Math.random()*(qn-td)/qn*wd/2;
+          }
         }
 
-        //dc.context.fillRect(l.x,l.y,l.w,l.h);
-        dc.context.beginPath();
-        dc.context.ellipse(l.cx+qx*dc.width,l.cy+qy*dc.height,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
-        dc.context.stroke();
-        dc.context.drawImage(l.shape,l.cx+qx*dc.width-l.shape.width/2,l.cy+qy*dc.height-l.shape.height/2,l.shape.width,l.shape.height);
-        if(l == hloc)
-        {
-          dc.context.fillStyle = "#000000";
-          //dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
-        }
+        self.drawLoc(l,qx,qy);
       }
 
       //draw quakes
@@ -546,16 +560,16 @@ var GamePlayScene = function(game, stage)
           dc.context.globalAlpha=1;
           dc.context.fillStyle = "#000000";
           self.labelBlip(q.location_s_ts[j]);
-          self.labelBlip(q.location_p_ts[j]);
+          if(p_waves) self.labelBlip(q.location_p_ts[j]);
         }
         else
         {
           dc.context.globalAlpha=0.2;
           self.shapeBlip(q.location_s_ts[j],self.earth.locations[j].shape);
-          self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape);
+          if(p_waves) self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape);
         }
         dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[j],0);
-        dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[j],0);
+        if(p_waves) { dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[j],0); }
       }
 
       //draw quake/loc blips
@@ -572,19 +586,22 @@ var GamePlayScene = function(game, stage)
             dc.context.globalAlpha=1;
             dc.context.fillStyle = "#000000";
             self.labelBlip(q.location_s_ts[j]);
-            if(self.earth.t > q.location_p_ts[j]) self.labelBlip(q.location_p_ts[j]);
+            if(p_waves) { if(self.earth.t > q.location_p_ts[j]) self.labelBlip(q.location_p_ts[j]); }
           }
           else
           {
             dc.context.globalAlpha=0.2;
             self.shapeBlip(q.location_s_ts[j],self.earth.locations[j].shape);
-            if(self.earth.t > q.location_p_ts[j]) self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape);
+            if(p_waves) { if(self.earth.t > q.location_p_ts[j]) self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape); }
           }
           dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[j],1);
-          if(self.earth.t > q.location_p_ts[j])
+          if(p_waves)
           {
-            dc.context.fillStyle = p_color;
-            self.drawBlip(q.location_p_ts[j],1);
+            if(self.earth.t > q.location_p_ts[j])
+            {
+              dc.context.fillStyle = p_color;
+              self.drawBlip(q.location_p_ts[j],1);
+            }
           }
         }
       }
