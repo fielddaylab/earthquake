@@ -4,6 +4,7 @@ var GamePlayScene = function(game, stage)
   var dc = stage.drawCanv;
 
   var location_size = 0.1;
+  var quake_size = 0.05;
   var quake_s_rate = 0.001;
   var quake_p_rate = 0.0005;
   var s_color = "#FF0000";
@@ -148,6 +149,8 @@ var GamePlayScene = function(game, stage)
         dragger.unregister(self.locations[i]);
       }
 
+      hloc = undefined;
+      hloc_i = -1;
       self.locations = [];
       var l;
       for(var i = 0; i < n_locations; i++)
@@ -161,6 +164,12 @@ var GamePlayScene = function(game, stage)
         self.locations.push(l);
       }
 
+      for(var i = 0; self.quakes && i < self.quakes.length; i++)
+      {
+        hoverer.unregister(self.quakes[i]);
+      }
+      hquak = undefined;
+      hquak_i = -1;
       self.quakes = [];
       self.ghost_quake = new Quake(Math.random(),Math.random(),0);
       self.ghost_quake.eval_loc_ts(self.locations);
@@ -176,6 +185,8 @@ var GamePlayScene = function(game, stage)
 
       var q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t,self.ghost_quake);
       q.eval_loc_ts(self.locations);
+      hoverer.register(q);
+      hquak = q;
       self.quakes.push(q);
     }
 
@@ -199,29 +210,29 @@ var GamePlayScene = function(game, stage)
 
     self.drawQuake = function(q)
     {
-      if(q == hquak || q == self.quakes[self.quakes.length-1])
+      if(q == hquak)
       {
         dc.context.strokeStyle = s_color;
         dc.context.beginPath();
-        dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_s_rate*dc.width, (self.t-q.t)*quake_s_rate*dc.height, 0, 0, 2 * Math.PI);
+        dc.context.ellipse(q.cx, q.cy, (self.t-q.t)*quake_s_rate*dc.width, (self.t-q.t)*quake_s_rate*dc.height, 0, 0, 2 * Math.PI);
         dc.context.stroke();
 
         if(p_waves)
         {
           dc.context.strokeStyle = p_color;
           dc.context.beginPath();
-          dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_p_rate*dc.width, (self.t-q.t)*quake_p_rate*dc.height, 0, 0, 2 * Math.PI);
+          dc.context.ellipse(q.cx, q.cy, (self.t-q.t)*quake_p_rate*dc.width, (self.t-q.t)*quake_p_rate*dc.height, 0, 0, 2 * Math.PI);
           dc.context.stroke();
         }
       }
 
       if(q.c_aware_t < self.t)
       {
-        if(q.c) dc.context.drawImage(cmark,q.x-cmark.width/2,q.y-cmark.height/2);
-        else    dc.context.drawImage(xmark,q.x-xmark.width/2,q.y-xmark.height/2);
+        if(q.c) dc.context.drawImage(cmark,q.cx-cmark.width/2,q.cy-cmark.height/2);
+        else    dc.context.drawImage(xmark,q.cx-xmark.width/2,q.cy-xmark.height/2);
       }
       else
-        dc.context.drawImage(qmark,q.x-qmark.width/2,q.y-qmark.height/2);
+        dc.context.drawImage(qmark,q.cx-qmark.width/2,q.cy-qmark.height/2);
     }
     self.drawLoc = function(l,shake_amt)
     {
@@ -328,10 +339,7 @@ var GamePlayScene = function(game, stage)
         l = self.locations[i];
         var shake_amt = 0;
 
-        if(hquak)
-          shake_amt += self.quakeShakes(hquak,i);
-        else if(self.quakes.length)
-          shake_amt += self.quakeShakes(self.quakes[self.quakes.length-1],i);
+        if(hquak) shake_amt += self.quakeShakes(hquak,i);
         shake_amt += self.quakeShakes(self.ghost_quake,i);
 
         self.drawLoc(l,shake_amt);
@@ -340,8 +348,6 @@ var GamePlayScene = function(game, stage)
       //draw quakes
       for(var i = 0; i < self.quakes.length; i++)
         self.drawQuake(self.quakes[i]);
-      if(self.quakes.length)
-        self.drawQuake(self.quakes[self.quakes.length-1]);
     }
   }
 
@@ -349,11 +355,17 @@ var GamePlayScene = function(game, stage)
   {
     var self = this;
 
-    self.x = dc.width*x;
-    self.y = dc.height*y;
-
     self.wx = x;
     self.wy = y;
+
+    self.cx = dc.width*self.wx;
+    self.cy = dc.height*self.wy;
+
+    self.w = quake_size*dc.width;
+    self.h = quake_size*dc.height;
+    self.x = self.cx-self.w/2;
+    self.y = self.cy-self.h/2;
+
     self.t = t;
 
     self.location_s_ts = [];
@@ -403,6 +415,18 @@ var GamePlayScene = function(game, stage)
       }
       if(self.c) self.c_aware_t = last_true;
       else       self.c_aware_t = first_false;
+    }
+
+    self.hovering = false;
+    self.hover = function(evt)
+    {
+      self.hovering = true;
+      hquak = self;
+      hquak_i = self.i;
+    }
+    self.unhover = function(evt)
+    {
+      self.hovering = false;
     }
   }
 
@@ -606,10 +630,7 @@ var GamePlayScene = function(game, stage)
       self.labelBlip(self.earth.t,1);
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
-      if(hquak)
-        self.drawQuakeBlips(hquak,false)
-      else if(self.earth.quakes.length)
-        self.drawQuakeBlips(self.earth.quakes[self.earth.quakes.length-1],false);
+      if(hquak) self.drawQuakeBlips(hquak,false)
       dc.context.globalAlpha=1;
     }
   }
