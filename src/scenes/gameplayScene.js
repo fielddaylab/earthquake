@@ -57,7 +57,7 @@ var GamePlayScene = function(game, stage)
 
     play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
     pause_button = new ButtonBox(40,10,20,20,function(){state = STATE_PAUSE;});
-    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){earth.reset();});
+    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){earth.reset();state = STATE_PAUSE;});
 
     clicker.register(speed_1x_button);
     clicker.register(speed_2x_button);
@@ -212,6 +212,11 @@ var GamePlayScene = function(game, stage)
     {
       if(q == hquak)
       {
+        dc.context.strokeStyle = "#000000";
+        dc.context.beginPath();
+        dc.context.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
+        dc.context.stroke();
+
         dc.context.strokeStyle = s_color;
         dc.context.beginPath();
         dc.context.ellipse(q.cx, q.cy, (self.t-q.t)*quake_s_rate*dc.width, (self.t-q.t)*quake_s_rate*dc.height, 0, 0, 2 * Math.PI);
