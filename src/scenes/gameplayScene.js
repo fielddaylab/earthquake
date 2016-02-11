@@ -42,7 +42,7 @@ var GamePlayScene = function(game, stage)
     dragger = new Dragger({source:stage.dispCanv.canvas});
     clicker = new Clicker({source:stage.dispCanv.canvas});
 
-    state = STATE_PLAY;
+    state = STATE_PAUSE;
     play_speed = 1;
 
     earth = new Earth();
@@ -199,18 +199,23 @@ var GamePlayScene = function(game, stage)
 
     self.drawQuake = function(q)
     {
-      dc.context.strokeStyle = s_color;
-      dc.context.beginPath();
-      dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_s_rate*dc.width, (self.t-q.t)*quake_s_rate*dc.height, 0, 0, 2 * Math.PI);
-      dc.context.stroke();
-
-      if(p_waves)
+      if(q == hquak || q == self.quakes[self.quakes.length-1])
       {
-        dc.context.strokeStyle = p_color;
+        dc.context.strokeStyle = s_color;
         dc.context.beginPath();
-        dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_p_rate*dc.width, (self.t-q.t)*quake_p_rate*dc.height, 0, 0, 2 * Math.PI);
+        dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_s_rate*dc.width, (self.t-q.t)*quake_s_rate*dc.height, 0, 0, 2 * Math.PI);
         dc.context.stroke();
+
+        if(p_waves)
+        {
+          dc.context.strokeStyle = p_color;
+          dc.context.beginPath();
+          dc.context.ellipse(q.x, q.y, (self.t-q.t)*quake_p_rate*dc.width, (self.t-q.t)*quake_p_rate*dc.height, 0, 0, 2 * Math.PI);
+          dc.context.stroke();
+        }
       }
+
+      dc.context.drawImage(qmark,q.x-qmark.width/2,q.y-qmark.height/2);
     }
     self.drawLoc = function(l,shake_amt)
     {
@@ -325,6 +330,8 @@ var GamePlayScene = function(game, stage)
       }
 
       //draw quakes
+      for(var i = 0; i < self.quakes.length; i++)
+        self.drawQuake(self.quakes[i]);
       if(self.quakes.length)
         self.drawQuake(self.quakes[self.quakes.length-1]);
     }
