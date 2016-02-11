@@ -39,39 +39,6 @@ var GamePlayScene = function(game, stage)
 
     earth = new Earth();
 
-    var l;
-    for(var i = 0; i < n_locations; i++)
-    {
-      l = new Location(Math.random(),Math.random());
-      l.shape = document.createElement('canvas');
-      l.shape.width = 10;
-      l.shape.height = 10;
-      l.shape.context = l.shape.getContext('2d');
-      l.shape.context.fillStyle = "#000000";
-      if(i == 0) //square
-      {
-        l.shape.context.fillRect(0,0,l.shape.width,l.shape.height);
-      }
-      else if(i == 1) //circle
-      {
-        l.shape.context.beginPath();
-        l.shape.context.arc(l.shape.width/2,l.shape.height/2,l.shape.width/2,0,2*Math.PI);
-        l.shape.context.fill();
-      }
-      else if(i == 2) //triangle
-      {
-        l.shape.context.beginPath();
-        l.shape.context.moveTo(0,l.shape.height);
-        l.shape.context.lineTo(l.shape.width/2,0);
-        l.shape.context.lineTo(l.shape.width,l.shape.height);
-        l.shape.context.fill();
-      }
-      hoverer.register(l);
-      dragger.register(l);
-      earth.registerLocation(l);
-    }
-    earth.reset();
-
     scrubber = new Scrubber(earth);
 
     play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
@@ -147,35 +114,76 @@ var GamePlayScene = function(game, stage)
     self.recordable_t = 1.5/quake_p_rate;
 
     self.locations = [];
-    self.quakes; //gets allocated on immediate reset
+    self.quakes = [];
     self.ghost_quake;
 
-    self.registerLocation = function(l)
-    {
-      self.locations.push(l);
-    }
+    var square = document.createElement('canvas');
+    square.width = 10;
+    square.height = 10;
+    square.context = square.getContext('2d');
+    square.context.fillStyle = "#000000";
+    square.context.fillRect(0,0,square.width,square.height);
+
+    var circle = document.createElement('canvas');
+    circle.width = 10;
+    circle.height = 10;
+    circle.context = circle.getContext('2d');
+    circle.context.fillStyle = "#000000";
+    circle.context.beginPath();
+    circle.context.arc(circle.width/2,circle.height/2,circle.width/2,0,2*Math.PI);
+    circle.context.fill();
+
+    var triangle = document.createElement('canvas');
+    triangle.width = 10;
+    triangle.height = 10;
+    triangle.context = triangle.getContext('2d');
+    triangle.context.fillStyle = "#000000";
+    triangle.context.beginPath();
+    triangle.context.moveTo(0,triangle.height);
+    triangle.context.lineTo(triangle.width/2,0);
+    triangle.context.lineTo(triangle.width,triangle.height);
+    triangle.context.fill();
 
     self.reset = function()
     {
       self.t = 0;
-      self.quakes = [];
+
+      var l;
+      for(var i = 0; i < n_locations; i++)
+      {
+        if(l = self.locations[i])
+        {
+          hoverer.unregister(l);
+          dragger.unregister(l);
+        }
+        l = new Location(Math.random(),Math.random());
+             if(i == 0) l.shape = square;
+        else if(i == 1) l.shape = circle;
+        else if(i == 2) l.shape = triangle;
+        hoverer.register(l);
+        dragger.register(l);
+        self.locations[i] = l;
+      }
+
       for(var i = 0; i < n_quakes; i++)
-        self.quakes.push(new Quake(9999,9999,0));
+        self.quakes[i] = new Quake(9999,9999,-1);
 
       self.ghost_quake = new Quake(Math.random(),Math.random(),0);
       self.ghost_quake.eval_loc_ts(self.locations);
     }
+    self.reset();
 
     self.click = function(evt)
     {
       if(evt.hit_ui) return; //only "hit" if unobtruded
       evt.hit_ui = true;
       self.t = 0;
+      state = STATE_PLAY;
+
       var q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t);
       q.eval_loc_ts(self.locations);
       self.quakes.push(q);
       if(self.quakes.length > n_quakes) self.quakes.splice(0,1);
-      state = STATE_PLAY;
     }
 
     self.hovering = false;
