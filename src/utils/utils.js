@@ -251,3 +251,17 @@ function wdist(a,b)
   var y = b.wy-a.wy;
   return Math.sqrt(x*x+y*y);
 }
+
+var GenIcon = function(w,h)
+{
+  var icon = document.createElement('canvas');
+  icon.width = w || 10;
+  icon.height = h || 10;
+  icon.context = icon.getContext('2d');
+  icon.context.fillStyle = "#000000";
+  icon.context.strokeStyle = "#000000";
+  icon.context.textAlign = "center";
+
+  return icon;
+}
+

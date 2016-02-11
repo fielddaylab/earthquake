@@ -8,9 +8,8 @@ var GamePlayScene = function(game, stage)
   var quake_p_rate = 0.0005;
   var s_color = "#FF0000";
   var p_color = "#0000FF";
-  var n_locations = 1;
-  var n_quakes = 1;
-  var p_waves = false;
+  var n_locations = 3;
+  var p_waves = true;
 
   var hoverer;
   var dragger;
@@ -24,6 +23,9 @@ var GamePlayScene = function(game, stage)
 
   var earth;
   var hloc;
+  var hloc_i;
+  var hquak;
+  var hquak_i;
 
   var scrubber;
   var speed_1x_button;
@@ -46,7 +48,6 @@ var GamePlayScene = function(game, stage)
     earth = new Earth();
 
     scrubber = new Scrubber(earth);
-
 
     speed_1x_button = new ToggleBox(dc.width-120,dc.height-60,20,20,true, function(on) { if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
     speed_2x_button = new ToggleBox(dc.width-90, dc.height-60,20,20,false,function(on) { if(on) play_speed = 2; else if(play_speed == 2) speed_2x_button.on = true; speed_1x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
@@ -133,61 +134,34 @@ var GamePlayScene = function(game, stage)
     self.t = 0;
     self.recordable_t = 1.5/quake_p_rate;
 
-    self.locations = [];
-    self.quakes = [];
+    self.locations;
+    self.quakes;
     self.ghost_quake;
-
-    var square = document.createElement('canvas');
-    square.width = 10;
-    square.height = 10;
-    square.context = square.getContext('2d');
-    square.context.fillStyle = "#000000";
-    square.context.fillRect(0,0,square.width,square.height);
-
-    var circle = document.createElement('canvas');
-    circle.width = 10;
-    circle.height = 10;
-    circle.context = circle.getContext('2d');
-    circle.context.fillStyle = "#000000";
-    circle.context.beginPath();
-    circle.context.arc(circle.width/2,circle.height/2,circle.width/2,0,2*Math.PI);
-    circle.context.fill();
-
-    var triangle = document.createElement('canvas');
-    triangle.width = 10;
-    triangle.height = 10;
-    triangle.context = triangle.getContext('2d');
-    triangle.context.fillStyle = "#000000";
-    triangle.context.beginPath();
-    triangle.context.moveTo(0,triangle.height);
-    triangle.context.lineTo(triangle.width/2,0);
-    triangle.context.lineTo(triangle.width,triangle.height);
-    triangle.context.fill();
 
     self.reset = function()
     {
       self.t = 0;
 
+      for(var i = 0; self.locations && i < self.locations.length; i++)
+      {
+        hoverer.unregister(self.locations[i]);
+        dragger.unregister(self.locations[i]);
+      }
+
+      self.locations = [];
       var l;
       for(var i = 0; i < n_locations; i++)
       {
-        if(l = self.locations[i])
-        {
-          hoverer.unregister(l);
-          dragger.unregister(l);
-        }
-        l = new Location(Math.random(),Math.random());
+        l = new Location(Math.random(),Math.random(),i);
              if(i == 0) l.shape = square;
         else if(i == 1) l.shape = circle;
         else if(i == 2) l.shape = triangle;
         hoverer.register(l);
         dragger.register(l);
-        self.locations[i] = l;
+        self.locations.push(l);
       }
 
-      for(var i = 0; i < n_quakes; i++)
-        self.quakes[i] = new Quake(9999,9999,-1);
-
+      self.quakes = [];
       self.ghost_quake = new Quake(Math.random(),Math.random(),0);
       self.ghost_quake.eval_loc_ts(self.locations);
     }
@@ -203,7 +177,6 @@ var GamePlayScene = function(game, stage)
       var q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t);
       q.eval_loc_ts(self.locations);
       self.quakes.push(q);
-      if(self.quakes.length > n_quakes) self.quakes.splice(0,1);
     }
 
     self.hovering = false;
@@ -239,8 +212,13 @@ var GamePlayScene = function(game, stage)
         dc.context.stroke();
       }
     }
-    self.drawLoc = function(l,qx,qy)
+    self.drawLoc = function(l,shake_amt)
     {
+      var qx = 0;
+      var qy = 0;
+      var wd = 0.01;
+      qx += Math.random()*shake_amt*wd;
+      qy += Math.random()*shake_amt*wd;
       dc.context.beginPath();
       dc.context.ellipse(l.cx+qx*dc.width,l.cy+qy*dc.height,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
       dc.context.stroke();
@@ -250,6 +228,24 @@ var GamePlayScene = function(game, stage)
         dc.context.fillStyle = "#000000";
         //dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
       }
+    }
+    self.quakeShakes = function(q,i)
+    {
+      var t_delta = 0;
+      var q_t = 50;
+      var shake_amt = 0;
+
+      t_delta = self.t - q.location_s_ts[i];
+      if(t_delta > 0 && t_delta < q_t)
+        shake_amt += (q_t-t_delta)/q_t;
+      if(p_waves)
+      {
+        t_delta = self.t - q.location_p_ts[i];
+        if(t_delta > 0 && t_delta < q_t)
+          shake_amt += ((q_t-t_delta)/q_t)/2;
+      }
+
+      return shake_amt;
     }
     self.draw = function()
     {
@@ -319,64 +315,18 @@ var GamePlayScene = function(game, stage)
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
+        var shake_amt = 0;
 
-        //quake-shakes
-        var qx = 0;
-        var qy = 0;
-        var td = 0;
-        var qn = 50;
-        var wd = 0.01;
-        for(var j = 0; j < self.quakes.length; j++)
-        {
-          td = self.t - self.quakes[j].location_s_ts[i];
-          if(td > 0 && td < qn)
-          {
-            qx += Math.random()*(qn-td)/qn*wd;
-            qy += Math.random()*(qn-td)/qn*wd;
-          }
-          if(p_waves)
-          {
-            td = self.t - self.quakes[j].location_p_ts[i];
-            if(td > 0 && td < qn)
-            {
-              qx += Math.random()*(qn-td)/qn*wd/2;
-              qy += Math.random()*(qn-td)/qn*wd/2;
-            }
-          }
-        }
-        //ghost-quake-shake
-        td = self.t - self.ghost_quake.location_s_ts[i];
-        if(td > 0 && td < qn)
-        {
-          qx += Math.random()*(qn-td)/qn*wd;
-          qy += Math.random()*(qn-td)/qn*wd;
-        }
-        if(p_waves)
-        {
-          td = self.t - self.ghost_quake.location_p_ts[i];
-          if(td > 0 && td < qn)
-          {
-            qx += Math.random()*(qn-td)/qn*wd/2;
-            qy += Math.random()*(qn-td)/qn*wd/2;
-          }
-        }
+        if(self.quakes.length)
+          shake_amt += self.quakeShakes(self.quakes[self.quakes.length-1],i);
+        shake_amt += self.quakeShakes(self.ghost_quake,i);
 
-        self.drawLoc(l,qx,qy);
+        self.drawLoc(l,shake_amt);
       }
 
       //draw quakes
-      var q;
-      for(var i = 0; i < self.quakes.length; i++)
-      {
-        q = self.quakes[i];
-        if(
-          self.t < q.t || //in the past
-          (self.t-q.t)*quake_s_rate > 2 //far enough in future, can guarantee no longer on screen
-        ) continue;
-
-        dc.context.strokeStyle = "rgba(0,0,0,"+Math.pow(((i+1)/n_quakes),2)+")";
-        self.drawQuake(q);
-      }
+      if(self.quakes.length)
+        self.drawQuake(self.quakes[self.quakes.length-1]);
     }
   }
 
@@ -412,7 +362,7 @@ var GamePlayScene = function(game, stage)
     }
   }
 
-  var Location = function(x,y)
+  var Location = function(x,y,i)
   {
     var self = this;
 
@@ -427,6 +377,8 @@ var GamePlayScene = function(game, stage)
     self.x = self.cx-self.w/2;
     self.y = self.cy-self.h/2;
 
+    self.i = i;
+
     self.shape; //sets externally
 
     self.hovering = false;
@@ -434,11 +386,16 @@ var GamePlayScene = function(game, stage)
     {
       self.hovering = true;
       hloc = self;
+      hloc_i = self.i;
     }
     self.unhover = function(evt)
     {
       self.hovering = false;
-      if(hloc == self) hloc = undefined;
+      if(hloc == self)
+      {
+        hloc = undefined;
+        hloc_i = -1;
+      }
     }
 
     self.move_locs = false;
@@ -470,6 +427,7 @@ var GamePlayScene = function(game, stage)
       self.dragging = true;
       evt.hit_ui = true;
       hloc = self;
+      hloc_i = self.i;
       if(self.move_locs)
       {
         self.deltaX = ((evt.doX-self.x)-self.offX);
@@ -496,9 +454,10 @@ var GamePlayScene = function(game, stage)
     {
       self.dragging = false;
       hloc = undefined;
+      hloc_i = -1;
       if(self.move_locs)
       {
-        for(var i = 0; i < n_quakes; i++)
+        for(var i = 0; i < earth.quakes.length; i++)
           earth.quakes[i].eval_loc_ts(earth.locations);
         earth.ghost_quake.eval_loc_ts(earth.locations);
       }
@@ -539,16 +498,16 @@ var GamePlayScene = function(game, stage)
       self.dragging = false;
     }
 
-    self.drawBlip = function(t,solid)
+    self.drawBlip = function(t,ghost)
     {
       var x = Math.round((t/self.earth.recordable_t)*dc.width);
-      if(solid)
-        dc.context.fillRect(x-1,self.y,2,self.h);
-      else
+      if(ghost)
       {
         dc.context.fillRect(x-2,self.y,4,self.h*0.2);
         dc.context.fillRect(x-2,self.y+self.h*0.8,4,self.h*0.2);
       }
+      else
+        dc.context.fillRect(x-1,self.y,2,self.h);
     }
     self.labelBlip = function(t)
     {
@@ -560,14 +519,48 @@ var GamePlayScene = function(game, stage)
       var x = Math.round((t/self.earth.recordable_t)*dc.width);
       dc.context.drawImage(shape,x-shape.width/2,self.y-5-shape.height);
     }
+    self.drawQuakeBlips = function(q,ghost)
+    {
+      for(var j = 0; j < self.earth.locations.length; j++)
+      {
+        if(!ghost && self.earth.t < q.location_s_ts[j]) continue;
+        if(j == hloc_i)
+        {
+          dc.context.globalAlpha=1;
+          dc.context.fillStyle = "#000000";
+          self.labelBlip(q.location_s_ts[j]);
+          if(p_waves)
+          {
+            if(ghost || self.earth.t > q.location_p_ts[j])
+              self.labelBlip(q.location_p_ts[j]);
+          }
+        }
+        else
+        {
+          dc.context.globalAlpha=0.2;
+          self.shapeBlip(q.location_s_ts[j],self.earth.locations[j].shape);
+          if(p_waves)
+          {
+            if(ghost || self.earth.t > q.location_p_ts[j])
+              self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape);
+          }
+        }
+        dc.context.fillStyle = s_color;
+        self.drawBlip(q.location_s_ts[j],ghost);
+        if(p_waves)
+        {
+          if(ghost || self.earth.t > q.location_p_ts[j])
+          {
+            dc.context.fillStyle = p_color;
+            self.drawBlip(q.location_p_ts[j],ghost);
+          }
+        }
+      }
+    }
     self.draw = function()
     {
       dc.context.font = "10px Helvetica";
       dc.context.textAlign = "center";
-
-      var hloc_i = -1;
-      for(var i = 0; i < self.earth.locations.length; i++)
-        if(hloc == self.earth.locations[i]) hloc_i = i;
 
       //draw self
       dc.context.fillStyle = "#AAAAAA";
@@ -577,65 +570,31 @@ var GamePlayScene = function(game, stage)
       dc.context.fillStyle = "#000000";
       self.labelBlip(self.earth.t,1);
 
-      //draw ghost quake/loc blips
-      var q;
-      var l;
-      q = self.earth.ghost_quake;
-      for(var j = 0; j < self.earth.locations.length; j++)
-      {
-        if(j == hloc_i)
-        {
-          dc.context.globalAlpha=1;
-          dc.context.fillStyle = "#000000";
-          self.labelBlip(q.location_s_ts[j]);
-          if(p_waves) self.labelBlip(q.location_p_ts[j]);
-        }
-        else
-        {
-          dc.context.globalAlpha=0.2;
-          self.shapeBlip(q.location_s_ts[j],self.earth.locations[j].shape);
-          if(p_waves) self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape);
-        }
-        dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[j],0);
-        if(p_waves) { dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[j],0); }
-      }
-
-      //draw quake/loc blips
-      var q;
-      var l;
-      for(var i = 0; i < self.earth.quakes.length; i++)
-      {
-        q = self.earth.quakes[i];
-        for(var j = 0; j < self.earth.locations.length; j++)
-        {
-          if(self.earth.t < q.location_s_ts[j]) continue;
-          if(j == hloc_i)
-          {
-            dc.context.globalAlpha=1;
-            dc.context.fillStyle = "#000000";
-            self.labelBlip(q.location_s_ts[j]);
-            if(p_waves) { if(self.earth.t > q.location_p_ts[j]) self.labelBlip(q.location_p_ts[j]); }
-          }
-          else
-          {
-            dc.context.globalAlpha=0.2;
-            self.shapeBlip(q.location_s_ts[j],self.earth.locations[j].shape);
-            if(p_waves) { if(self.earth.t > q.location_p_ts[j]) self.shapeBlip(q.location_p_ts[j],self.earth.locations[j].shape); }
-          }
-          dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[j],1);
-          if(p_waves)
-          {
-            if(self.earth.t > q.location_p_ts[j])
-            {
-              dc.context.fillStyle = p_color;
-              self.drawBlip(q.location_p_ts[j],1);
-            }
-          }
-        }
-      }
+      self.drawQuakeBlips(self.earth.ghost_quake,true);
+      if(self.earth.quakes.length)
+        self.drawQuakeBlips(self.earth.quakes[self.earth.quakes.length-1],false);
       dc.context.globalAlpha=1;
     }
   }
 
 };
+
+//icons
+var square = GenIcon();
+square.context.fillRect(0,0,square.width,square.height);
+
+var circle = GenIcon();
+circle.context.beginPath();
+circle.context.arc(circle.width/2,circle.height/2,circle.width/2,0,2*Math.PI);
+circle.context.fill();
+
+var triangle = GenIcon();
+triangle.context.beginPath();
+triangle.context.moveTo(0,triangle.height);
+triangle.context.lineTo(triangle.width/2,0);
+triangle.context.lineTo(triangle.width,triangle.height);
+triangle.context.fill();
+
+var qmark = GenIcon();
+qmark.context.fillText("?",qmark.width/2,qmark.height-2);
 
