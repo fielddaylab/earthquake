@@ -8,9 +8,9 @@ var GamePlayScene = function(game, stage)
   var quake_p_rate = 0.0005;
   var s_color = "#FF0000";
   var p_color = "#0000FF";
-  var n_locations = 3;
+  var n_locations = 1;
   var n_quakes = 1;
-  var p_waves = true;
+  var p_waves = false;
 
   var hoverer;
   var dragger;
@@ -20,11 +20,16 @@ var GamePlayScene = function(game, stage)
   var ENUM = 0;
   var STATE_PLAY = ENUM; ENUM++;
   var STATE_PAUSE = ENUM; ENUM++;
+  var play_speed;
 
   var earth;
   var hloc;
 
   var scrubber;
+  var speed_1x_button;
+  var speed_2x_button;
+  var speed_4x_button;
+  var speed_8x_button;
   var play_button;
   var pause_button;
   var reset_button;
@@ -36,15 +41,26 @@ var GamePlayScene = function(game, stage)
     clicker = new Clicker({source:stage.dispCanv.canvas});
 
     state = STATE_PLAY;
+    play_speed = 1;
 
     earth = new Earth();
 
     scrubber = new Scrubber(earth);
 
+
+    speed_1x_button = new ToggleBox(dc.width-120,dc.height-60,20,20,true, function(on) { if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
+    speed_2x_button = new ToggleBox(dc.width-90, dc.height-60,20,20,false,function(on) { if(on) play_speed = 2; else if(play_speed == 2) speed_2x_button.on = true; speed_1x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
+    speed_4x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,false,function(on) { if(on) play_speed = 4; else if(play_speed == 4) speed_4x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_8x_button.on = false; });
+    speed_8x_button = new ToggleBox(dc.width-30, dc.height-60,20,20,false,function(on) { if(on) play_speed = 8; else if(play_speed == 8) speed_8x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_4x_button.on = false; });
+
     play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
     pause_button = new ButtonBox(40,10,20,20,function(){state = STATE_PAUSE;});
     reset_button = new ButtonBox(dc.width-30,10,20,20,function(){earth.reset();});
 
+    clicker.register(speed_1x_button);
+    clicker.register(speed_2x_button);
+    clicker.register(speed_4x_button);
+    clicker.register(speed_8x_button);
     clicker.register(play_button);
     clicker.register(pause_button);
     clicker.register(reset_button);
@@ -62,7 +78,7 @@ var GamePlayScene = function(game, stage)
 
     if(state == STATE_PLAY)
     {
-      if(earth.t < earth.recordable_t) earth.t++;
+      if(earth.t < earth.recordable_t) earth.t += play_speed;
     }
   };
 
@@ -77,6 +93,10 @@ var GamePlayScene = function(game, stage)
       dc.context.globalAlpha=1.0;
     }
     scrubber.draw();
+    speed_1x_button.draw(dc);
+    speed_2x_button.draw(dc);
+    speed_4x_button.draw(dc);
+    speed_8x_button.draw(dc);
     //play_button.draw(dc);
     dc.context.fillStyle = "#000000";
     dc.context.strokeStyle = "#000000";
