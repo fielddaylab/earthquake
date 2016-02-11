@@ -215,7 +215,13 @@ var GamePlayScene = function(game, stage)
         }
       }
 
-      dc.context.drawImage(qmark,q.x-qmark.width/2,q.y-qmark.height/2);
+      if(q.c_aware_t < self.t)
+      {
+        if(q.c) dc.context.drawImage(cmark,q.x-cmark.width/2,q.y-cmark.height/2);
+        else    dc.context.drawImage(xmark,q.x-xmark.width/2,q.y-xmark.height/2);
+      }
+      else
+        dc.context.drawImage(qmark,q.x-qmark.width/2,q.y-qmark.height/2);
     }
     self.drawLoc = function(l,shake_amt)
     {
@@ -354,6 +360,8 @@ var GamePlayScene = function(game, stage)
     self.location_p_ts = [];
     self.location_s_cs = []
     self.location_p_cs = []
+    self.c_aware_t = 9999;
+    self.c = false;
 
     for(var i = 0; i < n_locations; i++)
     {
@@ -366,6 +374,9 @@ var GamePlayScene = function(game, stage)
     self.eval_loc_ts = function(locations)
     {
       var l;
+      self.c = true;
+      var first_false = 99999;
+      var last_true = 0;
       for(var i = 0; i < locations.length; i++)
       {
         l = locations[i];
@@ -374,7 +385,24 @@ var GamePlayScene = function(game, stage)
         self.location_p_ts[i] = self.t+(d/quake_p_rate);
         self.location_s_cs[i] = (ghost != undefined && Math.abs(self.location_s_ts[i]-ghost.location_s_ts[i]) < 10);
         self.location_p_cs[i] = (ghost != undefined && Math.abs(self.location_p_ts[i]-ghost.location_p_ts[i]) < 10);
+
+        if(!self.location_s_cs[i])
+        {
+          if(self.location_s_ts[i] < first_false) first_false = self.location_s_ts[i];
+          self.c = false;
+        }
+        else
+          if(self.location_s_ts[i] > last_true) last_true = self.location_s_ts[i];
+        if(!self.location_p_cs[i])
+        {
+          if(self.location_p_ts[i] < first_false) first_false = self.location_p_ts[i];
+          self.c = false;
+        }
+        else
+          if(self.location_p_ts[i] > last_true) last_true = self.location_p_ts[i];
       }
+      if(self.c) self.c_aware_t = last_true;
+      else       self.c_aware_t = first_false;
     }
   }
 
