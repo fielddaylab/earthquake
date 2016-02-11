@@ -603,8 +603,8 @@ var qmark = GenIcon();
 qmark.context.fillText("?",qmark.width/2,qmark.height-2);
 
 var xmark = GenIcon();
-xmark.context.fillText("x",xmark.width/2,xmark.height-2);
+xmark.context.fillText("✖",xmark.width/2,xmark.height-2);
 
 var cmark = GenIcon();
-cmark.context.fillText("c",cmark.width/2,cmark.height-2);
+cmark.context.fillText("✔",cmark.width/2,cmark.height-2);
 
