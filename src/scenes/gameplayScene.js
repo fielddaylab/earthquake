@@ -174,7 +174,7 @@ var GamePlayScene = function(game, stage)
       self.t = 0;
       state = STATE_PLAY;
 
-      var q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t);
+      var q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t,self.ghost_quake);
       q.eval_loc_ts(self.locations);
       self.quakes.push(q);
     }
@@ -339,7 +339,7 @@ var GamePlayScene = function(game, stage)
     }
   }
 
-  var Quake = function(x,y,t)
+  var Quake = function(x,y,t,ghost)
   {
     var self = this;
 
@@ -352,10 +352,15 @@ var GamePlayScene = function(game, stage)
 
     self.location_s_ts = [];
     self.location_p_ts = [];
+    self.location_s_cs = []
+    self.location_p_cs = []
+
     for(var i = 0; i < n_locations; i++)
     {
       self.location_s_ts[i] = 9999;
       self.location_p_ts[i] = 9999;
+      self.location_s_cs[i] = 0;
+      self.location_p_cs[i] = 0;
     }
 
     self.eval_loc_ts = function(locations)
@@ -367,6 +372,8 @@ var GamePlayScene = function(game, stage)
         var d = wdist(l,self);
         self.location_s_ts[i] = self.t+(d/quake_s_rate);
         self.location_p_ts[i] = self.t+(d/quake_p_rate);
+        self.location_s_cs[i] = (ghost != undefined && Math.abs(self.location_s_ts[i]-ghost.location_s_ts[i]) < 10);
+        self.location_p_cs[i] = (ghost != undefined && Math.abs(self.location_p_ts[i]-ghost.location_p_ts[i]) < 10);
       }
     }
   }
@@ -540,8 +547,6 @@ var GamePlayScene = function(game, stage)
       {
         var draw_s =             (ghost || self.earth.t > q.location_s_ts[i]);
         var draw_p = (p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
-        var s_correct = (!ghost && draw_s && Math.abs(q.location_s_ts[i]-self.earth.ghost_quake.location_s_ts[i]) < 10);
-        var p_correct = (!ghost && draw_p && Math.abs(q.location_p_ts[i]-self.earth.ghost_quake.location_p_ts[i]) < 10);
         if(i == hloc_i)
         {
           dc.context.globalAlpha=1;
@@ -555,8 +560,8 @@ var GamePlayScene = function(game, stage)
           if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
           if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
         }
-        if(draw_s) { dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[i],ghost,s_correct); }
-        if(draw_p) { dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[i],ghost,p_correct); }
+        if(draw_s) { dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[i],ghost,q.location_s_cs[i]); }
+        if(draw_p) { dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[i],ghost,q.location_p_cs[i]); }
       }
     }
     self.draw = function()
