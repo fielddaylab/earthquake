@@ -412,13 +412,16 @@ var GamePlayScene = function(game, stage)
         }
         else
           if(self.location_s_ts[i] > last_true) last_true = self.location_s_ts[i];
-        if(!self.location_p_cs[i])
+        if(p_waves)
         {
-          if(self.location_p_ts[i] < first_false) first_false = self.location_p_ts[i];
-          self.c = false;
+          if(!self.location_p_cs[i])
+          {
+            if(self.location_p_ts[i] < first_false) first_false = self.location_p_ts[i];
+            self.c = false;
+          }
+          else
+            if(self.location_p_ts[i] > last_true) last_true = self.location_p_ts[i];
         }
-        else
-          if(self.location_p_ts[i] > last_true) last_true = self.location_p_ts[i];
       }
       if(self.c) self.c_aware_t = last_true;
       else       self.c_aware_t = first_false;
