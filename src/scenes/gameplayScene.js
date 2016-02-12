@@ -24,8 +24,10 @@ var GamePlayScene = function(game, stage)
   var cur_level;
 
   var earth;
-  var sel_loc;
-  var sel_loc_i;
+  var hov_loc;
+  var hov_loc_i;
+  var hov_quak;
+  var hov_quak_i;
 
   var scrubber;
   var speed_1x_button;
@@ -168,8 +170,8 @@ var GamePlayScene = function(game, stage)
         dragger.unregister(self.locations[i]);
       }
 
-      sel_loc = undefined;
-      sel_loc_i = -1;
+      hov_loc = undefined;
+      hov_loc_i = -1;
       self.locations = [];
     }
     self.popLocations = function()
@@ -198,6 +200,9 @@ var GamePlayScene = function(game, stage)
         hoverer.unregister(self.quakes[i]);
         clicker.unregister(self.quakes[i]);
       }
+
+      hov_quak = undefined;
+      hov_quak_i = -1;
       self.quakes = [];
     }
     self.popGhost = function()
@@ -241,6 +246,7 @@ var GamePlayScene = function(game, stage)
       else                                   q = new Quake(evt.doX/dc.width,evt.doY/dc.height,     0,self.ghost_quake);
       q.eval_loc_ts(self.locations);
       q.selected = true;
+      hov_quak = q;
       hoverer.register(q);
       clicker.unregister(self);
       clicker.register(q);
@@ -308,7 +314,7 @@ var GamePlayScene = function(game, stage)
       dc.context.ellipse(l.cx+qx*dc.width,l.cy+qy*dc.height,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
       dc.context.stroke();
       dc.context.drawImage(l.shape,l.cx+qx*dc.width-l.shape.width/2,l.cy+qy*dc.height-l.shape.height/2,l.shape.width,l.shape.height);
-      if(l == sel_loc)
+      if(l == hov_loc)
       {
         dc.context.fillStyle = "#000000";
         //dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
@@ -491,10 +497,16 @@ var GamePlayScene = function(game, stage)
     self.hover = function(evt)
     {
       self.hovering = true;
+      hov_quak = self;
     }
     self.unhover = function(evt)
     {
       self.hovering = false;
+      if(hov_quak == self)
+      {
+        hov_quak = undefined;
+        hov_quak_i = -1;
+      }
     }
 
     self.click = function(evt)
@@ -527,16 +539,16 @@ var GamePlayScene = function(game, stage)
     self.hover = function(evt)
     {
       self.hovering = true;
-      sel_loc = self;
-      sel_loc_i = self.i;
+      hov_loc = self;
+      hov_loc_i = self.i;
     }
     self.unhover = function(evt)
     {
       self.hovering = false;
-      if(sel_loc == self)
+      if(hov_loc == self)
       {
-        sel_loc = undefined;
-        sel_loc_i = -1;
+        hov_loc = undefined;
+        hov_loc_i = -1;
       }
     }
 
@@ -595,16 +607,16 @@ var GamePlayScene = function(game, stage)
     self.hover = function(evt)
     {
       self.hovering = true;
-      sel_loc = self;
-      sel_loc_i = self.i;
+      hov_loc = self;
+      hov_loc_i = self.i;
     }
     self.unhover = function(evt)
     {
       self.hovering = false;
-      if(sel_loc == self)
+      if(hov_loc == self)
       {
-        sel_loc = undefined;
-        sel_loc_i = -1;
+        hov_loc = undefined;
+        hov_loc_i = -1;
       }
     }
 
@@ -636,8 +648,8 @@ var GamePlayScene = function(game, stage)
     {
       self.dragging = true;
       evt.hit_ui = true;
-      sel_loc = self;
-      sel_loc_i = self.i;
+      hov_loc = self;
+      hov_loc_i = self.i;
       if(self.move_locs)
       {
         self.deltaX = ((evt.doX-self.x)-self.offX);
@@ -663,8 +675,8 @@ var GamePlayScene = function(game, stage)
     self.dragFinish = function()
     {
       self.dragging = false;
-      sel_loc = undefined;
-      sel_loc_i = -1;
+      hov_loc = undefined;
+      hov_loc_i = -1;
       if(self.move_locs)
       {
         for(var i = 0; i < earth.quakes.length; i++)
@@ -745,12 +757,18 @@ var GamePlayScene = function(game, stage)
       {
         var draw_s =                               (ghost || self.earth.t > q.location_s_ts[i]);
         var draw_p = (levels[cur_level].p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
-        if(i == sel_loc_i)
+        if(i == hov_loc_i)
         {
           dc.context.globalAlpha=1;
           dc.context.fillStyle = "#000000";
           if(draw_s) self.labelBlip(q.location_s_ts[i]);
           if(draw_p) self.labelBlip(q.location_p_ts[i]);
+        }
+        else if(q == hov_quak)
+        {
+          dc.context.globalAlpha = 1;
+          if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
+          if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
         }
         else
         {
