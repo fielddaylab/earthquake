@@ -52,11 +52,15 @@ var GamePlayScene = function(game, stage)
     var l;
     levels = [];
     l = new Level();
+    /*
     l.n_locations = 1;
     l.p_waves = false;
-    l.draw_mouse_quake = true;
+    l.deselect_on_create = true;
+    l.draw_mouse_quake = false;
     l.click_resets_t = false;
     l.variable_quake_t = false;
+    l.allow_radii = false;
+    */
     levels.push(l);
     cur_level = 0;
 
@@ -109,26 +113,37 @@ var GamePlayScene = function(game, stage)
     earth.draw();
 
     scrubber.draw();
-    speed_1x_button.draw(dc);
-    speed_2x_button.draw(dc);
-    speed_4x_button.draw(dc);
-    speed_8x_button.draw(dc);
-    //play_button.draw(dc);
+
     dc.context.fillStyle = "#000000";
     dc.context.strokeStyle = "#000000";
+    dc.context.textAlign = "center";
+    //speed_buttons
+    var b;
+
+    b = speed_1x_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("1x",b.x+b.w/2,b.y+b.h-2);
+    b = speed_2x_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("2x",b.x+b.w/2,b.y+b.h-2);
+    b = speed_4x_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("4x",b.x+b.w/2,b.y+b.h-2);
+    b = speed_8x_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("8x",b.x+b.w/2,b.y+b.h-2);
+    //play_button
     dc.context.beginPath();
     dc.context.moveTo(play_button.x,play_button.y);
     dc.context.lineTo(play_button.x+play_button.w,play_button.y+play_button.h/2);
     dc.context.lineTo(play_button.x,play_button.y+play_button.h);
     dc.context.fill();
-    //pause_button.draw(dc);
-    dc.context.fillStyle = "#000000";
-    dc.context.strokeStyle = "#000000";
+    //pause_button
     dc.context.fillRect(pause_button.x,pause_button.y,8,pause_button.h);
     dc.context.fillRect(pause_button.x+pause_button.w-8,pause_button.y,8,pause_button.h);
-    reset_button.draw(dc);
-    clear_quakes_button.draw(dc);
-    clear_sel_quakes_button.draw(dc);
+
+    b = reset_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("new",b.x+b.w/2,b.y+b.h-2);
+    b = clear_quakes_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("clear",b.x+b.w/2,b.y+b.h-2);
+    b = clear_sel_quakes_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect",b.x+b.w/2,b.y+b.h-2);
   };
 
   self.cleanup = function()
@@ -141,9 +156,11 @@ var GamePlayScene = function(game, stage)
     var self = this;
     self.n_locations = 3;
     self.p_waves = true;
+    self.deselect_on_create = true;
     self.draw_mouse_quake = false;
     self.click_resets_t = true;
     self.variable_quake_t = false;
+    self.allow_radii = true;
   }
 
   var Earth = function()
@@ -246,6 +263,7 @@ var GamePlayScene = function(game, stage)
       if(levels[cur_level].variable_quake_t) q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t,self.ghost_quake);
       else                                   q = new Quake(evt.doX/dc.width,evt.doY/dc.height,     0,self.ghost_quake);
       q.eval_loc_ts(self.locations);
+      if(levels[cur_level].deselect_on_create) self.clearSelectedQuakes();
       q.selected = true;
       hov_quak = q;
       hoverer.register(q);
@@ -380,7 +398,7 @@ var GamePlayScene = function(game, stage)
             }
           }
         }
-        else
+        else if(l.drag_rad && levels[cur_level].allow_radii)
         {
           var x = l.wx-l.mx;
           var y = l.wy-l.my;
@@ -562,86 +580,12 @@ var GamePlayScene = function(game, stage)
     self.move_locs = false;
     self.drag_rad = true;
 
+    self.offX = 0;
+    self.offY = 0;
+    self.rad = 0;
+    self.mx = self.wx;
+    self.my = self.wy;
     self.dragging = false;
-    if(self.move_locs)
-    {
-      self.offX = 0;
-      self.offY = 0;
-    }
-    if(self.drag_rad)
-    {
-      self.rad = 0;
-      self.mx = self.wx;
-      self.my = self.wy;
-    }
-    self.dragStart = function(evt)
-    {
-      if(self.move_locs)
-      {
-        self.offX = evt.doX-self.x;
-        self.offY = evt.doY-self.y;
-      }
-      self.drag(evt);
-    }
-    self.drag = function(evt)
-    {
-      self.dragging = true;
-      evt.hit_ui = true;
-      self.selected = !self.selected;
-    }
-  }
-
-  var Location = function(x,y,i)
-  {
-    var self = this;
-
-    self.wx = x;
-    self.wy = y;
-
-    self.cx = dc.width*self.wx;
-    self.cy = dc.height*self.wy;
-
-    self.w = location_size*dc.width;
-    self.h = location_size*dc.height;
-    self.x = self.cx-self.w/2;
-    self.y = self.cy-self.h/2;
-
-    self.i = i;
-
-    self.shape; //sets externally
-
-    self.hovering = false;
-    self.hover = function(evt)
-    {
-      self.hovering = true;
-      hov_loc = self;
-      hov_loc_i = self.i;
-    }
-    self.unhover = function(evt)
-    {
-      self.hovering = false;
-      if(hov_loc == self)
-      {
-        hov_loc = undefined;
-        hov_loc_i = -1;
-      }
-    }
-
-    self.move_locs = false;
-    self.drag_rad = true;
-
-    self.dragging = false;
-    if(self.move_locs)
-    {
-      self.offX = 0;
-      self.offY = 0;
-    }
-    if(self.drag_rad)
-    {
-      self.rad = 0;
-      self.mx = self.wx;
-      self.my = self.wy;
-    }
     self.dragStart = function(evt)
     {
       if(self.move_locs)
@@ -670,7 +614,7 @@ var GamePlayScene = function(game, stage)
         self.cx = dc.width*self.wx;
         self.cy = dc.height*self.wy;
       }
-      if(self.drag_rad)
+      if(self.drag_rad && levels[cur_level].allow_radii)
       {
         self.mx = evt.doX/dc.width;
         self.my = evt.doY/dc.height;
