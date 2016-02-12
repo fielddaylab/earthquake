@@ -1,6 +1,4 @@
-- Level progression:
-
-- increase in given information
+Knowledge -> Derivations
 
 - "A was hit at 12:00"
 - - quake occurred
@@ -32,4 +30,11 @@
 - - diffs in distance proportional to diffs in time
 - - "quake occurred n meters further from B than A, and m meters further from C than B"
 - - - SAT 1 pt
+
+Levels
+
+- 1 Location. E @ T = 0; Try to find as many SAT locs. Direct towards spattering attempts. Hopefully reveal circle.
+- 1 Location. E @ T = ?; Try to find as many SAT time/locs. Hopefully reveal "expanding circle"
+- 1 Location. E @ T = 0; S&P. Try to find as many SAT locs. Notice circle, and that SAT'ing S also SAT's P.
+- 1 Location. E @ T = ?; S&P. Try to find as many SAT time/locs. Notice circle, but also notice that can only satisfy both from certain T!
 
