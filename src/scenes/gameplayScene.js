@@ -52,10 +52,10 @@ var GamePlayScene = function(game, stage)
     var l;
     levels = [];
     l = new Level();
-    l.n_locations = 3;
-    l.p_waves = true;
-    l.draw_mouse_quake = false;
-    l.click_resets_t = true;
+    l.n_locations = 1;
+    l.p_waves = false;
+    l.draw_mouse_quake = true;
+    l.click_resets_t = false;
     l.variable_quake_t = false;
     levels.push(l);
     cur_level = 0;
@@ -85,6 +85,7 @@ var GamePlayScene = function(game, stage)
     clicker.register(reset_button);
     clicker.register(clear_quakes_button);
     clicker.register(clear_sel_quakes_button);
+    hoverer.register(scrubber);
     dragger.register(scrubber);
     clicker.register(scrubber);
     hoverer.register(earth);
@@ -424,7 +425,7 @@ var GamePlayScene = function(game, stage)
       //draw quakes
       for(var i = 0; i < self.quakes.length; i++)
         self.drawQuake(self.quakes[i]);
-      if(self.hovering && levels[cur_level].draw_mouse_quake)
+      if(self.hovering && levels[cur_level].draw_mouse_quake && !hov_loc && !hov_quak && !scrubber.hovering)
       {
         self.mouse_quake.eval_pos(self.hovering_wx,self.hovering_wy);
         self.drawQuake(self.mouse_quake);
@@ -706,6 +707,16 @@ var GamePlayScene = function(game, stage)
     self.click = function(evt)
     {
       evt.hit_ui = true;
+    }
+
+    self.hovering = false;
+    self.hover = function(evt)
+    {
+      self.hovering = true;
+    }
+    self.unhover = function()
+    {
+      self.hovering = false;
     }
 
     self.dragging = false;
