@@ -327,8 +327,8 @@ var GamePlayScene = function(game, stage)
       var qx = 0;
       var qy = 0;
       var wd = 0.01;
-      qx += Math.random()*shake_amt*wd;
-      qy += Math.random()*shake_amt*wd;
+      qx += randR(-1,1)*shake_amt*wd;
+      qy += randR(-1,1)*shake_amt*wd;
       dc.context.beginPath();
       dc.context.ellipse(l.cx+qx*dc.width,l.cy+qy*dc.height,location_size/2*dc.width,location_size/2*dc.height,0,0,2*Math.PI);
       dc.context.stroke();
