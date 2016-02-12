@@ -1,0 +1,21 @@
+- Level progression:
+
+- increase in given information
+
+- "A was hit at 12:00"
+- - quake occurred
+- - distance proportional to time
+- - - SAT gradient (everywhere)
+- - - - can play with "satisfying" that info in multiple ways
+- - - - - given quake started at t = 11:00, can place quake at any spot around radius
+- - - - - if _not_ given quake starting t, you can place quake anywhere, given it is also placed at corresponding time (complex UI?)
+
+- "A was hit at 12:00 AND at 1:00"
+- - quake occurred
+- - distance proportional to time
+- - given S&P, d&t can be derived
+- - - SAT ring
+
+- "A was hit at 12:00, B was hit at 1:00"
+- - quake occurred
+- - - not knowing time, you can reduce SAT locations to a line
