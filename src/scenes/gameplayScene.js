@@ -36,6 +36,7 @@ var GamePlayScene = function(game, stage)
   var play_button;
   var pause_button;
   var reset_button;
+  var clear_quakes;
 
   self.ready = function()
   {
@@ -58,6 +59,7 @@ var GamePlayScene = function(game, stage)
     play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
     pause_button = new ButtonBox(40,10,20,20,function(){state = STATE_PAUSE;});
     reset_button = new ButtonBox(dc.width-30,10,20,20,function(){earth.reset();state = STATE_PAUSE;});
+    clear_quakes = new ButtonBox(dc.width-60,10,20,20,function(){earth.clearQuakes();});
 
     clicker.register(speed_1x_button);
     clicker.register(speed_2x_button);
@@ -66,6 +68,7 @@ var GamePlayScene = function(game, stage)
     clicker.register(play_button);
     clicker.register(pause_button);
     clicker.register(reset_button);
+    clicker.register(clear_quakes);
     dragger.register(scrubber);
     clicker.register(scrubber);
     hoverer.register(earth);
@@ -107,6 +110,7 @@ var GamePlayScene = function(game, stage)
     dc.context.fillRect(pause_button.x,pause_button.y,8,pause_button.h);
     dc.context.fillRect(pause_button.x+pause_button.w-8,pause_button.y,8,pause_button.h);
     reset_button.draw(dc);
+    clear_quakes.draw(dc);
   };
 
   self.cleanup = function()
@@ -115,7 +119,9 @@ var GamePlayScene = function(game, stage)
 
 
 
-//DATA
+  var Level = function()
+  {
+  }
 
   var Earth = function()
   {
@@ -133,10 +139,8 @@ var GamePlayScene = function(game, stage)
     self.quakes;
     self.ghost_quake;
 
-    self.reset = function()
+    self.clearLocations = function()
     {
-      self.t = 0;
-
       for(var i = 0; self.locations && i < self.locations.length; i++)
       {
         hoverer.unregister(self.locations[i]);
@@ -146,6 +150,9 @@ var GamePlayScene = function(game, stage)
       hloc = undefined;
       hloc_i = -1;
       self.locations = [];
+    }
+    self.popLocations = function()
+    {
       var l;
       for(var i = 0; i < n_locations; i++)
       {
@@ -157,7 +164,9 @@ var GamePlayScene = function(game, stage)
         dragger.register(l);
         self.locations.push(l);
       }
-
+    }
+    self.clearQuakes = function()
+    {
       for(var i = 0; self.quakes && i < self.quakes.length; i++)
       {
         hoverer.unregister(self.quakes[i]);
@@ -165,6 +174,9 @@ var GamePlayScene = function(game, stage)
       hquak = undefined;
       hquak_i = -1;
       self.quakes = [];
+    }
+    self.popGhost = function()
+    {
       var min_dist = location_size+quake_size;
       var accomplished = false;
       while(!accomplished)
@@ -175,6 +187,15 @@ var GamePlayScene = function(game, stage)
           accomplished = (wdist(self.locations[i],self.ghost_quake) > min_dist);
         if(accomplished) self.ghost_quake.eval_loc_ts(self.locations);
       }
+    }
+    self.reset = function()
+    {
+      self.t = 0;
+
+      self.clearLocations();
+      self.popLocations();
+      self.clearQuakes();
+      self.popGhost();
     }
     self.reset();
 
