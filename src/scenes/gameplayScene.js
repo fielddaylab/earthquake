@@ -52,15 +52,13 @@ var GamePlayScene = function(game, stage)
     var l;
     levels = [];
     l = new Level();
-    /*
     l.n_locations = 1;
-    l.p_waves = false;
+    l.p_waves = true;
     l.deselect_on_create = true;
     l.draw_mouse_quake = false;
     l.click_resets_t = false;
     l.variable_quake_t = false;
     l.allow_radii = false;
-    */
     levels.push(l);
     cur_level = 0;
 
@@ -293,6 +291,8 @@ var GamePlayScene = function(game, stage)
 
     self.drawQuake = function(q)
     {
+      if((self.t-q.t) < 0) return;
+
       if(q.selected || q == self.mouse_quake)
       {
         dc.context.strokeStyle = "#000000";
