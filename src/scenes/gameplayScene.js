@@ -795,7 +795,7 @@ var GamePlayScene = function(game, stage)
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
       for(var i = 0; i < self.earth.quakes.length; i++)
-        if(self.earth.quakes[i].selected) self.drawQuakeBlips(self.earth.quakes[i],false)
+        if(self.earth.quakes[i].selected || self.earth.quakes[i] == hov_quak) self.drawQuakeBlips(self.earth.quakes[i],false)
       dc.context.globalAlpha=1;
     }
   }
