@@ -18,4 +18,6 @@
 
 - "A was hit at 12:00, B was hit at 1:00"
 - - quake occurred
-- - - not knowing time, you can reduce SAT locations to a line
+- - diff in distance proportional to diff in time
+- - - SAT line
+

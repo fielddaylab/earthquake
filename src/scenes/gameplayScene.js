@@ -5,8 +5,8 @@ var GamePlayScene = function(game, stage)
 
   var location_size = 0.1;
   var quake_size = 0.03;
-  var quake_s_rate = 0.001;
-  var quake_p_rate = 0.0005;
+  var quake_s_rate = 0.0005;
+  var quake_p_rate = 0.001;
   var s_color = "#FF0000";
   var p_color = "#0000FF";
 
@@ -328,12 +328,12 @@ var GamePlayScene = function(game, stage)
 
       t_delta = self.t - q.location_s_ts[i];
       if(t_delta > 0 && t_delta < q_t)
-        shake_amt += (q_t-t_delta)/q_t;
+        shake_amt += ((q_t-t_delta)/q_t);
       if(levels[cur_level].p_waves)
       {
         t_delta = self.t - q.location_p_ts[i];
         if(t_delta > 0 && t_delta < q_t)
-          shake_amt += ((q_t-t_delta)/q_t)/2;
+          shake_amt += ((q_t-t_delta)/q_t)/10;
       }
 
       return shake_amt;
