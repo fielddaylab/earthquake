@@ -363,10 +363,13 @@ var GamePlayScene = function(game, stage)
           dc.context.ellipse(mouse.cx,mouse.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around mouse
           dc.context.ellipse((mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height,d/2*dc.width,d/2*dc.height,0,0,2*Math.PI); //circles between mouse/location
           dc.context.ellipse(l.cx,l.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around locs
-          dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(mouse.cx,mouse.cy); //line
           dc.context.stroke();
           if(l.dragging || l.hovering)
           {
+            dc.context.beginPath();
+            dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(mouse.cx,mouse.cy); //line
+            dc.context.stroke();
+
             dc.context.fillStyle = s_color;
             dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-10); //line annotations
             if(levels[cur_level].p_waves)
@@ -384,10 +387,13 @@ var GamePlayScene = function(game, stage)
 
           dc.context.beginPath();
           dc.context.ellipse(l.cx,l.cy,l.rad*dc.width,l.rad*dc.height,0,0,2*Math.PI); //circles around locs
-          dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(l.mx*dc.width,l.my*dc.height); //line
           dc.context.stroke();
           if(l.dragging || l.hovering)
           {
+            dc.context.beginPath();
+            dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(l.mx*dc.width,l.my*dc.height); //line
+            dc.context.stroke();
+
             dc.context.fillStyle = s_color;
             dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
             if(levels[cur_level].p_waves)
