@@ -9,11 +9,6 @@ var GamePlayScene = function(game, stage)
   var quake_p_rate = 0.0005;
   var s_color = "#FF0000";
   var p_color = "#0000FF";
-  var n_locations = 3;
-  var p_waves = true;
-  var draw_mouse_quake = false;
-  var click_resets_t = true;
-  var variable_quake_t = false;
 
   var hoverer;
   var dragger;
@@ -24,6 +19,9 @@ var GamePlayScene = function(game, stage)
   var STATE_PLAY  = ENUM; ENUM++;
   var STATE_PAUSE = ENUM; ENUM++;
   var play_speed;
+
+  var levels;
+  var cur_level;
 
   var earth;
   var sel_loc;
@@ -39,7 +37,7 @@ var GamePlayScene = function(game, stage)
   var play_button;
   var pause_button;
   var reset_button;
-  var clear_quakes;
+  var clear_quakes_button;
 
   self.ready = function()
   {
@@ -50,7 +48,19 @@ var GamePlayScene = function(game, stage)
     state = STATE_PAUSE;
     play_speed = 1;
 
+    var l;
+    levels = [];
+    l = new Level();
+    l.n_locations = 3;
+    l.p_waves = true;
+    l.draw_mouse_quake = false;
+    l.click_resets_t = true;
+    l.variable_quake_t = false;
+    levels.push(l);
+    cur_level = 0;
+
     earth = new Earth();
+    earth.reset();
 
     scrubber = new Scrubber(earth);
 
@@ -62,7 +72,7 @@ var GamePlayScene = function(game, stage)
     play_button  = new ButtonBox(10,10,20,20,function(){state = STATE_PLAY;});
     pause_button = new ButtonBox(40,10,20,20,function(){state = STATE_PAUSE;});
     reset_button = new ButtonBox(dc.width-30,10,20,20,function(){earth.reset();state = STATE_PAUSE;});
-    clear_quakes = new ButtonBox(dc.width-60,10,20,20,function(){earth.clearQuakes();});
+    clear_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){earth.clearQuakes();state = STATE_PAUSE;});
 
     clicker.register(speed_1x_button);
     clicker.register(speed_2x_button);
@@ -71,7 +81,7 @@ var GamePlayScene = function(game, stage)
     clicker.register(play_button);
     clicker.register(pause_button);
     clicker.register(reset_button);
-    clicker.register(clear_quakes);
+    clicker.register(clear_quakes_button);
     dragger.register(scrubber);
     clicker.register(scrubber);
     hoverer.register(earth);
@@ -113,7 +123,7 @@ var GamePlayScene = function(game, stage)
     dc.context.fillRect(pause_button.x,pause_button.y,8,pause_button.h);
     dc.context.fillRect(pause_button.x+pause_button.w-8,pause_button.y,8,pause_button.h);
     reset_button.draw(dc);
-    clear_quakes.draw(dc);
+    clear_quakes_button.draw(dc);
   };
 
   self.cleanup = function()
@@ -121,12 +131,14 @@ var GamePlayScene = function(game, stage)
   };
 
 
-
   var Level = function()
   {
     var self = this;
     self.n_locations = 3;
     self.p_waves = true;
+    self.draw_mouse_quake = false;
+    self.click_resets_t = true;
+    self.variable_quake_t = false;
   }
 
   var Earth = function()
@@ -161,7 +173,7 @@ var GamePlayScene = function(game, stage)
     self.popLocations = function()
     {
       var l;
-      for(var i = 0; i < n_locations; i++)
+      for(var i = 0; i < levels[cur_level].n_locations; i++)
       {
         l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
              if(i == 0) l.shape = square;
@@ -205,7 +217,6 @@ var GamePlayScene = function(game, stage)
       self.clearQuakes();
       self.popGhost();
     }
-    self.reset();
     self.mouse_quake = new Quake(0,0,0);
 
     self.click = function(evt)
@@ -213,15 +224,15 @@ var GamePlayScene = function(game, stage)
       if(evt.hit_ui) return; //only "hit" if unobtruded
       evt.hit_ui = true;
 
-      if(click_resets_t)
+      if(levels[cur_level].click_resets_t)
       {
         self.t = 0;
         state = STATE_PLAY;
       }
 
       var q;
-      if(variable_quake_t) q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t,self.ghost_quake);
-      else                 q = new Quake(evt.doX/dc.width,evt.doY/dc.height,     0,self.ghost_quake);
+      if(levels[cur_level].variable_quake_t) q = new Quake(evt.doX/dc.width,evt.doY/dc.height,self.t,self.ghost_quake);
+      else                                   q = new Quake(evt.doX/dc.width,evt.doY/dc.height,     0,self.ghost_quake);
       q.eval_loc_ts(self.locations);
       hoverer.register(q);
       sel_quak = q;
@@ -260,7 +271,7 @@ var GamePlayScene = function(game, stage)
         dc.context.ellipse(q.cx, q.cy, (self.t-q.t)*quake_s_rate*dc.width, (self.t-q.t)*quake_s_rate*dc.height, 0, 0, 2 * Math.PI);
         dc.context.stroke();
 
-        if(p_waves)
+        if(levels[cur_level].p_waves)
         {
           dc.context.strokeStyle = p_color;
           dc.context.beginPath();
@@ -303,7 +314,7 @@ var GamePlayScene = function(game, stage)
       t_delta = self.t - q.location_s_ts[i];
       if(t_delta > 0 && t_delta < q_t)
         shake_amt += (q_t-t_delta)/q_t;
-      if(p_waves)
+      if(levels[cur_level].p_waves)
       {
         t_delta = self.t - q.location_p_ts[i];
         if(t_delta > 0 && t_delta < q_t)
@@ -343,7 +354,7 @@ var GamePlayScene = function(game, stage)
           {
             dc.context.fillStyle = s_color;
             dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-10); //line annotations
-            if(p_waves)
+            if(levels[cur_level].p_waves)
             {
               dc.context.fillStyle = p_color;
               dc.context.fillText("("+Math.round(d/quake_p_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-20); //line annotations
@@ -364,7 +375,7 @@ var GamePlayScene = function(game, stage)
           {
             dc.context.fillStyle = s_color;
             dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
-            if(p_waves)
+            if(levels[cur_level].p_waves)
             {
               dc.context.fillStyle = p_color;
               dc.context.fillText("("+Math.round(l.rad/quake_p_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
@@ -391,7 +402,7 @@ var GamePlayScene = function(game, stage)
       //draw quakes
       for(var i = 0; i < self.quakes.length; i++)
         self.drawQuake(self.quakes[i]);
-      if(self.hovering && draw_mouse_quake && !sel_quak)
+      if(self.hovering && levels[cur_level].draw_mouse_quake && !sel_quak)
       {
         self.mouse_quake.eval_pos(self.hovering_wx,self.hovering_wy);
         self.drawQuake(self.mouse_quake);
@@ -411,14 +422,6 @@ var GamePlayScene = function(game, stage)
     self.location_p_cs = []
     self.c_aware_t = 9999;
     self.c = false;
-
-    for(var i = 0; i < n_locations; i++)
-    {
-      self.location_s_ts[i] = 9999;
-      self.location_p_ts[i] = 9999;
-      self.location_s_cs[i] = 0;
-      self.location_p_cs[i] = 0;
-    }
 
     self.eval_pos = function(x,y)
     {
@@ -457,7 +460,7 @@ var GamePlayScene = function(game, stage)
         }
         else
           if(self.location_s_ts[i] > last_true) last_true = self.location_s_ts[i];
-        if(p_waves)
+        if(levels[cur_level].p_waves)
         {
           if(!self.location_p_cs[i])
           {
@@ -482,8 +485,11 @@ var GamePlayScene = function(game, stage)
     self.unhover = function(evt)
     {
       self.hovering = false;
-      sel_quak = undefined;
-      sel_quak_i = -1;
+      if(levels[cur_level].draw_mouse_quake)
+      {
+        sel_quak = undefined;
+        sel_quak_i = -1;
+      }
     }
   }
 
@@ -658,8 +664,8 @@ var GamePlayScene = function(game, stage)
     {
       for(var i = 0; i < self.earth.locations.length; i++)
       {
-        var draw_s =             (ghost || self.earth.t > q.location_s_ts[i]);
-        var draw_p = (p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
+        var draw_s =                               (ghost || self.earth.t > q.location_s_ts[i]);
+        var draw_p = (levels[cur_level].p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
         if(i == sel_loc_i)
         {
           dc.context.globalAlpha=1;
