@@ -654,9 +654,11 @@ var GamePlayScene = function(game, stage)
     }
 
     self.hovering = false;
+    self.hovering_x;
     self.hover = function(evt)
     {
       self.hovering = true;
+      self.hovering_x = evt.doX;
     }
     self.unhover = function()
     {
@@ -753,6 +755,15 @@ var GamePlayScene = function(game, stage)
       self.drawBlip(self.earth.t,1);
       dc.context.fillStyle = "#000000";
       self.labelBlip(self.earth.t,1);
+
+      if(self.hovering && !self.dragging)
+      {
+        dc.context.fillStyle = "#888888";
+        var t = invlerp(self.x,self.x+self.w,self.hovering_x)*self.earth.recordable_t;
+        self.drawBlip(t,1);
+        dc.context.fillStyle = "#000000";
+        self.labelBlip(t,1);
+      }
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
       for(var i = 0; i < self.earth.quakes.length; i++)

@@ -37,4 +37,5 @@ Levels
 - 1 Location. E @ T = ?; Try to find as many SAT time/locs. Hopefully reveal "expanding circle"
 - 1 Location. E @ T = 0; S&P. Try to find as many SAT locs. Notice circle, and that SAT'ing S also SAT's P.
 - 1 Location. E @ T = ?; S&P. Try to find as many SAT time/locs. Notice circle, but also notice that can only satisfy both from certain T!
+- 2 Locations. E @ T = 0; Try to find as many SAT locs, for each location individually. Notice two circles. What SAT's both circles?
 
