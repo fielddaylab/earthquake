@@ -43,8 +43,9 @@ var GamePlayScene = function(game, stage)
   var play_button;
   var pause_button;
   var reset_button;
-  var clear_quakes_button;
-  var clear_sel_quakes_button;
+  var del_all_quakes_button;
+  var del_sel_quakes_button;
+  var desel_quakes_button;
 
   self.ready = function()
   {
@@ -82,9 +83,11 @@ var GamePlayScene = function(game, stage)
 
     play_button  = new ButtonBox(10,10,20,20,function(){ ui_lock = self; state = STATE_PLAY;});
     pause_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; state = STATE_PAUSE;});
-    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ ui_lock = self; earth.reset();state = STATE_PAUSE;});
-    clear_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ ui_lock = self; earth.clearQuakes();state = STATE_PAUSE;});
-    clear_sel_quakes_button = new ButtonBox(dc.width-90,10,20,20,function(){ ui_lock = self; earth.clearSelectedQuakes();});
+
+    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ ui_lock = self; earth.reset(); state = STATE_PAUSE;});
+    del_all_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ ui_lock = self; earth.deleteQuakes(); state = STATE_PAUSE;});
+    del_sel_quakes_button = new ButtonBox(dc.width-90,10,20,20,function(){ ui_lock = self; earth.deleteSelectedQuakes(); state = STATE_PAUSE;});
+    desel_quakes_button = new ButtonBox(dc.width-120,10,20,20,function(){ ui_lock = self; earth.deselectQuakes();});
 
     clicker.register(speed_1x_button);
     clicker.register(speed_2x_button);
@@ -93,8 +96,9 @@ var GamePlayScene = function(game, stage)
     clicker.register(play_button);
     clicker.register(pause_button);
     clicker.register(reset_button);
-    clicker.register(clear_quakes_button);
-    clicker.register(clear_sel_quakes_button);
+    clicker.register(del_all_quakes_button);
+    clicker.register(del_sel_quakes_button);
+    clicker.register(desel_quakes_button);
     hoverer.register(scrubber);
     dragger.register(scrubber);
     hoverer.register(earth);
@@ -227,9 +231,11 @@ var GamePlayScene = function(game, stage)
 
     b = reset_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("new",b.x+b.w/2,b.y+b.h-2);
-    b = clear_quakes_button;
+    b = del_all_quakes_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("clear",b.x+b.w/2,b.y+b.h-2);
-    b = clear_sel_quakes_button;
+    b = del_sel_quakes_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("delete",b.x+b.w/2,b.y+b.h-2);
+    b = desel_quakes_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect",b.x+b.w/2,b.y+b.h-2);
   };
 
@@ -293,12 +299,12 @@ var GamePlayScene = function(game, stage)
         self.locations.push(l);
       }
     }
-    self.clearSelectedQuakes = function()
+    self.deselectQuakes = function()
     {
       for(var i = 0; self.quakes && i < self.quakes.length; i++)
         self.quakes[i].selected = false;
     }
-    self.clearQuakes = function()
+    self.deleteQuakes = function()
     {
       for(var i = 0; self.quakes && i < self.quakes.length; i++)
       {
@@ -308,6 +314,23 @@ var GamePlayScene = function(game, stage)
       hov_quak = undefined;
       hov_quak_i = -1;
       self.quakes = [];
+    }
+    self.deleteSelectedQuakes = function()
+    {
+      for(var i = 0; self.quakes && i < self.quakes.length; i++)
+      {
+        if(self.quakes[i].selected)
+        {
+          if(self.quakes[i] == hov_quak)
+          {
+            hov_quak = undefined;
+            hov_quak_i = -1;
+          }
+          hoverer.unregister(self.quakes[i]);
+          self.quakes.splice(i,1);
+          i--;
+        }
+      }
     }
     self.popGhost = function()
     {
@@ -329,7 +352,7 @@ var GamePlayScene = function(game, stage)
 
       self.clearLocations();
       self.genLocations();
-      self.clearQuakes();
+      self.deleteQuakes();
       self.popGhost();
     }
     self.mouse_quake = new Quake(0,0,0);
@@ -383,6 +406,7 @@ var GamePlayScene = function(game, stage)
       self.dragging = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
 
+      if(self.dragging_x == -1) return;
       if(
         Math.abs(self.dragging_wx-self.drag_orig_wx) < 0.05 &&
         Math.abs(self.dragging_wy-self.drag_orig_wy) < 0.05
@@ -413,7 +437,7 @@ var GamePlayScene = function(game, stage)
         if(levels[cur_level].variable_quake_t) q = new Quake(self.dragging_wx,self.dragging_wy,self.t,self.ghost_quake);
         else                                   q = new Quake(self.dragging_wx,self.dragging_wy,     0,self.ghost_quake);
         q.eval_loc_ts(self.locations);
-        if(levels[cur_level].deselect_on_create) self.clearSelectedQuakes();
+        if(levels[cur_level].deselect_on_create) self.deselectQuakes();
         q.selected = true;
         hov_quak = q;
         hoverer.register(q);
@@ -820,7 +844,7 @@ var GamePlayScene = function(game, stage)
     }
 
     self.dragging = false;
-    var saved_stagte = STATE_PLAY;
+    var saved_state = STATE_PLAY;
     self.dragStart = function(evt)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
