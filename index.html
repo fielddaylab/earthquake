@@ -36,7 +36,7 @@ var d;
 function begin()
 {
   d = new Debugger({source:document.getElementById("debug_div")});
-  g = new Game({width:640,height:320,container:"stage_container"});
+  g = new Game({width:500,height:500,container:"stage_container"});
   g.begin();
 }
 window.addEventListener('touchstart', function(e){ e.preventDefault() }); //prevent browser from doing anything funny
@@ -46,12 +46,72 @@ window.addEventListener("load",begin,false);
 </head>
 <body>
 
-<div id="content" style="display:block; margin:50px auto; width:640px; position:relative;">
-  <div id="stage_container" style="display:block; width:640px; height:320px; position:absolute; top:0px; left:0px; user-select:none;"> </div>
-  <div id="shadow_container" style="display:block; width:640px; position:absolute; left:0px; top:322px; pointer-events:none; user-select:none;">
-    <img id="shadow" src="assets/shadow.png" style="display:block; pointer-events:none; user-select:none;"/>
+<div id="content" style="display:block; margin:50px auto; width:500px; position:relative;">
+  <div id="stage_container" style="display:block; width:500px; height:500px; position:absolute; top:0px; left:0px; user-select:none;"> </div>
+  <div id="shadow_container" style="display:block; width:500px; position:absolute; left:0px; top:502px; pointer-events:none; user-select:none;">
+    <img id="shadow" src="assets/shadow.png" style="display:block; pointer-events:none; user-select:none; width:500px;"/>
   </div>
-  <div id="debug_div" style="display:block; width:640px; height:320px; position:absolute; top:0px; left:0px; pointer-events:none; user-select:none;"> </div>
+  <div id="debug_div" style="display:block; width:500px; height:500px; position:absolute; top:0px; left:0px; pointer-events:none; user-select:none;"> </div>
+</div>
+
+<div style="margin:50px auto; position:relative; top:550px;">
+Earthquake Sim (Teacher's Beta)<br /> <br />
+
+Easiest way to get a feel for what's going on, pre-art assets and pre-instructional prompts. <br /> <br />
+
+1. Refresh the page (start from a new, untouched game)<br/>
+2. Press play, and watch the playhead move through the timeline.<br />
+- When it intersects with any of the markings, that marking's corresponding "location" will shake.<br/>
+- This is representative of playing through the history of a recent earthquake- the only information you have is "at what time each location reported feeling the tremor"<br/>
+3. Hover over a location to reveal the exact time at which that location reported a tremor (in "seconds since the earthquake began")<br />
+4. Click and drag out from a location to draw a radius around it.<br />
+- The number labelling the radius represents "seconds it would take a quake traveling from the radius to the location"<br />
+5. Drag the radius out until the number labelling the radius matches the time-since-earthquake-began that said location reported feeling the tremor.<br />
+- Once these two numbers match, you have reduced the source of the quake to originating somewhere on the perimeter of this drawn circle.<br />
+6. Repeat this process for the other two locations.<br />
+- Once you have two locations, you'll notice the only possible locations for the quake has reduced to 2 (non-identical circles can intersect at most at 2 points)<br />
+- Once you have three, there will be only one possible location left (that lands on the perimeter of all three radii)<br />
+7. Click at the intersection of these circles<br />
+- You can then watch the simulated quake from that point.<br />
+- If you were very accurate with dragging out the circles, and clicking at their intersection, you should see the quake hit each location at exactly its reported time.<br />
+- (If not, don't worry about it. We can increase the allowed area for error later on).<br />
+8. Try clicking on the perimeter of just one circle.<br />
+- See how the predicted time of intersection matches only for that location.<br />
+<br />
+Now that you have an idea for how this thing works, play around with it and see what you can do that is interesting.<br />
+<br />
+Some helpful UI:<br />
+click and drag through the timeline to scrub through it, similar to a youtube video.<br />
+click on a placed quake to select or deselect it. A selected quake will show its simulated earthquake expanding as the timeline moves.<br />
+You can also click and drag to highlight many quakes at once.<br />
+The buttons at the top right perform the following actions, respectively:<br />
+- deselect all selected quakes<br />
+- delete selected quakes<br />
+- delete all quakes<br />
+- generate new locations + a new mystery quake<br />
+<br />
+Some things not yet explored:<br/>
+There's actually one more piece of information we've given so far that we haven't accounted for- and that's <i>when</i> the earthquake originated.<br />
+- The "times reported" by the locations are relative to when the earthquake occurred ("I felt the earthquake 438 seconds after it started").<br />
+- In reality, that information would also be a mystery. They would instead report "I felt the earthquake at 12:30, and I have no idea when it originated".<br />
+- In practice, this issue is solved with p-waves and s-waves: two frequencies of vibration emanating from the same place at the same time, but travelling at different speeds.<br />
+- One can use the difference in these speeds and the differences in times each wave is experienced to figure out when it started, and how far away it was.<br />
+- The UI gets more complicated with the introduction of this: every visualization becomes doubly cluttered, and "setting the playhead and placing a quake" is more error prone than just placing a quake and assuming it starts at playhead = 0.<br />
+- - Any thoughts/suggestions would be appreciated! You can play around with p-waves enabled <a href="../earthquake2">here</a>.<br />
+There are a couple more interesting constraints not explored here:<br />
+- What happens if all 3 locations are colinear?<br />
+- Can a time-of-origin be calculated without the p-wave/s-wave trick? (answer: yes! but it's a bit more complicated, and requires at least 2 locations)<br />
+- How are the constraints here different than if we were trying to detect a position in 3d (rather than approximating the earth's surface as 2d)?<br />
+- How is this similar/different to GPS?<br />
+- How is this similar/different to using triangulation for tracking animals?<br />
+- " " " to using triangulation for old-school cartography?<br />
+<br />
+Some things we're especially interested in hearing your thoughts about:<br />
+How well does this fit into a ~6th grade curriculum?<br />
+Are the concepts explored age/complexity appropriate?<br />
+Is there some interesting aspect of earthquakes/triangulation we're missing?<br />
+Are we wasting time concerning ourselves with some aspect of earthquakes/triangulation that isn't interesting?<br />
+
 </div>
 
 </body>
