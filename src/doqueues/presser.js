@@ -12,6 +12,9 @@ var Presser = function(init)
   var pressing = [];
   var callbackQueue = [];
   var evtQueue = [];
+  var queues = {};
+  queues.callbackQueue = callbackQueue;
+  queues.evtQueue = evtQueue;
   var down = false;
   self.register = function(pressable) { pressables.push(pressable); }
   self.unregister = function(pressable) { var i = pressables.indexOf(pressable); if(i != -1) pressables.splice(i,1); }
@@ -111,6 +114,17 @@ var Presser = function(init)
   {
     for(var i = 0; i < callbackQueue.length; i++)
       callbackQueue[i](evtQueue[i]);
+    callbackQueue = [];
+    evtQueue = [];
+  }
+  self.requestManualFlush = function()
+  {
+    queues.callbackQueue = callbackQueue;
+    queues.evtQueue = evtQueue;
+    return queues;
+  }
+  self.manualFlush = function()
+  {
     callbackQueue = [];
     evtQueue = [];
   }
