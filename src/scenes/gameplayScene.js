@@ -58,15 +58,37 @@ var GamePlayScene = function(game, stage)
 
     var l;
     levels = [];
+
+    /*
+    //-1
     l = new Level();
     l.n_locations = 3;
+    l.quake_start_range = 0;
+    l.display_quake_start_range = false;
     l.p_waves = false;
     l.deselect_on_create = true;
     l.draw_mouse_quake = false;
     l.click_resets_t = true;
     l.variable_quake_t = false;
     l.allow_radii = true;
+    l.prompt = "test this!";
     levels.push(l);
+    */
+
+    //0
+    l = new Level();
+    l.n_locations = 1;
+    l.quake_start_range = 0;
+    l.display_quake_start_range = false;
+    l.p_waves = false;
+    l.deselect_on_create = true;
+    l.draw_mouse_quake = false;
+    l.click_resets_t = true;
+    l.variable_quake_t = false;
+    l.allow_radii = false;
+    l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
+    levels.push(l);
+
     cur_level = 0;
 
     earth = new Earth();
@@ -230,12 +252,15 @@ var GamePlayScene = function(game, stage)
   {
     var self = this;
     self.n_locations = 3;
+    self.quake_start_range = 0;
+    self.display_quake_start_range = true;
     self.p_waves = true;
     self.deselect_on_create = true;
     self.draw_mouse_quake = false;
     self.click_resets_t = true;
     self.variable_quake_t = false;
     self.allow_radii = true;
+    self.prompt = "what's up?";
   }
 
   var Earth = function()
@@ -320,7 +345,7 @@ var GamePlayScene = function(game, stage)
       var accomplished = false;
       while(!accomplished)
       {
-        self.ghost_quake = new Quake(randR(0.2,0.8),randR(0.2,0.8),0);
+        self.ghost_quake = new Quake(randR(0.2,0.8),randR(0.2,0.8),Math.round(Math.random()*levels[cur_level].quake_start_range));
         accomplished = true;
         for(var i = 0; accomplished && i < self.locations.length; i++)
           accomplished = (wdist(self.locations[i],self.ghost_quake) > min_dist);
@@ -930,17 +955,22 @@ var GamePlayScene = function(game, stage)
       //draw self
       dc.context.fillStyle = "#AAAAAA";
       dc.context.fillRect(self.x,self.y,self.w,self.h);
+      if(levels[cur_level].display_quake_start_range)
+      {
+        dc.context.fillStyle = "#88AAAA";
+        dc.context.fillRect(self.scrub_bar.x,self.y,self.scrub_bar.w*(levels[cur_level].quake_start_range/self.earth.recordable_t),self.h);
+      }
       dc.context.fillStyle = "#FFFFFF";
       self.drawBlip(self.earth.t,1);
       dc.context.fillStyle = "#000000";
-      self.labelBlip(self.earth.t,1);
+      self.labelBlip(self.earth.t);
 
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
         dc.context.fillStyle = "#888888";
         self.drawBlip(self.scrub_bar.hovering_t,1);
         dc.context.fillStyle = "#000000";
-        self.labelBlip(self.scrub_bar.hovering_t,1);
+        self.labelBlip(self.scrub_bar.hovering_t);
       }
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
