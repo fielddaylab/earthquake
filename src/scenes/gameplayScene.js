@@ -96,6 +96,24 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = false;
       l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
       levels.push(l);
+
+      //1
+      l = new Level();
+      l.n_locations = 1;
+      l.loc_1_x = 0.5;
+      l.loc_1_y = 0.5;
+      l.quake_start_range = 0;
+      l.quake_x = 0.25;
+      l.quake_y = 0.25;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.deselect_on_create = true;
+      l.draw_mouse_quake = true;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
+      levels.push(l);
     }
 
     cur_level = 0;
@@ -106,6 +124,7 @@ var GamePlayScene = function(game, stage)
     next_button = new ButtonBox(10,10,20,20,function(){ ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
     scrubber = new Scrubber(earth);
+    hoverer.register(scrubber);
 
     speed_1x_button = new ToggleBox(dc.width-120,dc.height-60,20,20,true, function(on) { ui_lock = self; if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
     speed_2x_button = new ToggleBox(dc.width-90, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 2; else if(play_speed == 2) speed_2x_button.on = true; speed_1x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
@@ -895,6 +914,17 @@ var GamePlayScene = function(game, stage)
     self.scrub_bar = new Box(self.h*2+5,self.y,self.w-(self.h*2+5),self.h);
     hoverer.register(self.scrub_bar);
     dragger.register(self.scrub_bar);
+
+    //just for other UI's information
+    self.hovering = false;
+    self.hover = function()
+    {
+      self.hovering = true;
+    }
+    self.unhover = function()
+    {
+      self.hovering = false;
+    }
 
     self.scrub_bar.hovering = false;
     self.scrub_bar.hovering_x;
