@@ -226,6 +226,7 @@ var GamePlayScene = function(game, stage)
     if(state == STATE_PLAY)
     {
       if(earth.t < earth.recordable_t) earth.t += play_speed;
+      if(earth.t > earth.recordable_t) earth.t = earth.recordable_t;
     }
   };
 
