@@ -40,8 +40,6 @@ var GamePlayScene = function(game, stage)
   var speed_2x_button;
   var speed_4x_button;
   var speed_8x_button;
-  var play_button;
-  var pause_button;
   var reset_button;
   var del_all_quakes_button;
   var del_sel_quakes_button;
@@ -81,9 +79,6 @@ var GamePlayScene = function(game, stage)
     speed_4x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 4; else if(play_speed == 4) speed_4x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_8x_button.on = false; });
     speed_8x_button = new ToggleBox(dc.width-30, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 8; else if(play_speed == 8) speed_8x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_4x_button.on = false; });
 
-    play_button  = new ButtonBox(10,10,20,20,function(){ ui_lock = self; state = STATE_PLAY;});
-    pause_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; state = STATE_PAUSE;});
-
     reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ ui_lock = self; earth.reset(); state = STATE_PAUSE;});
     del_all_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ ui_lock = self; earth.deleteQuakes(); state = STATE_PAUSE;});
     del_sel_quakes_button = new ButtonBox(dc.width-90,10,20,20,function(){ ui_lock = self; earth.deleteSelectedQuakes(); state = STATE_PAUSE;});
@@ -93,14 +88,10 @@ var GamePlayScene = function(game, stage)
     clicker.register(speed_2x_button);
     clicker.register(speed_4x_button);
     clicker.register(speed_8x_button);
-    clicker.register(play_button);
-    clicker.register(pause_button);
     clicker.register(reset_button);
     clicker.register(del_all_quakes_button);
     clicker.register(del_sel_quakes_button);
     clicker.register(desel_quakes_button);
-    hoverer.register(scrubber);
-    dragger.register(scrubber);
     hoverer.register(earth);
     dragger.register(earth);
   };
@@ -114,9 +105,9 @@ var GamePlayScene = function(game, stage)
     for(var i = 0; i < drag_qs.callbackQueue.length; i++)
     {
       if(
-        drag_qs.callbackQueue[i] == scrubber.dragStart ||
-        drag_qs.callbackQueue[i] == scrubber.drag ||
-        drag_qs.callbackQueue[i] == scrubber.dragFinish
+        drag_qs.callbackQueue[i] == scrubber.scrub_bar.dragStart ||
+        drag_qs.callbackQueue[i] == scrubber.scrub_bar.drag ||
+        drag_qs.callbackQueue[i] == scrubber.scrub_bar.dragFinish
       )
       {
         drag_qs.callbackQueue[i](drag_qs.evtQueue[i]);
@@ -219,15 +210,6 @@ var GamePlayScene = function(game, stage)
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("4x",b.x+b.w/2,b.y+b.h-2);
     b = speed_8x_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("8x",b.x+b.w/2,b.y+b.h-2);
-    //play_button
-    dc.context.beginPath();
-    dc.context.moveTo(play_button.x,play_button.y);
-    dc.context.lineTo(play_button.x+play_button.w,play_button.y+play_button.h/2);
-    dc.context.lineTo(play_button.x,play_button.y+play_button.h);
-    dc.context.fill();
-    //pause_button
-    dc.context.fillRect(pause_button.x,pause_button.y,8,pause_button.h);
-    dc.context.fillRect(pause_button.x+pause_button.w-8,pause_button.y,8,pause_button.h);
 
     b = reset_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("new",b.x+b.w/2,b.y+b.h-2);
@@ -831,44 +813,62 @@ var GamePlayScene = function(game, stage)
 
     self.earth = earth;
 
-    self.hovering = false;
-    self.hovering_x;
-    self.hover = function(evt)
+    self.play_button  = new ButtonBox(self.h*0,self.y,self.h,self.h,function(){ ui_lock = self; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; state = STATE_PLAY;});
+    self.pause_button = new ButtonBox(self.h*1,self.y,self.h,self.h,function(){ ui_lock = self; state = STATE_PAUSE;});
+    clicker.register(self.play_button);
+    clicker.register(self.pause_button);
+    self.scrub_bar = new Box(self.h*2+5,self.y,self.w-(self.h*2+5),self.h);
+    hoverer.register(self.scrub_bar);
+    dragger.register(self.scrub_bar);
+
+    self.scrub_bar.hovering = false;
+    self.scrub_bar.hovering_x;
+    self.scrub_bar.hovering_t;
+    self.scrub_bar.hover = function(evt)
     {
-      self.hovering = true;
-      self.hovering_x = evt.doX;
+      self.scrub_bar.hovering = true;
+      self.scrub_bar.hovering_x = evt.doX;
+      self.scrub_bar.hovering_t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
+      if(self.scrub_bar.hovering_t < 0) self.scrub_bar.hovering_t = 0;
+      if(self.scrub_bar.hovering_t > self.earth.recordable_t) self.scrub_bar.hovering_t = self.earth.recordable_t;
     }
-    self.unhover = function()
+    self.scrub_bar.unhover = function()
     {
-      self.hovering = false;
+      self.scrub_bar.hovering = false;
     }
 
-    self.dragging = false;
+    self.scrub_bar.dragging = false;
     var saved_state = STATE_PLAY;
-    self.dragStart = function(evt)
+    self.scrub_bar.dragStart = function(evt)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
-      self.dragging = true;
+      self.scrub_bar.dragging = true;
       saved_state = state;
       state = STATE_PAUSE;
-      self.drag(evt);
+      self.scrub_bar.drag(evt);
     }
-    self.drag = function(evt)
+    self.scrub_bar.drag = function(evt)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
-      if(!self.dragging) return;
-      self.earth.t = Math.round((evt.doX/dc.width)*self.earth.recordable_t);
+      if(!self.scrub_bar.dragging) return;
+      self.earth.t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
+      if(self.earth.t < 0) self.earth.t = 0;
+      if(self.earth.t > self.earth.recordable_t) self.earth.t = self.earth.recordable_t;
     }
-    self.dragFinish = function(evt)
+    self.scrub_bar.dragFinish = function(evt)
     {
-      self.dragging = false;
+      self.scrub_bar.dragging = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       state = saved_state;
     }
 
+    self.scrub_bar.xForT = function(t)
+    {
+      return self.scrub_bar.x+Math.round((t/self.earth.recordable_t)*self.scrub_bar.w);
+    }
     self.drawBlip = function(t,ghost,correct)
     {
-      var x = Math.round((t/self.earth.recordable_t)*dc.width);
+      var x = self.scrub_bar.xForT(t);
       if(ghost)
       {
         dc.context.fillRect(x-2,self.y,4,self.h*0.2);
@@ -885,12 +885,12 @@ var GamePlayScene = function(game, stage)
     }
     self.labelBlip = function(t)
     {
-      var x = Math.round((t/self.earth.recordable_t)*dc.width);
+      var x = self.scrub_bar.xForT(t);
       dc.context.fillText(Math.round(t),x,self.y-1);
     }
     self.shapeBlip = function(t,shape)
     {
-      var x = Math.round((t/self.earth.recordable_t)*dc.width);
+      var x = self.scrub_bar.xForT(t);
       dc.context.drawImage(shape,x-shape.width/2,self.y-5-shape.height);
     }
     self.drawQuakeBlips = function(q,ghost)
@@ -935,19 +935,30 @@ var GamePlayScene = function(game, stage)
       dc.context.fillStyle = "#000000";
       self.labelBlip(self.earth.t,1);
 
-      if(self.hovering && !self.dragging)
+      if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
         dc.context.fillStyle = "#888888";
-        var t = invlerp(self.x,self.x+self.w,self.hovering_x)*self.earth.recordable_t;
-        self.drawBlip(t,1);
+        self.drawBlip(self.scrub_bar.hovering_t,1);
         dc.context.fillStyle = "#000000";
-        self.labelBlip(t,1);
+        self.labelBlip(self.scrub_bar.hovering_t,1);
       }
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
       for(var i = 0; i < self.earth.quakes.length; i++)
         if(self.earth.quakes[i].selected || self.earth.quakes[i] == hov_quak) self.drawQuakeBlips(self.earth.quakes[i],false)
       dc.context.globalAlpha=1;
+
+      //ui
+      dc.context.fillStyle = "#000000";
+      //play_button
+      dc.context.beginPath();
+      dc.context.moveTo(self.play_button.x+2,self.play_button.y+2);
+      dc.context.lineTo(self.play_button.x+self.play_button.w-2,self.play_button.y+self.play_button.h/2);
+      dc.context.lineTo(self.play_button.x+2,self.play_button.y+self.play_button.h-2);
+      dc.context.fill();
+      //pause_button
+      dc.context.fillRect(self.pause_button.x+2,self.pause_button.y+2,6,self.pause_button.h-4);
+      dc.context.fillRect(self.pause_button.x+self.pause_button.w-6-2,self.pause_button.y+2,6,self.pause_button.h-4);
     }
   }
 

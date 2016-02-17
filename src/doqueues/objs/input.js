@@ -1,3 +1,12 @@
+function Box(x,y,w,h)
+{
+  var self = this;
+  self.x = x;
+  self.y = y;
+  self.w = w;
+  self.h = h;
+}
+
 function NumberBox(x,y,w,h,val,delta,callback)
 //register to keyer, dragger, blurer
 {
