@@ -9,6 +9,7 @@ var GamePlayScene = function(game, stage)
   var quake_p_rate = 0.001;
   var s_color = "#FF0000";
   var p_color = "#0000FF";
+  var debug_levels = true;
 
   var hoverer;
   var dragger;
@@ -35,6 +36,7 @@ var GamePlayScene = function(game, stage)
   var hov_quak;
   var hov_quak_i;
 
+  var next_button;
   var scrubber;
   var speed_1x_button;
   var speed_2x_button;
@@ -59,41 +61,50 @@ var GamePlayScene = function(game, stage)
     var l;
     levels = [];
 
-    /*
-    //-1
-    l = new Level();
-    l.n_locations = 3;
-    l.quake_start_range = 0;
-    l.display_quake_start_range = false;
-    l.p_waves = false;
-    l.deselect_on_create = true;
-    l.draw_mouse_quake = false;
-    l.click_resets_t = true;
-    l.variable_quake_t = false;
-    l.allow_radii = true;
-    l.prompt = "test this!";
-    levels.push(l);
-    */
-
-    //0
-    l = new Level();
-    l.n_locations = 1;
-    l.quake_start_range = 0;
-    l.display_quake_start_range = false;
-    l.p_waves = false;
-    l.deselect_on_create = true;
-    l.draw_mouse_quake = false;
-    l.click_resets_t = true;
-    l.variable_quake_t = false;
-    l.allow_radii = false;
-    l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
-    levels.push(l);
+    if(debug_levels)
+    {
+      //-1
+      l = new Level();
+      l.n_locations = 3;
+      l.quake_start_range = 0;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.deselect_on_create = true;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = true;
+      l.prompt = "test this!";
+      levels.push(l);
+    }
+    else
+    {
+      //0
+      l = new Level();
+      l.n_locations = 1;
+      l.loc_1_x = 0.5;
+      l.loc_1_y = 0.5;
+      l.quake_start_range = 0;
+      l.quake_x = 0.25;
+      l.quake_y = 0.25;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.deselect_on_create = true;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
+      levels.push(l);
+    }
 
     cur_level = 0;
 
     earth = new Earth();
     earth.reset();
 
+    next_button = new ButtonBox(10,10,20,20,function(){ ui_lock = self; self.nextLevel(); });
+    clicker.register(next_button);
     scrubber = new Scrubber(earth);
 
     speed_1x_button = new ToggleBox(dc.width-120,dc.height-60,20,20,true, function(on) { ui_lock = self; if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
@@ -117,6 +128,12 @@ var GamePlayScene = function(game, stage)
     hoverer.register(earth);
     dragger.register(earth);
   };
+
+  self.nextLevel = function()
+  {
+    cur_level = (cur_level+1)%levels.length;
+    earth.reset();
+  }
 
   self.manuallyFlushQueues = function()
   {
@@ -216,6 +233,7 @@ var GamePlayScene = function(game, stage)
   {
     earth.draw();
 
+    next_button.draw(dc);
     scrubber.draw();
 
     dc.context.fillStyle = "#000000";
@@ -247,12 +265,21 @@ var GamePlayScene = function(game, stage)
   {
   };
 
-
   var Level = function()
   {
     var self = this;
     self.n_locations = 3;
+    self.loc_1_x = 0;
+    self.loc_1_y = 0;
+    self.loc_2_x = 0;
+    self.loc_2_y = 0;
+    self.loc_3_x = 0;
+    self.loc_3_y = 0;
+    self.loc_4_x = 0;
+    self.loc_4_y = 0;
     self.quake_start_range = 0;
+    self.quake_x = 0;
+    self.quake_y = 0;
     self.display_quake_start_range = true;
     self.p_waves = true;
     self.deselect_on_create = true;
@@ -297,10 +324,30 @@ var GamePlayScene = function(game, stage)
       var l;
       for(var i = 0; i < levels[cur_level].n_locations; i++)
       {
-        l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
-             if(i == 0) l.shape = square;
-        else if(i == 1) l.shape = circle;
-        else if(i == 2) l.shape = triangle;
+             if(i == 0)
+        {
+          if(levels[cur_level].loc_1_x) l = new Location(levels[cur_level].loc_1_x,levels[cur_level].loc_1_y,i);
+          else                          l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          l.shape = square;
+        }
+        else if(i == 1)
+        {
+          if(levels[cur_level].loc_2_x) l = new Location(levels[cur_level].loc_2_x,levels[cur_level].loc_2_y,i);
+          else                          l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          l.shape = circle;
+        }
+        else if(i == 2)
+        {
+          if(levels[cur_level].loc_3_x) l = new Location(levels[cur_level].loc_3_x,levels[cur_level].loc_3_y,i);
+          else                          l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          l.shape = triangle;
+        }
+        else if(i == 3)
+        {
+          if(levels[cur_level].loc_4_x) l = new Location(levels[cur_level].loc_4_x,levels[cur_level].loc_4_y,i);
+          else                          l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          l.shape = triangle;
+        }
         hoverer.register(l);
         dragger.register(l);
         self.locations.push(l);
@@ -345,7 +392,8 @@ var GamePlayScene = function(game, stage)
       var accomplished = false;
       while(!accomplished)
       {
-        self.ghost_quake = new Quake(randR(0.2,0.8),randR(0.2,0.8),Math.round(Math.random()*levels[cur_level].quake_start_range));
+        if(levels[cur_level].quake_x) self.ghost_quake = new Quake(levels[cur_level].quake_x, levels[cur_level].quake_y, Math.round(Math.random()*levels[cur_level].quake_start_range));
+        else                          self.ghost_quake = new Quake(           randR(0.2,0.8),            randR(0.2,0.8), Math.round(Math.random()*levels[cur_level].quake_start_range));
         accomplished = true;
         for(var i = 0; accomplished && i < self.locations.length; i++)
           accomplished = (wdist(self.locations[i],self.ghost_quake) > min_dist);
@@ -361,6 +409,7 @@ var GamePlayScene = function(game, stage)
       self.genLocations();
       self.deleteQuakes();
       self.popGhost();
+      state = STATE_PAUSE;
     }
     self.mouse_quake = new Quake(0,0,0);
 
