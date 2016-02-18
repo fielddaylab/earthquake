@@ -308,10 +308,11 @@ var GamePlayScene = function(game, stage)
 
     hoverer.flush();
     clicker.flush();
-    dragger.flush();
-    presser.flush();
 
-/*
+
+    //dragger.flush();
+    //presser.flush();
+
     drag_qs = dragger.requestManualFlush();
     press_qs = presser.requestManualFlush();
 
@@ -319,7 +320,6 @@ var GamePlayScene = function(game, stage)
 
     dragger.manualFlush();
     presser.manualFlush();
-*/
 
     ui_lock = undefined;
 
