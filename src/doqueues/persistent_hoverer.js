@@ -50,10 +50,13 @@ var PersistentHoverer = function(init)
       ; //no hover on mobile, dummy
   }
 
-
   function hover(evt)
   {
     doSetPosOnEvent(evt);
+    self.injectHover(evt);
+  }
+  self.injectHover = function(evt)
+  {
     var r = self.source.getBoundingClientRect();
 
     if(evt.clientX < r.left || evt.clientY < r.top || evt.clientX > r.right || evt.clientY > r.bottom)

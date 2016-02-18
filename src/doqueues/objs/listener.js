@@ -3,10 +3,10 @@ var Listener = function(canv)
   var self = this;
 
   self.canv = canv;
-  self.x = canv.x;
-  self.y = canv.y;
-  self.w = canv.w;
-  self.h = canv.h;
+  self.x = 0;
+  self.y = 0;
+  self.w = canv.width;
+  self.h = canv.height;
 
   self.blurer;
   self.clicker;
@@ -30,7 +30,9 @@ var Listener = function(canv)
     doSetPosOnEvent(evt);
     this.id = id;
     this.doX = evt.doX;
-    this.doY = evt.doX;
+    this.doY = evt.doY;
+    this.clientX = evt.clientX;
+    this.clientY = evt.clientY;
   }
 
   var frame = function()
@@ -62,15 +64,15 @@ var Listener = function(canv)
     }
     if(self.playing)
     {
-      if(self.blurer) self.blurer.ignore();
-      if(self.clicker) self.clicker.ignore();
-      if(self.dragger) self.dragger.ignore();
-      if(self.flicker) self.flicker.ignore();
-      if(self.hoverer) self.hoverer.ignore();
-      if(self.keyer) self.keyer.ignore();
-      if(self.persistenthoverer) self.persistenthoverer.ignore();
-      if(self.presser) self.presser.ignore();
-      if(self.ticker) self.ticker.ignore();
+      if(self.blurer) self.blurer.manualFlush();
+      if(self.clicker) self.clicker.manualFlush();
+      if(self.dragger) self.dragger.manualFlush();
+      if(self.flicker) self.flicker.manualFlush();
+      if(self.hoverer) self.hoverer.manualFlush();
+      if(self.keyer) self.keyer.manualFlush();
+      if(self.persistenthoverer) self.persistenthoverer.manualFlush();
+      if(self.presser) self.presser.manualFlush();
+      if(self.ticker) self.ticker.manualFlush();
 
       if(!self.history.length) { self.playing = false; return; }
       var h = self.history[0];
@@ -108,16 +110,11 @@ var Listener = function(canv)
               self.flicker.injectFlickFinish(e);
               break;
             case 8:
+            case 9:
               if(self.hoverer)
                 self.hoverer.injectHover(e);
               if(self.persistenthoverer)
                 self.persistenthoverer.injectHover(e);
-              break;
-            case 9:
-              if(self.hoverer)
-                self.hoverer.injectUnhover(e);
-              if(self.persistenthoverer)
-                self.persistenthoverer.injectUnhover(e);
               break;
             case 10:
               self.keyer.injectKey(e);
@@ -192,7 +189,6 @@ var Listener = function(canv)
     output.push("]}");
 
     var out_string = output.join("");
-    console.log(out_string);
     return out_string;
   }
 
@@ -204,76 +200,90 @@ var Listener = function(canv)
   //blurer
   self.blur = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,0));
   };
   //clicker
   self.click = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,1));
   };
   //dragger
   self.dragStart = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,2));
   };
   self.drag = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,3));
   };
   self.dragFinish = function()
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
-    self.cur_queue.push(new fevt(evt,4));
+    self.cur_queue.push(new fevt({},4));
   };
   //flicker
   self.flickStart = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,5));
   };
   self.flick = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,6));
   };
   self.flickFinish = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt),7);
   };
   //hoverer
   self.hover = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,8));
   };
   self.unhover = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,9));
   };
   //keyer
   self.key = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,10));
   };
   self.key_letter = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,11));
   };
   self.key_down = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,12));
   };
   self.key_up = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,13));
   };
@@ -281,17 +291,20 @@ var Listener = function(canv)
   //presser
   self.press = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,14));
   };
   self.unpress = function(evt)
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,15));
   };
   //ticker
   self.tick = function()
   {
+    if(!self.recording) return;
     if(!self.cur_queue) self.cur_queue = [];
     self.cur_queue.push(new fevt(evt,16));
   };

@@ -11,15 +11,18 @@ var GamePlayScene = function(game, stage)
   var p_color = "#0000FF";
   var debug_levels = true;
 
+  var n_ticks = 0;
+
   var hoverer;
   var dragger;
   var clicker;
   var presser;
-  var hover_qs;
   var drag_qs;
-  var click_qs;
   var press_qs;
   var ui_lock;
+
+  var listener;
+  var fake_mouse;
 
   var state;
   var ENUM = 0;
@@ -37,6 +40,8 @@ var GamePlayScene = function(game, stage)
   var hov_quak_i;
 
   var next_button;
+  var record_button;
+
   var scrubber;
   var speed_1x_button;
   var speed_2x_button;
@@ -55,6 +60,39 @@ var GamePlayScene = function(game, stage)
     presser = new Presser({source:stage.dispCanv.canvas});
     ui_lock = undefined;
 
+    listener = new Listener(dc);
+    hoverer.register(listener); listener.hoverer = hoverer;
+    dragger.register(listener); listener.dragger = dragger;
+    clicker.register(listener); listener.clicker = clicker;
+    presser.register(listener); listener.presser = presser;
+
+    var Mouse = function()
+    {
+      var self = this;
+      self.x = 0;
+      self.y = 0;
+      self.w = dc.width;
+      self.h = dc.height;
+
+      self.sx = 0;
+      self.sy = 0;
+
+      self.hover = function(evt)
+      {
+        self.sx = evt.doX;
+        self.sy = evt.doY;
+      }
+      self.unhover = function(evt)
+      {
+      }
+      self.draw = function()
+      {
+        dc.context.fillRect(self.sx-2,self.sy-2,4,4);
+      }
+    }
+    fake_mouse = new Mouse();
+    hoverer.register(fake_mouse);
+
     state = STATE_PAUSE;
     play_speed = 1;
 
@@ -68,7 +106,7 @@ var GamePlayScene = function(game, stage)
       l.n_locations = 3;
       l.quake_start_range = 0;
       l.display_quake_start_range = false;
-      l.p_waves = true;
+      l.p_waves = false;
       l.deselect_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
@@ -121,6 +159,8 @@ var GamePlayScene = function(game, stage)
     earth = new Earth();
     earth.reset();
 
+    record_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; if(listener.playing) listener.stop(); else if(listener.recording) listener.play(); else listener.record(); });
+    clicker.register(record_button);
     next_button = new ButtonBox(10,10,20,20,function(){ ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
     scrubber = new Scrubber(earth);
@@ -158,6 +198,22 @@ var GamePlayScene = function(game, stage)
   {
     if(ui_lock) return;
     //dragger first
+
+    //listener takes -1 priority
+    for(var i = 0; i < drag_qs.callbackQueue.length; i++)
+    {
+      if(
+        drag_qs.callbackQueue[i] == listener.dragStart ||
+        drag_qs.callbackQueue[i] == listener.drag ||
+        drag_qs.callbackQueue[i] == listener.dragFinish
+      )
+      {
+        drag_qs.callbackQueue[i](drag_qs.evtQueue[i]);
+        drag_qs.callbackQueue.splice(i,1);
+        drag_qs.evtQueue.splice(i,1);
+        i--;
+      }
+    }
 
     //scrubber takes first priority
     for(var i = 0; i < drag_qs.callbackQueue.length; i++)
@@ -199,6 +255,21 @@ var GamePlayScene = function(game, stage)
       }
     }
 
+    //listener takes -1 priority
+    for(var i = 0; i < press_qs.callbackQueue.length; i++)
+    {
+      if(
+        press_qs.callbackQueue[i] == listener.press ||
+        press_qs.callbackQueue[i] == listener.unPress
+      )
+      {
+        press_qs.callbackQueue[i](press_qs.evtQueue[i]);
+        press_qs.callbackQueue.splice(i,1);
+        press_qs.evtQueue.splice(i,1);
+        i--;
+      }
+    }
+
     //now presser
     //non-earth (quakes) takes first
     for(var i = 0; i < press_qs.callbackQueue.length; i++)
@@ -209,7 +280,6 @@ var GamePlayScene = function(game, stage)
       )
       {
         press_qs.callbackQueue[i](press_qs.evtQueue[i]);
-        console.log('found press');
         return;
       }
     }
@@ -221,7 +291,6 @@ var GamePlayScene = function(game, stage)
         press_qs.callbackQueue[i] == earth.unpress
       )
       {
-        console.log('found epress');
         press_qs.callbackQueue[i](press_qs.evtQueue[i]);
         return;
       }
@@ -229,9 +298,23 @@ var GamePlayScene = function(game, stage)
   }
   self.tick = function()
   {
+    n_ticks++;
+    if(false)
+    {
+      if(n_ticks == 100)
+        listener.record();
+      if(n_ticks == 200)
+        listener.play();
+    }
+
+    listener.flush();
+
     hoverer.flush();
     clicker.flush();
+    dragger.flush();
+    presser.flush();
 
+/*
     drag_qs = dragger.requestManualFlush();
     press_qs = presser.requestManualFlush();
 
@@ -239,6 +322,7 @@ var GamePlayScene = function(game, stage)
 
     dragger.manualFlush();
     presser.manualFlush();
+*/
 
     ui_lock = undefined;
 
@@ -253,6 +337,7 @@ var GamePlayScene = function(game, stage)
   {
     earth.draw();
 
+    record_button.draw(dc);
     next_button.draw(dc);
     scrubber.draw();
 
@@ -279,6 +364,8 @@ var GamePlayScene = function(game, stage)
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("delete",b.x+b.w/2,b.y+b.h-2);
     b = desel_quakes_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect",b.x+b.w/2,b.y+b.h-2);
+
+    fake_mouse.draw();
   };
 
   self.cleanup = function()

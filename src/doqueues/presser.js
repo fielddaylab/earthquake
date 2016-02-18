@@ -55,13 +55,17 @@ var Presser = function(init)
   function begin(evt)
   {
     down = true;
-    press(evt);
+    doSetPosOnEvent(evt);
+    self.injectPress(evt);
   }
   function press(evt)
   {
     if(!down) return;
-
     doSetPosOnEvent(evt);
+    self.injectPress(evt);
+  }
+  self.injectPress = function(evt)
+  {
     var alreadypressing;
     for(var i = 0; i < pressables.length; i++)
     {
@@ -101,6 +105,10 @@ var Presser = function(init)
     }
   }
   function end(evt)
+  {
+    self.injectUnpress(evt);
+  }
+  self.injectUnpress = function(evt)
   {
     down = false;
     for(var i = 0; i < pressing.length; i++)
