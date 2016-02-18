@@ -32,6 +32,10 @@ var Clicker = function(init)
   function click(evt)
   {
     doSetPosOnEvent(evt);
+    self.injectClick(evt);
+  }
+  self.injectClick = function(evt)
+  {
     for(var i = 0; i < clickables.length; i++)
     {
       if(clicked(clickables[i], evt))
