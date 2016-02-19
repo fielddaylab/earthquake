@@ -10,7 +10,7 @@ var GamePlayScene = function(game, stage)
   var s_color = "#FF0000";
   var p_color = "#0000FF";
   var debug_levels = true;
-  var record = false;
+  var record = true;
 
   var n_ticks = 0;
 

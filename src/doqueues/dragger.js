@@ -61,7 +61,6 @@ var Dragger = function(init)
   }
   self.injectDragStart = function(evt)
   {
-    console.log("doin start");
     for(var i = 0; i < draggables.length; i++)
     {
       if(ptWithinObj(evt.doX, evt.doY, draggables[i]))
@@ -86,7 +85,6 @@ var Dragger = function(init)
   }
   self.injectDrag = function(evt)
   {
-    console.log("doin drag");
     var r = self.source.getBoundingClientRect();
     if(evt.clientX < r.left || evt.clientY < r.top || evt.clientX > r.right || evt.clientY > r.bottom)
     {
@@ -107,7 +105,6 @@ var Dragger = function(init)
   }
   self.injectDragFinish = function(evt)
   {
-    console.log("doin finish");
     for(var i = 0; i < dragging.length; i++)
     {
       callbackQueue.push(dragging[i].dragFinish);
