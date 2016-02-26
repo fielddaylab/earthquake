@@ -19,7 +19,7 @@ var GamePlayScene = function(game, stage)
   var quake_p_rate = 0.001;
   var s_color = "#0088CC";
   var p_color = "#8800CC";
-  var debug_levels = true;
+  var debug_levels = false;
   var record = false;
 
   var n_ticks = 0;
@@ -115,11 +115,11 @@ var GamePlayScene = function(game, stage)
     {
       //-1
       l = new Level();
-      l.location_success_range = 20;
-      l.n_locations = 3;
+      l.location_success_range = 50;
+      l.n_locations = 2;
       l.quake_start_range = 0;
       l.display_quake_start_range = false;
-      l.p_waves = false;
+      l.p_waves = true;
       l.deselect_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
@@ -132,7 +132,7 @@ var GamePlayScene = function(game, stage)
     {
       //0
       l = new Level();
-      l.location_success_range = 100;
+      l.location_success_range = 50;
       l.n_locations = 1;
       l.loc_1_x = 0.5;
       l.loc_1_y = 0.5;
@@ -151,22 +151,48 @@ var GamePlayScene = function(game, stage)
 
       //1
       l = new Level();
-      l.location_success_range = 10;
-      l.n_locations = 1;
+      l.location_success_range = 50;
+      l.n_locations = 2;
       l.loc_1_x = 0.5;
       l.loc_1_y = 0.5;
+      l.loc_2_x = 0.7;
+      l.loc_2_y = 0.3;
       l.quake_start_range = 0;
       l.quake_x = 0.25;
       l.quake_y = 0.25;
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.deselect_on_create = true;
-      l.draw_mouse_quake = true;
+      l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
-      l.allow_radii = false;
+      l.allow_radii = true;
       l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
       levels.push(l);
+
+      //2
+      l = new Level();
+      l.location_success_range = 50;
+      l.n_locations = 3;
+      l.loc_1_x = 0.5;
+      l.loc_1_y = 0.5;
+      l.loc_2_x = 0.7;
+      l.loc_2_y = 0.3;
+      l.loc_3_x = 0.4;
+      l.loc_3_y = 0.9;
+      l.quake_start_range = 0;
+      l.quake_x = 0.25;
+      l.quake_y = 0.25;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.deselect_on_create = true;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = true;
+      l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
+      levels.push(l);
+
     }
 
     cur_level = 0;
