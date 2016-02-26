@@ -19,7 +19,7 @@ var GamePlayScene = function(game, stage)
   var quake_p_rate = 0.001;
   var s_color = "#0088CC";
   var p_color = "#8800CC";
-  var debug_levels = false;
+  var debug_levels = true;
   var record = false;
 
   var n_ticks = 0;
@@ -115,7 +115,7 @@ var GamePlayScene = function(game, stage)
     {
       //-1
       l = new Level();
-      l.location_success_range = 100;
+      l.location_success_range = 20;
       l.n_locations = 3;
       l.quake_start_range = 0;
       l.display_quake_start_range = false;
@@ -145,13 +145,13 @@ var GamePlayScene = function(game, stage)
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
-      l.allow_radii = false;
+      l.allow_radii = true;
       l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
       levels.push(l);
 
       //1
       l = new Level();
-      l.location_success_range = 100;
+      l.location_success_range = 10;
       l.n_locations = 1;
       l.loc_1_x = 0.5;
       l.loc_1_y = 0.5;
@@ -406,7 +406,7 @@ var GamePlayScene = function(game, stage)
   var Level = function()
   {
     var self = this;
-    self.location_success_range = 100;
+    self.location_success_range = 10;
     self.n_locations = 3;
     self.loc_1_x = 0;
     self.loc_1_y = 0;
@@ -663,7 +663,7 @@ var GamePlayScene = function(game, stage)
 
       if(q.selected || q == self.mouse_quake)
       {
-        dc.context.strokeStyle = "#000000";
+        dc.context.strokeStyle = "#888888";
         dc.context.beginPath();
         dc.context.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
         dc.context.stroke();
@@ -772,6 +772,12 @@ var GamePlayScene = function(game, stage)
           var y = l.wy-l.my;
           var d = Math.sqrt(x*x+y*y);
 
+          dc.context.lineWidth = dc.width*(quake_p_rate*levels[cur_level].location_success_range);
+          dc.context.beginPath();
+          dc.context.ellipse(l.cx,l.cy,l.rad*dc.width,l.rad*dc.height,0,0,2*Math.PI); //circles around locs
+          dc.context.stroke();
+
+          dc.context.lineWidth = 2;
           dc.context.beginPath();
           dc.context.ellipse(l.cx,l.cy,l.rad*dc.width,l.rad*dc.height,0,0,2*Math.PI); //circles around locs
           dc.context.stroke();
@@ -781,12 +787,18 @@ var GamePlayScene = function(game, stage)
             dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(l.mx*dc.width,l.my*dc.height); //line
             dc.context.stroke();
 
-            dc.context.fillStyle = s_color;
-            dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
-            if(levels[cur_level].p_waves)
+            if(l.rad != 0)
             {
-              dc.context.fillStyle = p_color;
-              dc.context.fillText("("+Math.round(l.rad/quake_p_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
+              var tmp_alpha = dc.context.globalAlpha;
+              dc.context.globalAlpha=1;
+              dc.context.fillStyle = s_color;
+              dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
+              if(levels[cur_level].p_waves)
+              {
+                dc.context.fillStyle = p_color;
+                dc.context.fillText("("+Math.round(l.rad/quake_p_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
+              }
+              dc.context.globalAlpha=tmp_alpha;
             }
           }
         }
