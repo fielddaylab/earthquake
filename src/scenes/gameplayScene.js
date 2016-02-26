@@ -1,5 +1,15 @@
 var GamePlayScene = function(game, stage)
 {
+  var ENUM;
+
+  ENUM = 0;
+  var STATE_PLAY  = ENUM; ENUM++;
+  var STATE_PAUSE = ENUM; ENUM++;
+
+  ENUM = 0;
+  var IGNORE_INPUT = ENUM; ENUM++;
+  var RESUME_INPUT = ENUM; ENUM++;
+
   var self = this;
   var dc = stage.drawCanv;
 
@@ -9,8 +19,8 @@ var GamePlayScene = function(game, stage)
   var quake_p_rate = 0.001;
   var s_color = "#FF0000";
   var p_color = "#0000FF";
-  var debug_levels = true;
-  var record = true;
+  var debug_levels = false;
+  var record = false;
 
   var n_ticks = 0;
 
@@ -25,10 +35,9 @@ var GamePlayScene = function(game, stage)
   var listener;
   var fake_mouse;
 
-  var state;
-  var ENUM = 0;
-  var STATE_PLAY  = ENUM; ENUM++;
-  var STATE_PAUSE = ENUM; ENUM++;
+  var input_state;
+
+  var play_state;
   var play_speed;
 
   var levels;
@@ -52,6 +61,8 @@ var GamePlayScene = function(game, stage)
   var del_all_quakes_button;
   var del_sel_quakes_button;
   var desel_quakes_button;
+
+  var dom;
 
   self.ready = function()
   {
@@ -94,7 +105,7 @@ var GamePlayScene = function(game, stage)
     fake_mouse = new Mouse();
     hoverer.register(fake_mouse);
 
-    state = STATE_PAUSE;
+    play_state = STATE_PAUSE;
     play_speed = 1;
 
     var l;
@@ -175,9 +186,9 @@ var GamePlayScene = function(game, stage)
     speed_4x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 4; else if(play_speed == 4) speed_4x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_8x_button.on = false; });
     speed_8x_button = new ToggleBox(dc.width-30, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 8; else if(play_speed == 8) speed_8x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_4x_button.on = false; });
 
-    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ ui_lock = self; earth.reset(); state = STATE_PAUSE;});
-    del_all_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ ui_lock = self; earth.deleteQuakes(); state = STATE_PAUSE;});
-    del_sel_quakes_button = new ButtonBox(dc.width-90,10,20,20,function(){ ui_lock = self; earth.deleteSelectedQuakes(); state = STATE_PAUSE;});
+    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ ui_lock = self; earth.reset(); play_state = STATE_PAUSE;});
+    del_all_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ ui_lock = self; earth.deleteQuakes(); play_state = STATE_PAUSE;});
+    del_sel_quakes_button = new ButtonBox(dc.width-90,10,20,20,function(){ ui_lock = self; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
     desel_quakes_button = new ButtonBox(dc.width-120,10,20,20,function(){ ui_lock = self; earth.deselectQuakes();});
 
     clicker.register(speed_1x_button);
@@ -190,7 +201,17 @@ var GamePlayScene = function(game, stage)
     clicker.register(desel_quakes_button);
     hoverer.register(earth);
     dragger.register(earth);
+
+    dom = new Dom();
+    //setTimeout(function(){ input_state = IGNORE_INPUT; dom.popDismissableMessageOnEl('hi',100,100,100,100,document.getElementById('stage_container'),dismissed); },100);
+
+    input_state = RESUME_INPUT;
   };
+
+  var dismissed = function()
+  {
+    input_state = RESUME_INPUT;
+  }
 
   self.nextLevel = function()
   {
@@ -304,26 +325,36 @@ var GamePlayScene = function(game, stage)
   {
     n_ticks++;
 
-    listener.flush();
+    if(input_state == IGNORE_INPUT)
+    {
+      hoverer.ignore();
+      clicker.ignore();
+      dragger.ignore();
+      presser.ignore();
+    }
+    else
+    {
+      listener.flush();
 
-    hoverer.flush();
-    clicker.flush();
+      hoverer.flush();
+      clicker.flush();
 
 
-    //dragger.flush();
-    //presser.flush();
+      //dragger.flush();
+      //presser.flush();
 
-    drag_qs = dragger.requestManualFlush();
-    press_qs = presser.requestManualFlush();
+      drag_qs = dragger.requestManualFlush();
+      press_qs = presser.requestManualFlush();
 
-    self.manuallyFlushQueues();
+      self.manuallyFlushQueues();
 
-    dragger.manualFlush();
-    presser.manualFlush();
+      dragger.manualFlush();
+      presser.manualFlush();
+    }
 
     ui_lock = undefined;
 
-    if(state == STATE_PLAY)
+    if(play_state == STATE_PLAY)
     {
       if(earth.t < earth.recordable_t) earth.t += play_speed;
       if(earth.t > earth.recordable_t) earth.t = earth.recordable_t;
@@ -513,7 +544,7 @@ var GamePlayScene = function(game, stage)
       self.genLocations();
       self.deleteQuakes();
       self.popGhost();
-      state = STATE_PAUSE;
+      play_state = STATE_PAUSE;
     }
     self.mouse_quake = new Quake(0,0,0);
 
@@ -590,7 +621,7 @@ var GamePlayScene = function(game, stage)
         if(levels[cur_level].click_resets_t)
         {
           self.t = 0;
-          state = STATE_PLAY;
+          play_state = STATE_PLAY;
         }
 
         var q;
@@ -991,8 +1022,8 @@ var GamePlayScene = function(game, stage)
 
     self.earth = earth;
 
-    self.play_button  = new ButtonBox(self.h*0,self.y,self.h,self.h,function(){ ui_lock = self; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; state = STATE_PLAY;});
-    self.pause_button = new ButtonBox(self.h*1,self.y,self.h,self.h,function(){ ui_lock = self; state = STATE_PAUSE;});
+    self.play_button  = new ButtonBox(self.h*0,self.y,self.h,self.h,function(){ ui_lock = self; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY;});
+    self.pause_button = new ButtonBox(self.h*1,self.y,self.h,self.h,function(){ ui_lock = self; play_state = STATE_PAUSE;});
     clicker.register(self.play_button);
     clicker.register(self.pause_button);
     self.scrub_bar = new Box(self.h*2+5,self.y,self.w-(self.h*2+5),self.h);
@@ -1032,8 +1063,8 @@ var GamePlayScene = function(game, stage)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       self.scrub_bar.dragging = true;
-      saved_state = state;
-      state = STATE_PAUSE;
+      saved_state = play_state;
+      play_state = STATE_PAUSE;
       self.scrub_bar.drag(evt);
     }
     self.scrub_bar.drag = function(evt)
@@ -1048,7 +1079,7 @@ var GamePlayScene = function(game, stage)
     {
       self.scrub_bar.dragging = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
-      state = saved_state;
+      play_state = saved_state;
     }
 
     self.scrub_bar.xForT = function(t)

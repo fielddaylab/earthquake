@@ -46,7 +46,6 @@ function doSetPosOnEvent(evt)
 
     evt.doX = evt.touches[0].pageX-left;
     evt.doY = evt.touches[0].pageY-top;
-
   }
   else if(evt.layerX != undefined && evt.originalTarget != undefined)
   {
