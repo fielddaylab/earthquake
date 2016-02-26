@@ -17,8 +17,8 @@ var GamePlayScene = function(game, stage)
   var quake_size = 0.03;
   var quake_s_rate = 0.0005;
   var quake_p_rate = 0.001;
-  var s_color = "#FF0000";
-  var p_color = "#0000FF";
+  var s_color = "#0088CC";
+  var p_color = "#8800CC";
   var debug_levels = false;
   var record = false;
 
@@ -115,6 +115,7 @@ var GamePlayScene = function(game, stage)
     {
       //-1
       l = new Level();
+      l.location_success_range = 100;
       l.n_locations = 3;
       l.quake_start_range = 0;
       l.display_quake_start_range = false;
@@ -131,6 +132,7 @@ var GamePlayScene = function(game, stage)
     {
       //0
       l = new Level();
+      l.location_success_range = 100;
       l.n_locations = 1;
       l.loc_1_x = 0.5;
       l.loc_1_y = 0.5;
@@ -149,6 +151,7 @@ var GamePlayScene = function(game, stage)
 
       //1
       l = new Level();
+      l.location_success_range = 100;
       l.n_locations = 1;
       l.loc_1_x = 0.5;
       l.loc_1_y = 0.5;
@@ -403,6 +406,7 @@ var GamePlayScene = function(game, stage)
   var Level = function()
   {
     var self = this;
+    self.location_success_range = 100;
     self.n_locations = 3;
     self.loc_1_x = 0;
     self.loc_1_y = 0;
@@ -872,8 +876,8 @@ var GamePlayScene = function(game, stage)
         var d = wdist(l,self);
         self.location_s_ts[i] = self.t+(d/quake_s_rate);
         self.location_p_ts[i] = self.t+(d/quake_p_rate);
-        self.location_s_cs[i] = (ghost != undefined && Math.abs(self.location_s_ts[i]-ghost.location_s_ts[i]) < 10);
-        self.location_p_cs[i] = (ghost != undefined && Math.abs(self.location_p_ts[i]-ghost.location_p_ts[i]) < 10);
+        self.location_s_cs[i] = (ghost != undefined && Math.abs(self.location_s_ts[i]-ghost.location_s_ts[i]) < levels[cur_level].location_success_range);
+        self.location_p_cs[i] = (ghost != undefined && Math.abs(self.location_p_ts[i]-ghost.location_p_ts[i]) < levels[cur_level].location_success_range);
 
         if(!self.location_s_cs[i])
         {
@@ -1086,22 +1090,20 @@ var GamePlayScene = function(game, stage)
     {
       return self.scrub_bar.x+Math.round((t/self.earth.recordable_t)*self.scrub_bar.w);
     }
-    self.drawBlip = function(t,ghost,correct)
+    self.drawBlip = function(t,range,split,icon)
     {
       var x = self.scrub_bar.xForT(t);
-      if(ghost)
+      var w = self.scrub_bar.w*((2*range)/self.earth.recordable_t);
+      if(range == 0) w = 1;
+
+      if(split)
       {
-        dc.context.fillRect(x-2,self.y,4,self.h*0.2);
-        dc.context.fillRect(x-2,self.y+self.h*0.8,4,self.h*0.2);
+        dc.context.fillRect(x-w/2,self.y,           w,self.h*0.2);
+        dc.context.fillRect(x-w/2,self.y+self.h*0.8,w,self.h*0.2);
       }
-      else
-      {
-        dc.context.fillRect(x-1,self.y,2,self.h);
-        if(correct)
-          dc.context.drawImage(cmark,x-cmark.width/2,self.y+self.h/2-cmark.height/2);
-        else
-          dc.context.drawImage(xmark,x-xmark.width/2,self.y+self.h/2-xmark.height/2);
-      }
+      else dc.context.fillRect(x-w/2,self.y,w,self.h);
+
+      if(icon) dc.context.drawImage(icon,x-icon.width/2,self.y+self.h/2-icon.height/2);
     }
     self.labelBlip = function(t)
     {
@@ -1138,8 +1140,21 @@ var GamePlayScene = function(game, stage)
           if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
           if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
         }
-        if(draw_s) { dc.context.fillStyle = s_color; self.drawBlip(q.location_s_ts[i],ghost,q.location_s_cs[i]); }
-        if(draw_p) { dc.context.fillStyle = p_color; self.drawBlip(q.location_p_ts[i],ghost,q.location_p_cs[i]); }
+
+        var range = ghost ? levels[cur_level].location_success_range : 0;
+        var split = ghost;
+        if(draw_s)
+        {
+          dc.context.fillStyle = s_color;
+          var icon = q.location_s_cs[i] ? cmark : xmark;
+          self.drawBlip(q.location_s_ts[i],range,split,ghost ? 0 : icon);
+        }
+        if(draw_p)
+        {
+          dc.context.fillStyle = p_color;
+          var icon = q.location_p_cs[i] ? cmark : xmark;
+          self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
+        }
       }
     }
     self.draw = function()
@@ -1156,14 +1171,15 @@ var GamePlayScene = function(game, stage)
         dc.context.fillRect(self.scrub_bar.x,self.y,self.scrub_bar.w*(levels[cur_level].quake_start_range/self.earth.recordable_t),self.h);
       }
       dc.context.fillStyle = "#FFFFFF";
-      self.drawBlip(self.earth.t,1);
+
+      self.drawBlip(self.earth.t,0,0,0);
       dc.context.fillStyle = "#000000";
       self.labelBlip(self.earth.t);
 
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
         dc.context.fillStyle = "#888888";
-        self.drawBlip(self.scrub_bar.hovering_t,1);
+        self.drawBlip(self.scrub_bar.hovering_t,0,0,0);
         dc.context.fillStyle = "#000000";
         self.labelBlip(self.scrub_bar.hovering_t);
       }
@@ -1209,8 +1225,10 @@ var qmark = GenIcon();
 qmark.context.fillText("?",qmark.width/2,qmark.height-2);
 
 var xmark = GenIcon();
+xmark.context.fillStyle = "#CC2222";
 xmark.context.fillText("✖",xmark.width/2,xmark.height-2);
 
 var cmark = GenIcon();
+cmark.context.fillStyle = "#22CC22";
 cmark.context.fillText("✔",cmark.width/2,cmark.height-2);
 
