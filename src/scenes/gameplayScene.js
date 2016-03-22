@@ -167,10 +167,10 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = true;
       l.lines = [
         "An earthquake has been reported by Square City!",
-        "",
-        "",
-        "",
-        "",
+        "Hi",
+        "Wow more text",
+        "Tdexst keeps coming",
+        "hoorraaay",
       ];
       levels.push(l);
 
@@ -430,6 +430,9 @@ var GamePlayScene = function(game, stage)
 
   self.draw = function()
   {
+    dc.context.fillStyle = "#FFFFFF";
+    dc.context.fillRect(0,0,dc.width,dc.height);
+
     earth.draw();
 
     if(record) record_button.draw(dc);
@@ -504,6 +507,7 @@ var GamePlayScene = function(game, stage)
     self.h = dc.height;
 
     self.t = 0;
+    self.assumed_start_t = 0;
     self.recordable_t = 1.5/quake_p_rate;
 
     self.locations;
@@ -831,11 +835,11 @@ var GamePlayScene = function(game, stage)
               var tmp_alpha = dc.context.globalAlpha;
               dc.context.globalAlpha=1;
               dc.context.fillStyle = s_color;
-              dc.context.fillText("("+tToTime(Math.round(l.rad/quake_s_rate))+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
+              dc.context.fillText("("+timeForT(Math.round(l.rad/quake_s_rate))+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
               if(levels[cur_level].p_waves)
               {
                 dc.context.fillStyle = p_color;
-                dc.context.fillText("("+tToTime(Math.round(l.rad/quake_p_rate))+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
+                dc.context.fillText("("+timeForT(Math.round(l.rad/quake_p_rate))+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
               }
               dc.context.globalAlpha=tmp_alpha;
             }
@@ -929,8 +933,8 @@ var GamePlayScene = function(game, stage)
         var d = wdist(l,self);
         self.location_s_ts[i] = self.t+(d/quake_s_rate);
         self.location_p_ts[i] = self.t+(d/quake_p_rate);
-        self.location_s_hrts[i] = tToTime(Math.round(self.t+(d/quake_s_rate)));
-        self.location_p_hrts[i] = tToTime(Math.round(self.t+(d/quake_p_rate)));
+        self.location_s_hrts[i] = timeForT(Math.round(self.t+(d/quake_s_rate)));
+        self.location_p_hrts[i] = timeForT(Math.round(self.t+(d/quake_p_rate)));
         self.location_s_cs[i] = (ghost != undefined && Math.abs(self.location_s_ts[i]-ghost.location_s_ts[i]) < levels[cur_level].location_success_range);
         self.location_p_cs[i] = (ghost != undefined && Math.abs(self.location_p_ts[i]-ghost.location_p_ts[i]) < levels[cur_level].location_success_range);
 
@@ -1169,6 +1173,16 @@ var GamePlayScene = function(game, stage)
       var x = self.scrub_bar.xForT(t);
       dc.context.drawImage(shape,x-shape.width/2,self.y-5-shape.height);
     }
+    self.drawAssumedStartBlip = function()
+    {
+      dc.context.textAlign = "left";
+      var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
+      dc.context.fillStyle = "#2277FF";
+      dc.context.fillRect(x-0.5,self.y,1,self.h);
+      dc.context.fillRect(x-0.5,self.y-15,60,15);
+      dc.context.fillStyle = "#FFFFFF";
+      dc.context.fillText("Quake Start",x+2,self.y-3);
+    }
     self.drawQuakeBlips = function(q,ghost)
     {
       for(var i = 0; i < self.earth.locations.length; i++)
@@ -1228,20 +1242,22 @@ var GamePlayScene = function(game, stage)
 
       self.drawBlip(self.earth.t,0,0,0);
       dc.context.fillStyle = "#000000";
-      self.labelBlip(self.earth.t,tToTime(self.earth.t));
+      self.labelBlip(self.earth.t,timeForT(self.earth.t));
 
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
         dc.context.fillStyle = "#888888";
         self.drawBlip(self.scrub_bar.hovering_t,0,0,0);
         dc.context.fillStyle = "#000000";
-        self.labelBlip(self.scrub_bar.hovering_t,tToTime(self.scrub_bar.hovering_t));
+        self.labelBlip(self.scrub_bar.hovering_t,timeForT(self.scrub_bar.hovering_t));
       }
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
       for(var i = 0; i < self.earth.quakes.length; i++)
         if(self.earth.quakes[i].selected || self.earth.quakes[i] == hov_quak) self.drawQuakeBlips(self.earth.quakes[i],false)
       dc.context.globalAlpha=1;
+
+      self.drawAssumedStartBlip();
 
       //ui
       dc.context.fillStyle = "#000000";
@@ -1257,7 +1273,7 @@ var GamePlayScene = function(game, stage)
     }
   }
 
-  var tToTime = function(t)
+  var timeForT = function(t)
   {
     var hrs = (Math.floor(t/60)%24);
     var mins = t%60;
