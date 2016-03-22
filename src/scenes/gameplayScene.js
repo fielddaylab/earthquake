@@ -165,7 +165,13 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = true;
-      l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
+      l.lines = [
+        "An earthquake has been reported by Square City!",
+        "",
+        "",
+        "",
+        "",
+      ];
       levels.push(l);
 
       //2
@@ -799,33 +805,7 @@ var GamePlayScene = function(game, stage)
       {
         l = self.locations[i];
 
-        if(!l.drag_rad)
-        {
-          var x = l.wx-mouse.wx;
-          var y = l.wy-mouse.wy;
-          var d = Math.sqrt(x*x+y*y);
-
-          dc.context.beginPath();
-          dc.context.ellipse(mouse.cx,mouse.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around mouse
-          dc.context.ellipse((mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height,d/2*dc.width,d/2*dc.height,0,0,2*Math.PI); //circles between mouse/location
-          dc.context.ellipse(l.cx,l.cy,d*dc.width,d*dc.height,0,0,2*Math.PI); //circles around locs
-          dc.context.stroke();
-          if(l.dragging || l.hovering)
-          {
-            dc.context.beginPath();
-            dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(mouse.cx,mouse.cy); //line
-            dc.context.stroke();
-
-            dc.context.fillStyle = s_color;
-            dc.context.fillText("("+Math.round(d/quake_s_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-10); //line annotations
-            if(levels[cur_level].p_waves)
-            {
-              dc.context.fillStyle = p_color;
-              dc.context.fillText("("+Math.round(d/quake_p_rate)+")",(mouse.wx+x/2)*dc.width,(mouse.wy+y/2)*dc.height-20); //line annotations
-            }
-          }
-        }
-        else if(l.drag_rad && levels[cur_level].allow_radii)
+        if(levels[cur_level].allow_radii)
         {
           var x = l.wx-l.mx;
           var y = l.wy-l.my;
@@ -851,11 +831,11 @@ var GamePlayScene = function(game, stage)
               var tmp_alpha = dc.context.globalAlpha;
               dc.context.globalAlpha=1;
               dc.context.fillStyle = s_color;
-              dc.context.fillText("("+Math.round(l.rad/quake_s_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
+              dc.context.fillText("("+tToTime(Math.round(l.rad/quake_s_rate))+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-10);
               if(levels[cur_level].p_waves)
               {
                 dc.context.fillStyle = p_color;
-                dc.context.fillText("("+Math.round(l.rad/quake_p_rate)+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
+                dc.context.fillText("("+tToTime(Math.round(l.rad/quake_p_rate))+")",(l.mx+x/2)*dc.width,(l.my+y/2)*dc.height-20);
               }
               dc.context.globalAlpha=tmp_alpha;
             }
@@ -913,6 +893,8 @@ var GamePlayScene = function(game, stage)
 
     self.location_s_ts = [];
     self.location_p_ts = [];
+    self.location_s_hrts = [];
+    self.location_p_hrts = [];
     self.location_s_cs = []
     self.location_p_cs = []
     self.c_aware_t = 9999;
@@ -947,6 +929,8 @@ var GamePlayScene = function(game, stage)
         var d = wdist(l,self);
         self.location_s_ts[i] = self.t+(d/quake_s_rate);
         self.location_p_ts[i] = self.t+(d/quake_p_rate);
+        self.location_s_hrts[i] = tToTime(Math.round(self.t+(d/quake_s_rate)));
+        self.location_p_hrts[i] = tToTime(Math.round(self.t+(d/quake_p_rate)));
         self.location_s_cs[i] = (ghost != undefined && Math.abs(self.location_s_ts[i]-ghost.location_s_ts[i]) < levels[cur_level].location_success_range);
         self.location_p_cs[i] = (ghost != undefined && Math.abs(self.location_p_ts[i]-ghost.location_p_ts[i]) < levels[cur_level].location_success_range);
 
@@ -1026,7 +1010,6 @@ var GamePlayScene = function(game, stage)
     }
 
     self.move_locs = false;
-    self.drag_rad = true;
 
     self.offX = 0;
     self.offY = 0;
@@ -1063,7 +1046,7 @@ var GamePlayScene = function(game, stage)
         self.cx = dc.width*self.wx;
         self.cy = dc.height*self.wy;
       }
-      if(self.drag_rad && levels[cur_level].allow_radii)
+      if(levels[cur_level].allow_radii)
       {
         self.mx = evt.doX/dc.width;
         self.my = evt.doY/dc.height;
@@ -1176,10 +1159,10 @@ var GamePlayScene = function(game, stage)
 
       if(icon) dc.context.drawImage(icon,x-icon.width/2,self.y+self.h/2-icon.height/2);
     }
-    self.labelBlip = function(t)
+    self.labelBlip = function(t,hrt)
     {
       var x = self.scrub_bar.xForT(t);
-      dc.context.fillText(Math.round(t),x,self.y-1);
+      dc.context.fillText(hrt,x,self.y-1);
     }
     self.shapeBlip = function(t,shape)
     {
@@ -1196,8 +1179,8 @@ var GamePlayScene = function(game, stage)
         {
           dc.context.globalAlpha=1;
           dc.context.fillStyle = "#000000";
-          if(draw_s) self.labelBlip(q.location_s_ts[i]);
-          if(draw_p) self.labelBlip(q.location_p_ts[i]);
+          if(draw_s) self.labelBlip(q.location_s_ts[i],q.location_s_hrts[i]);
+          if(draw_p) self.labelBlip(q.location_s_ts[i],q.location_p_hrts[i]);
         }
         else if(q == hov_quak)
         {
@@ -1245,14 +1228,14 @@ var GamePlayScene = function(game, stage)
 
       self.drawBlip(self.earth.t,0,0,0);
       dc.context.fillStyle = "#000000";
-      self.labelBlip(self.earth.t);
+      self.labelBlip(self.earth.t,tToTime(self.earth.t));
 
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
         dc.context.fillStyle = "#888888";
         self.drawBlip(self.scrub_bar.hovering_t,0,0,0);
         dc.context.fillStyle = "#000000";
-        self.labelBlip(self.scrub_bar.hovering_t);
+        self.labelBlip(self.scrub_bar.hovering_t,tToTime(self.scrub_bar.hovering_t));
       }
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
@@ -1272,6 +1255,14 @@ var GamePlayScene = function(game, stage)
       dc.context.fillRect(self.pause_button.x+2,self.pause_button.y+2,6,self.pause_button.h-4);
       dc.context.fillRect(self.pause_button.x+self.pause_button.w-6-2,self.pause_button.y+2,6,self.pause_button.h-4);
     }
+  }
+
+  var tToTime = function(t)
+  {
+    var hrs = (Math.floor(t/60)%24);
+    var mins = t%60;
+    if(mins < 10) mins = "0"+mins;
+    return hrs+":"+mins;
   }
 
 };

@@ -114,7 +114,11 @@ var BottomMessageWrangler = function()
     if(lines && lines.length > cur_line)
       text_el.innerHTML  = lines[cur_line];
     else
-      visd = -0.1;
+    {
+      if(c) c();
+      c = undefined;
+      visa = -0.01;
+    }
   }
 
   var el = document.getElementById("bottom_display");
@@ -123,6 +127,7 @@ var BottomMessageWrangler = function()
   button_el.addEventListener('click',bclicked);
 
   var vis = 0;
+  var visa = 0;
   var visd = 0;
 
   var c;
@@ -132,16 +137,17 @@ var BottomMessageWrangler = function()
   var height = 200;
   self.tick = function()
   {
+    visd += visa;
     vis += visd;
     if(vis > 1)
     {
+      if(visa > 0) visa = 0;
       vis = 1;
       visd = 0;
     }
     else if(vis < 0)
     {
-      if(c) c();
-      c = undefined;
+      if(visa < 0) visa = 0;
       vis = 0;
       visd = 0;
     }
@@ -154,7 +160,7 @@ var BottomMessageWrangler = function()
     lines = newlines;
     cur_line = 0;
     text_el.innerHTML = lines[cur_line];
-    visd = 0.1;
+    visa = 0.01;
   }
 }
 
