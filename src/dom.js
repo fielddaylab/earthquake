@@ -53,3 +53,54 @@ var Dom = function()
   }
 }
 
+var CanvDom = function(canv)
+{
+  var self = this;
+
+  var m;
+  var c;
+
+  self.x = 0;
+  self.y = 0;
+  self.w = 0;
+  self.h = 0;
+
+  var mclicked = function(evt)
+  {
+    m = undefined;
+    if(c) c();
+    c = undefined;
+
+    self.x = 0;
+    self.y = 0;
+    self.w = 0;
+    self.h = 0;
+  }
+
+  self.popDismissableMessage = function(text,x,y,w,h,callback)
+  {
+    if(m) mclicked();
+    m = text;
+    c = callback;
+
+    //take on dimensions of message
+    self.x = x;
+    self.y = y;
+    self.w = w;
+    self.h = h;
+  }
+
+  self.click = mclicked;
+  self.draw = function(canv)
+  {
+    if(m)
+    {
+      canv.context.fillStyle = "#FF0000";
+      canv.context.fillRect(self.x,self.y,self.w,self.h);
+      canv.context.fillStyle = "#000000";
+      canv.context.textAlign = "left";
+      canv.context.fillText(m,self.x,self.y+self.h);
+    }
+  }
+}
+

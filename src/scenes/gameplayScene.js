@@ -30,12 +30,14 @@ var GamePlayScene = function(game, stage)
   var presser;
   var drag_qs;
   var press_qs;
+  var canvdom_clicker;
   var ui_lock;
 
   var listener;
   var fake_mouse;
 
   var input_state;
+  var input_mask;
 
   var play_state;
   var play_speed;
@@ -63,6 +65,7 @@ var GamePlayScene = function(game, stage)
   var desel_quakes_button;
 
   var dom;
+  var canvdom;
 
   self.ready = function()
   {
@@ -70,6 +73,7 @@ var GamePlayScene = function(game, stage)
     dragger = new Dragger({source:stage.dispCanv.canvas});
     clicker = new Clicker({source:stage.dispCanv.canvas});
     presser = new Presser({source:stage.dispCanv.canvas});
+    canvdom_clicker = new Clicker({source:stage.dispCanv.canvas});
     ui_lock = undefined;
 
     listener = new Listener(dc);
@@ -116,10 +120,10 @@ var GamePlayScene = function(game, stage)
       //-1
       l = new Level();
       l.location_success_range = 50;
-      l.n_locations = 2;
+      l.n_locations = 3;
       l.quake_start_range = 0;
       l.display_quake_start_range = false;
-      l.p_waves = true;
+      l.p_waves = false;
       l.deselect_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
@@ -232,7 +236,11 @@ var GamePlayScene = function(game, stage)
     dragger.register(earth);
 
     dom = new Dom();
+    canvdom = new CanvDom();
     //setTimeout(function(){ input_state = IGNORE_INPUT; dom.popDismissableMessageOnEl('hi',100,100,100,100,document.getElementById('stage_container'),dismissed); },100);
+    setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
+
+    canvdom_clicker.register(canvdom);
 
     input_state = RESUME_INPUT;
   };
@@ -354,6 +362,7 @@ var GamePlayScene = function(game, stage)
   {
     n_ticks++;
 
+    canvdom_clicker.flush();
     if(input_state == IGNORE_INPUT)
     {
       hoverer.ignore();
@@ -423,6 +432,7 @@ var GamePlayScene = function(game, stage)
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect",b.x+b.w/2,b.y+b.h-2);
 
     fake_mouse.draw();
+    canvdom.draw(dc);
   };
 
   self.cleanup = function()
