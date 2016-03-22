@@ -116,6 +116,20 @@ var GamePlayScene = function(game, stage)
     var l;
     levels = [];
 
+    //0
+    l = new Level();
+    l.location_success_range = 0;
+    l.n_locations = 0;
+    l.display_quake_start_range = false;
+    l.p_waves = false;
+    l.deselect_on_create = false;
+    l.draw_mouse_quake = false;
+    l.click_resets_t = false;
+    l.variable_quake_t = false;
+    l.allow_radii = false;
+    l.lines = [];
+    levels.push(l);
+
     if(debug_levels)
     {
       //-1
@@ -130,12 +144,12 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = true;
-      l.prompt = "test this!";
+      l.lines = ["test this!"];
       levels.push(l);
     }
     else
     {
-      //0
+      //1
       l = new Level();
       l.location_success_range = 50;
       l.n_locations = 1;
@@ -151,10 +165,10 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = true;
-      l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
+      l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
       levels.push(l);
 
-      //1
+      //2
       l = new Level();
       l.location_success_range = 50;
       l.n_locations = 2;
@@ -172,10 +186,10 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = true;
-      l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
+      l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
       levels.push(l);
 
-      //2
+      //3
       l = new Level();
       l.location_success_range = 50;
       l.n_locations = 3;
@@ -195,7 +209,7 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = true;
-      l.prompt = "A location has reported a quake. What can we know about where this quake occurred?";
+      l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
       levels.push(l);
 
     }
@@ -241,11 +255,13 @@ var GamePlayScene = function(game, stage)
     bmwrangler = new BottomMessageWrangler();
     //setTimeout(function(){ input_state = IGNORE_INPUT; dom.popDismissableMessageOnEl('hi',100,100,100,100,document.getElementById('stage_container'),dismissed); },100);
     //setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
-    setTimeout(function(){ input_state = IGNORE_INPUT; bmwrangler.popMessage(['hi','there','what','you'],dismissed); },100);
+    //setTimeout(function(){ input_state = IGNORE_INPUT; bmwrangler.popMessage(['hi','there','what','you'],dismissed); },100);
 
     canvdom_clicker.register(canvdom);
 
     input_state = RESUME_INPUT;
+
+    self.nextLevel();
   };
 
   var dismissed = function()
@@ -256,6 +272,8 @@ var GamePlayScene = function(game, stage)
   self.nextLevel = function()
   {
     cur_level = (cur_level+1)%levels.length;
+    input_state = IGNORE_INPUT;
+    bmwrangler.popMessage(levels[cur_level].lines,dismissed);
     earth.reset();
   }
 
@@ -467,7 +485,7 @@ var GamePlayScene = function(game, stage)
     self.click_resets_t = true;
     self.variable_quake_t = false;
     self.allow_radii = true;
-    self.prompt = "what's up?";
+    self.lines = ["what's up?"];
   }
 
   var Earth = function()
