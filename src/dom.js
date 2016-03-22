@@ -104,3 +104,57 @@ var CanvDom = function(canv)
   }
 }
 
+var BottomMessageWrangler = function()
+{
+  var self = this;
+
+  var bclicked = function()
+  {
+    cur_line++;
+    if(lines && lines.length > cur_line)
+      text_el.innerHTML  = lines[cur_line];
+    else
+      visd = -0.1;
+  }
+
+  var el = document.getElementById("bottom_display");
+  var text_el = document.getElementById("bottom_text");
+  var button_el = document.getElementById("bottom_button")
+  button_el.addEventListener('click',bclicked);
+
+  var vis = 0;
+  var visd = 0;
+
+  var c;
+  var lines;
+  var cur_line = 0;
+
+  var height = 200;
+  self.tick = function()
+  {
+    vis += visd;
+    if(vis > 1)
+    {
+      vis = 1;
+      visd = 0;
+    }
+    else if(vis < 0)
+    {
+      if(c) c();
+      c = undefined;
+      vis = 0;
+      visd = 0;
+    }
+    el.style.bottom = ((vis-1)*height)+"px";
+  }
+
+  self.popMessage = function(newlines,callback)
+  {
+    c = callback;
+    lines = newlines;
+    cur_line = 0;
+    text_el.innerHTML = lines[cur_line];
+    visd = 0.1;
+  }
+}
+

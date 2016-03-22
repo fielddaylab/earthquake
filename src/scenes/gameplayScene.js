@@ -66,6 +66,7 @@ var GamePlayScene = function(game, stage)
 
   var dom;
   var canvdom;
+  var bmwrangler;
 
   self.ready = function()
   {
@@ -237,8 +238,10 @@ var GamePlayScene = function(game, stage)
 
     dom = new Dom();
     canvdom = new CanvDom();
+    bmwrangler = new BottomMessageWrangler();
     //setTimeout(function(){ input_state = IGNORE_INPUT; dom.popDismissableMessageOnEl('hi',100,100,100,100,document.getElementById('stage_container'),dismissed); },100);
-    setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
+    //setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
+    setTimeout(function(){ input_state = IGNORE_INPUT; bmwrangler.popMessage(['hi','there','what','you'],dismissed); },100);
 
     canvdom_clicker.register(canvdom);
 
@@ -397,6 +400,8 @@ var GamePlayScene = function(game, stage)
       if(earth.t < earth.recordable_t) earth.t += play_speed;
       if(earth.t > earth.recordable_t) earth.t = earth.recordable_t;
     }
+
+    bmwrangler.tick();
   };
 
   self.draw = function()

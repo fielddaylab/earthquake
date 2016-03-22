@@ -49,9 +49,13 @@ function begin()
   document.getElementById("content").style.width = w+"px";
   document.getElementById("stage_container").style.width = w+"px";
   document.getElementById("stage_container").style.height = h+"px";
+  document.getElementById("bottom_text").style.width =
+    document.getElementById("bottom_display").offsetWidth-
+    (document.getElementById("bottom_button").offsetWidth+(20*3));
   g = new Game({width:w,height:h,container:"stage_container"});
   g.begin();
 }
+
 window.addEventListener('touchstart', function(e){ e.preventDefault() }); //prevent browser from doing anything funny
 window.addEventListener("load",begin,false);
 </script>
@@ -65,13 +69,15 @@ window.addEventListener("load",begin,false);
     <div id="content" style="display:block; margin:50px auto; position:relative;">
       <div id="stage_container" style="display:block; position:absolute; top:0px; left:0px; user-select:none;"> </div>
     </div>
-    <!--
+
     <div id="bottom_display" style="display:block; position:fixed; bottom:0px; width:100%; height:200px; background-color:#FF0000;">
-      <div id="bottom_text" style="position:relative; margin:20px;">
+      <div id="bottom_text" style="position:absolute; top:20px; left:20px; width:100px;">
         What this is test text wow HTML is terrible
       </div>
+      <div id="bottom_button" style="width:100px; height:20px; position:absolute; right:20px; top:20px; background-color:#FFFF00;">
+        Next
+      </div>
     </div>
-    -->
 
   </div>
 
