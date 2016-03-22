@@ -435,7 +435,6 @@ var GamePlayScene = function(game, stage)
       hoverer.flush();
       clicker.flush();
 
-
       //dragger.flush();
       //presser.flush();
 
@@ -1157,11 +1156,15 @@ var GamePlayScene = function(game, stage)
     }
 
     self.scrub_bar.dragging = false;
+    self.scrub_bar.dragging_quake_start = false;
     var saved_state = STATE_PLAY;
     self.scrub_bar.dragStart = function(evt)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       self.scrub_bar.dragging = true;
+      var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
+      if(levels[cur_level].variable_quake_t && Math.abs(t-self.earth.assumed_start_t) < 20)
+        self.scrub_bar.dragging_quake_start = true;
       saved_state = play_state;
       play_state = STATE_PAUSE;
       self.scrub_bar.drag(evt);
@@ -1173,10 +1176,15 @@ var GamePlayScene = function(game, stage)
       self.earth.t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
       if(self.earth.t < 0) self.earth.t = 0;
       if(self.earth.t > self.earth.recordable_t) self.earth.t = self.earth.recordable_t;
+      if(self.scrub_bar.dragging_quake_start)
+      {
+        self.earth.assumed_start_t = self.earth.t;
+      }
     }
     self.scrub_bar.dragFinish = function(evt)
     {
       self.scrub_bar.dragging = false;
+      self.scrub_bar.dragging_quake_start = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       play_state = saved_state;
     }
