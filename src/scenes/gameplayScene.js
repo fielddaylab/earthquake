@@ -118,10 +118,12 @@ var GamePlayScene = function(game, stage)
 
     //0
     l = new Level();
+    l.reset = true;
     l.location_success_range = 0;
     l.n_locations = 0;
     l.display_quake_start_range = false;
     l.p_waves = false;
+    l.quake_selection_r = 0;
     l.deselect_on_create = false;
     l.draw_mouse_quake = false;
     l.click_resets_t = false;
@@ -134,11 +136,13 @@ var GamePlayScene = function(game, stage)
     {
       //-1
       l = new Level();
+      l.reset = true;
       l.location_success_range = 50;
       l.n_locations = 3;
       l.quake_start_range = 0;
       l.display_quake_start_range = false;
       l.p_waves = false;
+      l.quake_selection_r = 0;
       l.deselect_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
@@ -151,6 +155,7 @@ var GamePlayScene = function(game, stage)
     {
       //1
       l = new Level();
+      l.reset = true;
       l.location_success_range = 50;
       l.n_locations = 1;
       l.loc_1_x = 0.5;
@@ -160,6 +165,7 @@ var GamePlayScene = function(game, stage)
       l.quake_y = 0.25;
       l.display_quake_start_range = false;
       l.p_waves = false;
+      l.quake_selection_r = 50;
       l.deselect_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
@@ -167,15 +173,36 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = true;
       l.lines = [
         "An earthquake has been reported by Square City!",
-        "Hi",
-        "Wow more text",
-        "Tdexst keeps coming",
-        "hoorraaay",
+        "All we know is that the earthquake started at midnight (<b>0:00</b>), and Square City reported feeling its tremors at <b>11:47</b>.",
+        "So we know <b>when</b> it <b>originated</b>, and <b>when</b> it was <b>experienced at a specific location</b>.",
+        "We also know at what speed earthquakes travel across the surface of the earth.",
+        "We've put all of this informaiton into an earthquake simulator. See if you can use this info to make a guess <b>where</b> you think the earthquake might have originated.",
       ];
       levels.push(l);
 
       //2
       l = new Level();
+      l.reset = false;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.quake_selection_r = 50;
+      l.deselect_on_create = true;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = true;
+      l.lines = [
+        "An earthquake has been reported by Square City!",
+        "All we know is that the earthquake started at midnight (<b>0:00</b>), and Square City reported feeling its tremors at <b>11:47</b>.",
+        "So we know <b>when</b> it <b>originated</b>, and <b>when</b> it was <b>experienced at a specific place</b>.",
+        "We also know at what speed earthquakes travel across the surface of the earth.",
+        "We've put all of this informaiton into an earthquake simulator. See if you can use this info to make a guess <b>where</b> you think the earthquake might have originated.",
+      ];
+      levels.push(l);
+
+      //3
+      l = new Level();
+      l.reset = true;
       l.location_success_range = 50;
       l.n_locations = 2;
       l.loc_1_x = 0.5;
@@ -187,6 +214,7 @@ var GamePlayScene = function(game, stage)
       l.quake_y = 0.25;
       l.display_quake_start_range = false;
       l.p_waves = false;
+      l.quake_selection_r = 0;
       l.deselect_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
@@ -195,8 +223,9 @@ var GamePlayScene = function(game, stage)
       l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
       levels.push(l);
 
-      //3
+      //4
       l = new Level();
+      l.reset = true;
       l.location_success_range = 50;
       l.n_locations = 3;
       l.loc_1_x = 0.5;
@@ -210,6 +239,7 @@ var GamePlayScene = function(game, stage)
       l.quake_y = 0.25;
       l.display_quake_start_range = false;
       l.p_waves = false;
+      l.quake_selection_r = 0;
       l.deselect_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
@@ -280,7 +310,8 @@ var GamePlayScene = function(game, stage)
     cur_level = (cur_level+1)%levels.length;
     input_state = IGNORE_INPUT;
     bmwrangler.popMessage(levels[cur_level].lines,dismissed);
-    earth.reset();
+    if(levels[cur_level].reset)
+      earth.reset();
   }
 
   self.manuallyFlushQueues = function()
@@ -474,6 +505,7 @@ var GamePlayScene = function(game, stage)
   var Level = function()
   {
     var self = this;
+    self.reset = true;
     self.location_success_range = 10;
     self.n_locations = 3;
     self.loc_1_x = 0;
@@ -489,6 +521,7 @@ var GamePlayScene = function(game, stage)
     self.quake_y = 0;
     self.display_quake_start_range = true;
     self.p_waves = true;
+    self.quake_selection_r = 0;
     self.deselect_on_create = true;
     self.draw_mouse_quake = false;
     self.click_resets_t = true;
@@ -612,6 +645,7 @@ var GamePlayScene = function(game, stage)
     self.reset = function()
     {
       self.t = 0;
+      self.assumed_start_t = 0;
 
       self.clearLocations();
       self.genLocations();
@@ -678,7 +712,11 @@ var GamePlayScene = function(game, stage)
       {
         for(var i = 0; i < self.quakes.length; i++)
         {
-          if(ptWithinObj(self.dragging_x, self.dragging_y, self.quakes[i]))
+          //var within = ptWithinObj(self.dragging_x, self.dragging_y, self.quakes[i]);
+          var obj = self.quakes[i];
+          var r = levels[cur_level].quake_selection_r;
+          var within = ptWithin(self.dragging_x, self.dragging_y, obj.x-r/2, obj.y-r/2, obj.w+r, obj.h+r); //expanded
+          if(within)
           {
             self.quakes[i].selected = !self.quakes[i].selected;
             self.dragging_x = -1;
@@ -698,8 +736,7 @@ var GamePlayScene = function(game, stage)
         }
 
         var q;
-        if(levels[cur_level].variable_quake_t) q = new Quake(self.dragging_wx,self.dragging_wy,self.t,self.ghost_quake);
-        else                                   q = new Quake(self.dragging_wx,self.dragging_wy,     0,self.ghost_quake);
+        q = new Quake(self.dragging_wx,self.dragging_wy,self.assumed_start_t,self.ghost_quake);
         q.eval_loc_ts(self.locations);
         if(levels[cur_level].deselect_on_create) self.deselectQuakes();
         q.selected = true;
@@ -1240,6 +1277,9 @@ var GamePlayScene = function(game, stage)
       }
       dc.context.fillStyle = "#FFFFFF";
 
+      self.drawAssumedStartBlip();
+      dc.context.textAlign = "center";
+
       self.drawBlip(self.earth.t,0,0,0);
       dc.context.fillStyle = "#000000";
       self.labelBlip(self.earth.t,timeForT(self.earth.t));
@@ -1256,8 +1296,6 @@ var GamePlayScene = function(game, stage)
       for(var i = 0; i < self.earth.quakes.length; i++)
         if(self.earth.quakes[i].selected || self.earth.quakes[i] == hov_quak) self.drawQuakeBlips(self.earth.quakes[i],false)
       dc.context.globalAlpha=1;
-
-      self.drawAssumedStartBlip();
 
       //ui
       dc.context.fillStyle = "#000000";
