@@ -5,6 +5,9 @@ var GamePlayScene = function(game, stage)
   ENUM = 0;
   var STATE_PLAY  = ENUM; ENUM++;
   var STATE_PAUSE = ENUM; ENUM++;
+  var play_state;
+  var play_speed;
+
 
   ENUM = 0;
   var IGNORE_INPUT = ENUM; ENUM++;
@@ -14,7 +17,11 @@ var GamePlayScene = function(game, stage)
   ENUM = 0;
   var SPC_NONE = ENUM; ENUM++;
   var SPC_CLICK_TO_GUESS = ENUM; ENUM++;
-  var SPC_WAIT_RESULT = ENUM;
+  var SPC_WAIT_RESULT = ENUM; ENUM++;
+  var SPC_RESULT_WRONG_TRY_CORRECT = ENUM; ENUM++;
+  var SPC_RESULT_CORRECT_TRY_2 = ENUM; ENUM++;
+  var SPC_RESULT_CORRECT_TRY_5 = ENUM; ENUM++;
+  var SPC_XXX = ENUM; ENUM++;
   var spc_state;
 
   var self = this;
@@ -41,9 +48,6 @@ var GamePlayScene = function(game, stage)
 
   var listener;
   var fake_mouse;
-
-  var play_state;
-  var play_speed;
 
   var levels;
   var cur_level;
@@ -154,7 +158,7 @@ var GamePlayScene = function(game, stage)
     }
     else
     {
-      //1
+      //intro - guess loc
       l = new Level();
       l.reset = true;
       l.location_success_range = 50;
@@ -167,11 +171,11 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 50;
-      l.deselect_on_create = true;
+      l.deselect_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
-      l.allow_radii = true;
+      l.allow_radii = false;
       l.lines = [
         "An earthquake has been reported by Square City!",
         "All we know is that the earthquake started at midnight (<b>0:00</b>), and Square City reported feeling its tremors at <b>11:47</b>.",
@@ -182,9 +186,66 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() { spc_state = SPC_CLICK_TO_GUESS; }
       levels.push(l);
 
-      //2
+      //was incorrect - find correct
       l = new Level();
       l.reset = false;
+      l.location_success_range = 50;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.quake_selection_r = 50;
+      l.deselect_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.lines = [
+        "It looks like we can rule out that guess as a <b>plausable origin</b> for the quake. Had the quake originated there, square city would have reported feeling its tremors at a different time.",
+        "Keep guessing to find some plausable originating locations, using only the information of <b>when</b> the quake originated, and <b>when it was experienced</b>.",
+        "(Don't be afraid to make guesses all over the map!)",
+      ];
+      levels.push(l);
+
+      //was correct - find 2
+      l = new Level();
+      l.reset = false;
+      l.location_success_range = 50;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.quake_selection_r = 50;
+      l.deselect_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.lines = [
+        "Wow! Good guess! Your guessed location is a <b>plausable origin</b> of the quake! Had the quake originated there, square city would have reported feeling its tremors just around the time it actually did!",
+        "Try to find some other plausable originating locations, using only the information of <b>when</b> the quake originated, and <b>when it was experienced</b>.",
+        "(Don't be afraid to make guesses all over the map!)",
+      ];
+      levels.push(l);
+
+      //found 2 corrects - find 5
+      l = new Level();
+      l.reset = false;
+      l.location_success_range = 50;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.quake_selection_r = 50;
+      l.deselect_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.lines = [
+        "So you've found a couple <b>plausibly correct</b> origins- that is, we've made some guesses that <b>don't conflict with what we know</b>.",
+        "Make a few more guesses, and try to look for a pattern. What does the space look like where the quake might have originated?",
+      ];
+      levels.push(l);
+
+      //found 5 corrects
+      l = new Level();
+      l.reset = false;
+      l.location_success_range = 50;
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 50;
@@ -192,17 +253,14 @@ var GamePlayScene = function(game, stage)
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
-      l.allow_radii = true;
+      l.allow_radii = false;
       l.lines = [
-        "An earthquake has been reported by Square City!",
-        "All we know is that the earthquake started at midnight (<b>0:00</b>), and Square City reported feeling its tremors at <b>11:47</b>.",
-        "So we know <b>when</b> it <b>originated</b>, and <b>when</b> it was <b>experienced at a specific place</b>.",
-        "We also know at what speed earthquakes travel across the surface of the earth.",
-        "We've put all of this informaiton into an earthquake simulator. See if you can use this info to make a guess <b>where</b> you think the earthquake might have originated.",
+        "Do you see the pattern starting to emerge? There are clearly areas we can rule out for the origin of the quake, and areas we cannot.",
+        "Keep guessing until the pattern is obvious.",
       ];
       levels.push(l);
 
-      //3
+      //
       l = new Level();
       l.reset = true;
       l.location_success_range = 50;
@@ -225,7 +283,7 @@ var GamePlayScene = function(game, stage)
       l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
       levels.push(l);
 
-      //4
+      //
       l = new Level();
       l.reset = true;
       l.location_success_range = 50;
@@ -272,10 +330,10 @@ var GamePlayScene = function(game, stage)
     speed_4x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 4; else if(play_speed == 4) speed_4x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_8x_button.on = false; });
     speed_8x_button = new ToggleBox(dc.width-30, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 8; else if(play_speed == 8) speed_8x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_4x_button.on = false; });
 
-    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; earth.reset(); play_state = STATE_PAUSE;});
-    del_all_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; earth.deleteQuakes(); play_state = STATE_PAUSE;});
-    del_sel_quakes_button = new ButtonBox(dc.width-90,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
-    desel_quakes_button = new ButtonBox(dc.width-120,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; earth.deselectQuakes();});
+    reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ if(spc_state == SPC_WAIT_RESULT) return; ui_lock = self; earth.reset(); play_state = STATE_PAUSE;});
+    del_all_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ if(spc_state == SPC_WAIT_RESULT) return; ui_lock = self; earth.deleteQuakes(); play_state = STATE_PAUSE;});
+    del_sel_quakes_button = new ButtonBox(dc.width-90,10,20,20,function(){ if(spc_state == SPC_WAIT_RESULT) return; ui_lock = self; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
+    desel_quakes_button = new ButtonBox(dc.width-120,10,20,20,function(){ if(spc_state == SPC_WAIT_RESULT) return; ui_lock = self; earth.deselectQuakes();});
 
     clicker.register(speed_1x_button);
     clicker.register(speed_2x_button);
@@ -415,6 +473,68 @@ var GamePlayScene = function(game, stage)
       if(earth.t > earth.recordable_t) earth.t = earth.recordable_t;
     }
 
+    switch(spc_state)
+    {
+      case SPC_NONE: break;
+      case SPC_CLICK_TO_GUESS: break;
+      case SPC_WAIT_RESULT:
+        if(!earth.quakes.length) spc_state = SPC_CLICK_TO_GUESS;
+        else
+        {
+          if(earth.t > earth.quakes[0].location_s_ts[0])
+          {
+            if(!earth.quakes[0].location_s_cs[0])
+            {
+              spc_state = SPC_RESULT_WRONG_TRY_CORRECT;
+              levels[cur_level].complete = true;
+              play_state = STATE_PAUSE;
+              self.nextLevel();
+            }
+            else
+            {
+              spc_state = SPC_RESULT_CORRECT_TRY_2;
+              levels[cur_level].complete = true;
+              cur_level++; //skip a level
+              play_state = STATE_PAUSE;
+              self.nextLevel();
+            }
+          }
+        }
+        break;
+      case SPC_RESULT_WRONG_TRY_CORRECT:
+      case SPC_RESULT_CORRECT_TRY_2:
+      case SPC_RESULT_CORRECT_TRY_5:
+        var n_correct = 0;
+        var q;
+        for(var i = 0; i < earth.quakes.length; i++)
+        {
+          var q = earth.quakes[i];
+          if(earth.t > q.location_s_ts[0] && q.location_s_cs[0]) n_correct++;
+        }
+        if(spc_state == SPC_RESULT_WRONG_TRY_CORRECT && n_correct >= 1)
+        {
+          spc_state = SPC_RESULT_CORRECT_TRY_2;
+          levels[cur_level].complete = true;
+          play_state = STATE_PAUSE;
+          self.nextLevel();
+        }
+        if(spc_state == SPC_RESULT_CORRECT_TRY_2 && n_correct >= 2)
+        {
+          spc_state = SPC_RESULT_CORRECT_TRY_5;
+          levels[cur_level].complete = true;
+          play_state = STATE_PAUSE;
+          self.nextLevel();
+        }
+        else if(spc_state == SPC_RESULT_CORRECT_TRY_5 && n_correct >= 5)
+        {
+          spc_state = SPC_NONE;
+          levels[cur_level].complete = true;
+          play_state = STATE_PAUSE;
+          self.nextLevel();
+        }
+        break;
+    }
+
     bmwrangler.tick();
   };
 
@@ -454,12 +574,24 @@ var GamePlayScene = function(game, stage)
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect",b.x+b.w/2,b.y+b.h-2);
 
     if(input_state != IGNORE_INPUT) fake_mouse.draw();
+    dc.context.fillStyle = "#000000";
     switch(spc_state)
     {
       case SPC_NONE:break;
       case SPC_CLICK_TO_GUESS:
-        dc.context.fillStyle = "#000000";
         dc.context.fillText("Click to Guess",100,100);
+        break;
+      case SPC_WAIT_RESULT:
+        dc.context.fillText("Wait for it...",100,100);
+        break;
+      case SPC_RESULT_WRONG_TRY_CORRECT:
+        dc.context.fillText("Try to find a plausable quake location",100,100);
+        break;
+      case SPC_RESULT_CORRECT_TRY_2:
+        dc.context.fillText("Try to find another plausable quake origin",100,100);
+        break;
+      case SPC_RESULT_CORRECT_TRY_5:
+        dc.context.fillText("Keep finding plausible origins until a pattern emerges",100,100);
         break;
     }
     canvdom.draw(dc);
@@ -473,6 +605,7 @@ var GamePlayScene = function(game, stage)
   {
     var self = this;
     self.reset = true;
+    self.complete = false;
     self.location_success_range = 10;
     self.n_locations = 3;
     self.loc_1_x = 0;
@@ -630,7 +763,6 @@ var GamePlayScene = function(game, stage)
     self.hovering_wy = 0;
     self.hover = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
       self.hovering = true;
       self.hovering_x = evt.doX;
       self.hovering_y = evt.doY;
@@ -651,13 +783,13 @@ var GamePlayScene = function(game, stage)
     self.drag_orig_wy = -1;
     self.dragStart = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
+      if(spc_state == SPC_WAIT_RESULT) return;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       self.drag(evt);
     }
     self.drag = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
+      if(spc_state == SPC_WAIT_RESULT) return;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       self.dragging = true;
       self.dragging_x = evt.doX;
@@ -669,9 +801,15 @@ var GamePlayScene = function(game, stage)
         self.drag_orig_wx = self.dragging_wx;
         self.drag_orig_wy = self.dragging_wy;
       }
+      if(spc_state == SPC_CLICK_TO_GUESS)
+      {
+        self.dragFinish();
+        spc_state = SPC_WAIT_RESULT;
+      }
     }
     self.dragFinish = function()
     {
+      if(spc_state == SPC_WAIT_RESULT) return;
       self.dragging = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
 
@@ -971,7 +1109,6 @@ var GamePlayScene = function(game, stage)
     self.hovering = false;
     self.hover = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
       self.hovering = true;
       hov_quak = self;
     }
@@ -1008,7 +1145,6 @@ var GamePlayScene = function(game, stage)
     self.hovering = false;
     self.hover = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
       self.hovering = true;
       hov_loc = self;
       hov_loc_i = self.i;
@@ -1033,7 +1169,6 @@ var GamePlayScene = function(game, stage)
     self.dragging = false;
     self.dragStart = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       if(self.move_locs)
       {
@@ -1044,7 +1179,6 @@ var GamePlayScene = function(game, stage)
     }
     self.drag = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       self.dragging = true;
       hov_loc = self;
@@ -1096,8 +1230,8 @@ var GamePlayScene = function(game, stage)
 
     self.earth = earth;
 
-    self.play_button  = new ButtonBox(self.h*0,self.y,self.h,self.h,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY;});
-    self.pause_button = new ButtonBox(self.h*1,self.y,self.h,self.h,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; play_state = STATE_PAUSE;});
+    self.play_button  = new ButtonBox(self.h*0,self.y,self.h,self.h,function(){ if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return; ui_lock = self; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY;});
+    self.pause_button = new ButtonBox(self.h*1,self.y,self.h,self.h,function(){ if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return; ui_lock = self; play_state = STATE_PAUSE;});
     clicker.register(self.play_button);
     clicker.register(self.pause_button);
     self.scrub_bar = new Box(self.h*2+5,self.y,self.w-(self.h*2+5),self.h);
@@ -1108,7 +1242,6 @@ var GamePlayScene = function(game, stage)
     self.hovering = false;
     self.hover = function()
     {
-      if(spc_state != SPC_NONE) return;
       self.hovering = true;
     }
     self.unhover = function()
@@ -1121,7 +1254,6 @@ var GamePlayScene = function(game, stage)
     self.scrub_bar.hovering_t;
     self.scrub_bar.hover = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
       self.scrub_bar.hovering = true;
       self.scrub_bar.hovering_x = evt.doX;
       self.scrub_bar.hovering_t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
@@ -1138,7 +1270,7 @@ var GamePlayScene = function(game, stage)
     var saved_state = STATE_PAUSE;
     self.scrub_bar.dragStart = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
+      if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       self.scrub_bar.dragging = true;
       var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
@@ -1150,7 +1282,7 @@ var GamePlayScene = function(game, stage)
     }
     self.scrub_bar.drag = function(evt)
     {
-      if(spc_state != SPC_NONE) return;
+      if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       if(!self.scrub_bar.dragging) return;
       self.earth.t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
@@ -1166,6 +1298,7 @@ var GamePlayScene = function(game, stage)
       self.scrub_bar.dragging = false;
       self.scrub_bar.dragging_quake_start = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
+      if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return;
       play_state = saved_state;
     }
 
