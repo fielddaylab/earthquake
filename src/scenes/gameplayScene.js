@@ -34,9 +34,8 @@ var GamePlayScene = function(game, stage)
   var hoverer;
   var dragger;
   var clicker;
-  var presser;
+
   var drag_qs;
-  var press_qs;
   var canvdom_clicker;
   var ui_lock;
 
@@ -77,7 +76,6 @@ var GamePlayScene = function(game, stage)
     hoverer = new PersistentHoverer({source:stage.dispCanv.canvas});
     dragger = new Dragger({source:stage.dispCanv.canvas});
     clicker = new Clicker({source:stage.dispCanv.canvas});
-    presser = new Presser({source:stage.dispCanv.canvas});
     canvdom_clicker = new Clicker({source:stage.dispCanv.canvas});
     ui_lock = undefined;
 
@@ -85,7 +83,6 @@ var GamePlayScene = function(game, stage)
     hoverer.register(listener); listener.hoverer = hoverer;
     dragger.register(listener); listener.dragger = dragger;
     clicker.register(listener); listener.clicker = clicker;
-    presser.register(listener); listener.presser = presser;
 
     var Mouse = function()
     {
@@ -99,8 +96,7 @@ var GamePlayScene = function(game, stage)
       self.sy = 0;
 
       self.hover = function(evt)
-      { 
-        if(spc_state != SPC_NONE) return;
+      {
         self.sx = evt.doX;
         self.sy = evt.doY;
       }
@@ -183,7 +179,7 @@ var GamePlayScene = function(game, stage)
         "We also know at what speed earthquakes travel across the surface of the earth.",
         "We've put all of this informaiton into an earthquake simulator. See if you can use this info to make a guess <b>where</b> you think the earthquake might have originated.",
       ];
-      l.postPromptEvent = function() { spc_state = SPC_CLICK_TO_GUESS; }
+      l.postPromptEvt = function() { spc_state = SPC_CLICK_TO_GUESS; }
       levels.push(l);
 
       //2
@@ -271,10 +267,10 @@ var GamePlayScene = function(game, stage)
     scrubber = new Scrubber(earth);
     hoverer.register(scrubber);
 
-    speed_1x_button = new ToggleBox(dc.width-120,dc.height-60,20,20,true, function(on) { if(spc_state != SPC_NONE) return; ui_lock = self; if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
-    speed_2x_button = new ToggleBox(dc.width-90, dc.height-60,20,20,false,function(on) { if(spc_state != SPC_NONE) return; ui_lock = self; if(on) play_speed = 2; else if(play_speed == 2) speed_2x_button.on = true; speed_1x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
-    speed_4x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,false,function(on) { if(spc_state != SPC_NONE) return; ui_lock = self; if(on) play_speed = 4; else if(play_speed == 4) speed_4x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_8x_button.on = false; });
-    speed_8x_button = new ToggleBox(dc.width-30, dc.height-60,20,20,false,function(on) { if(spc_state != SPC_NONE) return; ui_lock = self; if(on) play_speed = 8; else if(play_speed == 8) speed_8x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_4x_button.on = false; });
+    speed_1x_button = new ToggleBox(dc.width-120,dc.height-60,20,20,true, function(on) { ui_lock = self; if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
+    speed_2x_button = new ToggleBox(dc.width-90, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 2; else if(play_speed == 2) speed_2x_button.on = true; speed_1x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
+    speed_4x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 4; else if(play_speed == 4) speed_4x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_8x_button.on = false; });
+    speed_8x_button = new ToggleBox(dc.width-30, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 8; else if(play_speed == 8) speed_8x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_4x_button.on = false; });
 
     reset_button = new ButtonBox(dc.width-30,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; earth.reset(); play_state = STATE_PAUSE;});
     del_all_quakes_button = new ButtonBox(dc.width-60,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; earth.deleteQuakes(); play_state = STATE_PAUSE;});
@@ -383,46 +379,6 @@ var GamePlayScene = function(game, stage)
       }
     }
 
-    //listener takes -1 priority
-    for(var i = 0; i < press_qs.callbackQueue.length; i++)
-    {
-      if(
-        press_qs.callbackQueue[i] == listener.press ||
-        press_qs.callbackQueue[i] == listener.unPress
-      )
-      {
-        press_qs.callbackQueue[i](press_qs.evtQueue[i]);
-        press_qs.callbackQueue.splice(i,1);
-        press_qs.evtQueue.splice(i,1);
-        i--;
-      }
-    }
-
-    //now presser
-    //non-earth (quakes) takes first
-    for(var i = 0; i < press_qs.callbackQueue.length; i++)
-    {
-      if(
-        press_qs.callbackQueue[i] != earth.press &&
-        press_qs.callbackQueue[i] != earth.unpress
-      )
-      {
-        press_qs.callbackQueue[i](press_qs.evtQueue[i]);
-        return;
-      }
-    }
-    //earth takes second
-    for(var i = 0; i < press_qs.callbackQueue.length; i++)
-    {
-      if(
-        press_qs.callbackQueue[i] == earth.press ||
-        press_qs.callbackQueue[i] == earth.unpress
-      )
-      {
-        press_qs.callbackQueue[i](press_qs.evtQueue[i]);
-        return;
-      }
-    }
   }
   self.tick = function()
   {
@@ -434,7 +390,6 @@ var GamePlayScene = function(game, stage)
       hoverer.ignore();
       clicker.ignore();
       dragger.ignore();
-      presser.ignore();
     }
     else
     {
@@ -444,15 +399,12 @@ var GamePlayScene = function(game, stage)
       clicker.flush();
 
       //dragger.flush();
-      //presser.flush();
 
       drag_qs = dragger.requestManualFlush();
-      press_qs = presser.requestManualFlush();
 
       self.manuallyFlushQueues();
 
       dragger.manualFlush();
-      presser.manualFlush();
     }
 
     ui_lock = undefined;
@@ -1183,7 +1135,7 @@ var GamePlayScene = function(game, stage)
 
     self.scrub_bar.dragging = false;
     self.scrub_bar.dragging_quake_start = false;
-    var saved_state = STATE_PLAY;
+    var saved_state = STATE_PAUSE;
     self.scrub_bar.dragStart = function(evt)
     {
       if(spc_state != SPC_NONE) return;
