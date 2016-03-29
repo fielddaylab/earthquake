@@ -167,6 +167,7 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = true;
+      l.ghost_countdown = true;
       l.lines = ["test this!"];
       levels.push(l);
     }
@@ -191,6 +192,7 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = false;
+      l.ghost_countdown = true;
       l.lines = [
         "An earthquake has been reported by Square City!",
         "All we know is that the earthquake started at midnight (<b>0:00</b>), and Square City reported feeling its tremors at <b>11:47</b>.",
@@ -649,6 +651,7 @@ var GamePlayScene = function(game, stage)
     self.click_resets_t = true;
     self.variable_quake_t = false;
     self.allow_radii = true;
+    self.ghost_countdown = false;
     self.lines = ["what's up?"];
     self.postPromptEvt = function(){};
   }
@@ -691,25 +694,25 @@ var GamePlayScene = function(game, stage)
              if(i == 0)
         {
           if(levels[cur_level].loc_1_x !== undefined) l = new Location(levels[cur_level].loc_1_x,levels[cur_level].loc_1_y,i);
-          else                                        l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = square;
         }
         else if(i == 1)
         {
           if(levels[cur_level].loc_2_x !== undefined) l = new Location(levels[cur_level].loc_2_x,levels[cur_level].loc_2_y,i);
-          else                                        l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = circle;
         }
         else if(i == 2)
         {
           if(levels[cur_level].loc_3_x !== undefined) l = new Location(levels[cur_level].loc_3_x,levels[cur_level].loc_3_y,i);
-          else                                        l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = triangle;
         }
         else if(i == 3)
         {
           if(levels[cur_level].loc_4_x !== undefined) l = new Location(levels[cur_level].loc_4_x,levels[cur_level].loc_4_y,i);
-          else                                        l = new Location(randR(0.2,0.8),randR(0.2,0.8),i);
+          else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = triangle;
         }
         hoverer.register(l);
@@ -765,7 +768,7 @@ var GamePlayScene = function(game, stage)
       while(!accomplished)
       {
         if(levels[cur_level].quake_x !== undefined) self.ghost_quake = new Quake(levels[cur_level].quake_x, levels[cur_level].quake_y, Math.round(Math.random()*levels[cur_level].quake_start_range));
-        else                                        self.ghost_quake = new Quake(           randR(0.2,0.8),            randR(0.2,0.8), Math.round(Math.random()*levels[cur_level].quake_start_range));
+        else                                        self.ghost_quake = new Quake(          randR(-0.3,0.3),           randR(-0.3,0.3), Math.round(Math.random()*levels[cur_level].quake_start_range));
         accomplished = true;
         for(var i = 0; accomplished && i < self.locations.length; i++)
           accomplished = (wdist(self.locations[i],self.ghost_quake) > min_dist);
@@ -1081,6 +1084,47 @@ var GamePlayScene = function(game, stage)
       {
         self.mouse_quake.eval_pos(self.hovering_wx,self.hovering_wy);
         self.drawQuake(self.mouse_quake);
+      }
+      if(levels[cur_level].ghost_countdown)
+      {
+        var l;
+        var g = self.ghost_quake;
+        dc.context.strokeStyle = "#000000";
+        for(var i = 0; i < self.locations.length; i++)
+        {
+          l = self.locations[i];
+          var t_til = g.location_s_ts[i]-self.t;
+          if(t_til > 0 && t_til < 200)
+          {
+            ellipse.wx = l.wx;
+            ellipse.wy = l.wy;
+            ellipse.ww = t_til*quake_s_rate;
+            ellipse.wh = t_til*quake_s_rate;
+            screenSpace(cam,dc,ellipse);
+            dc.context.globalAlpha=1-(t_til/200);
+            dc.context.beginPath();
+            dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+            dc.context.stroke();
+          }
+
+          if(levels[cur_level].p_waves)
+          {
+            var t_til = g.location_p_ts[i]-self.t;
+            if(t_til > 0 && t_til < 200)
+            {
+              ellipse.wx = l.wx;
+              ellipse.wy = l.wy;
+              ellipse.ww = t_til*quake_p_rate;
+              ellipse.wh = t_til*quake_p_rate;
+              screenSpace(cam,dc,ellipse);
+              dc.context.globalAlpha=1-(t_til/200);
+              dc.context.beginPath();
+              dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+              dc.context.stroke();
+            }
+          }
+          dc.context.globalAlpha=1;
+        }
       }
     }
   }
