@@ -195,7 +195,8 @@ var GamePlayScene = function(game, stage)
       l.ghost_countdown = true;
       l.lines = [
         "An earthquake has been reported by Square City!",
-        "All we know is that the earthquake started at midnight (<b>0:00</b>), and Square City reported feeling its tremors at <b>11:47</b>.",
+        "All we know is that the earthquake started at midnight (<b>0:00</b>),",
+        "and Square City reported feeling its tremors at <b>11:47</b>.",
         "So we know <b>when</b> it <b>originated</b>, and <b>when</b> it was <b>experienced at a specific location</b>.",
         "We also know at what speed earthquakes travel across the surface of the earth.",
         "We've put all of this informaiton into an earthquake simulator. See if you can use this info to make a guess <b>where</b> you think the earthquake might have originated.",
@@ -216,9 +217,12 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = false;
+      l.ghost_countdown = true;
       l.lines = [
-        "It looks like we can rule out that guess as a <b>plausable origin</b> for the quake. Had the quake originated there, square city would have reported feeling its tremors at a different time.",
-        "Keep guessing to find some plausable originating locations, using only the information of <b>when</b> the quake originated, and <b>when it was experienced</b>.",
+        "Looks like we can rule that location out- that is <b>not</b> the originating location of the earthquake.",
+        "Had the quake originated there, square city would have reported feeling its tremors at a different time.",
+        "Keep guessing until we find a location that <b>doesn't conflict</b> with any of the information we know.",
+        "The only information we have is <b>when</b> the earthquake originated, and <b>when it was experienced</b>.",
         "(Don't be afraid to make guesses all over the map!)",
       ];
       levels.push(l);
@@ -236,8 +240,13 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = false;
+      l.ghost_countdown = true;
       l.lines = [
-        "Wow! Good guess! Your guessed location is a <b>plausable origin</b> of the quake! Had the quake originated there, square city would have reported feeling its tremors just around the time it actually did!",
+        "Wow! Good guess!",
+        "We <b>can't</b> difinitively say that's where the earthquake originated, but we <b>can't rule it out</b>-",
+        "That is, your guessed location <b>does not conflict</b> with any information we know.",
+        "Had the quake originated there, square city would have reported feeling its tremors just around the time it actually did!",
+        "But there may be other locations we could try that wouldn't conflict with our known information, either...",
         "Try to find some other plausable originating locations, using only the information of <b>when</b> the quake originated, and <b>when it was experienced</b>.",
         "(Don't be afraid to make guesses all over the map!)",
       ];
@@ -256,14 +265,16 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = false;
+      l.ghost_countdown = true;
       l.lines = [
-        "So you've found a couple <b>plausibly correct</b> origins- that is, we've made some guesses that <b>don't conflict with what we know</b>.",
+        "So you've found a couple locations that <b>cannot be ruled out</b> as origins- that is, we've made some guesses that <b>don't conflict with what we know</b>.",
         "Make a few more guesses, and try to look for a pattern. What does the space look like where the quake might have originated?",
       ];
       levels.push(l);
 
-      //found 5 corrects
+      //found 5 corrects - find pattern
       l = new Level();
+      l.allow_skip_prompt = "I think I've got it";
       l.reset = false;
       l.location_success_range = 50;
       l.display_quake_start_range = false;
@@ -275,9 +286,31 @@ var GamePlayScene = function(game, stage)
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = false;
+      l.ghost_countdown = true;
       l.lines = [
         "Do you see the pattern starting to emerge? There are clearly areas we can rule out for the origin of the quake, and areas we cannot.",
         "Keep guessing until the pattern is obvious.",
+      ];
+      levels.push(l);
+
+      //said pattern found - drag to it
+      l = new Level();
+      l.allow_skip_prompt = "Got";
+      l.reset = false;
+      l.location_success_range = 50;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.quake_selection_r = 50;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = true;
+      l.ghost_countdown = true;
+      l.lines = [
+        "So you think you see the pattern?",
+        "Click and drag out from square city to highlight the area that <b>cannot be ruled out</b> as a possible originating location of the earthquake",
       ];
       levels.push(l);
 
@@ -343,7 +376,7 @@ var GamePlayScene = function(game, stage)
       record_button = new ButtonBox(40,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; if(listener.playing) listener.stop(); else if(listener.recording) listener.play(); else listener.record(); });
       clicker.register(record_button);
     }
-    next_button = new ButtonBox(10,10,20,20,function(){ if(spc_state != SPC_NONE) return; ui_lock = self; self.nextLevel(); });
+    next_button = new ButtonBox(10,10,20,20,function(){ if(spc_state != SPC_NONE || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
     scrubber = new Scrubber(earth);
     hoverer.register(scrubber);
@@ -569,7 +602,13 @@ var GamePlayScene = function(game, stage)
     earth.draw();
 
     if(record) record_button.draw(dc);
-    next_button.draw(dc);
+    if(levels[cur_level].allow_skip_prompt)
+    {
+      next_button.draw(dc);
+      dc.context.fillStyle = "#000000";
+      dc.context.textAlign = "left";
+      dc.context.fillText(levels[cur_level].allow_skip_prompt,next_button.x,next_button.y+10);
+    }
     scrubber.draw();
 
     dc.context.fillStyle = "#000000";
@@ -598,6 +637,7 @@ var GamePlayScene = function(game, stage)
 
     if(input_state != IGNORE_INPUT) fake_mouse.draw();
     dc.context.fillStyle = "#000000";
+    dc.context.textAlign = "left";
     switch(spc_state)
     {
       case SPC_NONE:break;
@@ -627,6 +667,7 @@ var GamePlayScene = function(game, stage)
   var Level = function()
   {
     var self = this;
+    self.allow_skip_prompt = false;
     self.reset = true;
     self.complete = false;
     self.location_success_range = 10;
@@ -1004,7 +1045,7 @@ var GamePlayScene = function(game, stage)
           var y = l.wy-l.rad_obj.wy;
           var d = Math.sqrt(x*x+y*y);
 
-          dc.context.lineWidth = dc.width*(quake_p_rate*levels[cur_level].location_success_range);
+          dc.context.lineWidth = dc.height*(quake_p_rate*levels[cur_level].location_success_range); //BAD- ONLY WORKS WHEN cam.wh == 1;
           ellipse.wx = l.wx;
           ellipse.wy = l.wy;
           ellipse.ww = l.rad;
