@@ -814,7 +814,6 @@ var GamePlayScene = function(game, stage)
     self.drag_origin_obj.wy = -1;
     self.dragStart = function(evt)
     {
-      console.log('wut');
       if(spc_state == SPC_WAIT_RESULT) return;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       self.drag(evt);
@@ -829,6 +828,8 @@ var GamePlayScene = function(game, stage)
       worldSpace(cam,dc,self.drag_obj);
       if(self.drag_origin_obj.wx == -1)
       {
+        self.drag_origin_obj.x = self.drag_obj.x;
+        self.drag_origin_obj.y = self.drag_obj.y;
         self.drag_origin_obj.wx = self.drag_obj.wx;
         self.drag_origin_obj.wy = self.drag_obj.wy;
       }
@@ -1048,17 +1049,20 @@ var GamePlayScene = function(game, stage)
       dc.context.globalAlpha=1;
 
       //draw selection box
+      var dragSel;
       if(self.dragging)
       {
-        var min_x = self.drag_orig_wx;
-        var min_y = self.drag_orig_wy;
-        if(self.dragging_wx < min_x) min_x = self.dragging_wx;
-        if(self.dragging_wy < min_y) min_y = self.dragging_wy;
-        var w = Math.abs(self.drag_orig_wx-self.dragging_wx);
-        var h = Math.abs(self.drag_orig_wy-self.dragging_wy);
+        dragSel = new WO();
+        var min_x = self.drag_origin_obj.x;
+        var min_y = self.drag_origin_obj.y;
+        if(self.drag_obj.x < min_x) min_x = self.drag_obj.x;
+        if(self.drag_obj.y < min_y) min_y = self.drag_obj.y;
+        var w = Math.abs(self.drag_origin_obj.x-self.drag_obj.x);
+        var h = Math.abs(self.drag_origin_obj.y-self.drag_obj.y);
+
         dc.context.fillStyle = "#000000";
         dc.context.globalAlpha=0.1;
-        dc.context.fillRect(min_x*dc.width,min_y*dc.height,w*dc.width,h*dc.height);
+        dc.context.fillRect(min_x,min_y,w,h);
         dc.context.globalAlpha=1;
       }
 
