@@ -129,7 +129,8 @@ var GamePlayScene = function(game, stage)
     l.display_quake_start_range = false;
     l.p_waves = false;
     l.quake_selection_r = 0;
-    l.deselect_on_create = false;
+    l.deselect_all_on_create = false;
+    l.deselect_known_wrongs_on_create = false;
     l.draw_mouse_quake = false;
     l.click_resets_t = false;
     l.variable_quake_t = false;
@@ -148,7 +149,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 0;
-      l.deselect_on_create = true;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -171,7 +173,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 50;
-      l.deselect_on_create = false;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -193,7 +196,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 50;
-      l.deselect_on_create = false;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -212,7 +216,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 50;
-      l.deselect_on_create = false;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -231,7 +236,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 50;
-      l.deselect_on_create = false;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = true;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -249,7 +255,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 50;
-      l.deselect_on_create = true;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -275,7 +282,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 0;
-      l.deselect_on_create = true;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -300,7 +308,8 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 0;
-      l.deselect_on_create = true;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
@@ -622,7 +631,8 @@ var GamePlayScene = function(game, stage)
     self.display_quake_start_range = true;
     self.p_waves = true;
     self.quake_selection_r = 0;
-    self.deselect_on_create = true;
+    self.deselect_all_on_create = true;
+    self.deselect_known_wrongs_on_create = false;
     self.draw_mouse_quake = false;
     self.click_resets_t = true;
     self.variable_quake_t = false;
@@ -699,6 +709,14 @@ var GamePlayScene = function(game, stage)
     {
       for(var i = 0; self.quakes && i < self.quakes.length; i++)
         self.quakes[i].selected = false;
+    }
+    self.deselectKnownWrongQuakes = function()
+    {
+      for(var i = 0; self.quakes && i < self.quakes.length; i++)
+      {
+        var q = self.quakes[i];
+        if(!q.c && q.player_knows_c) self.quakes[i].selected = false;
+      }
     }
     self.deleteQuakes = function()
     {
@@ -847,7 +865,8 @@ var GamePlayScene = function(game, stage)
         var q;
         q = new Quake(self.dragging_wx,self.dragging_wy,self.assumed_start_t,self.ghost_quake);
         q.eval_loc_ts(self.locations);
-        if(levels[cur_level].deselect_on_create) self.deselectQuakes();
+        if(levels[cur_level].deselect_all_on_create) self.deselectQuakes();
+        if(levels[cur_level].deselect_known_wrongs_on_create) self.deselectKnownWrongQuakes();
         q.selected = true;
         hov_quak = q;
         hoverer.register(q);
@@ -901,6 +920,7 @@ var GamePlayScene = function(game, stage)
       {
         if(q.c) dc.context.drawImage(cmark,q.cx-cmark.width/2,q.cy-cmark.height/2);
         else    dc.context.drawImage(xmark,q.cx-xmark.width/2,q.cy-xmark.height/2);
+        q.player_knows_c = true;
       }
       else
         dc.context.drawImage(qmark,q.cx-qmark.width/2,q.cy-qmark.height/2);
@@ -1049,6 +1069,7 @@ var GamePlayScene = function(game, stage)
     self.location_p_cs = []
     self.c_aware_t = 9999;
     self.c = false;
+    self.player_knows_c = false;
 
     self.selected = false;
 
