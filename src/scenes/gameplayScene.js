@@ -1563,6 +1563,15 @@ var GamePlayScene = function(game, stage)
         self.labelBlip(self.scrub_bar.hovering_t,timeForT(self.scrub_bar.hovering_t));
       }
 
+      if(hov_loc && hov_loc.rad)
+      {
+        dc.context.globalAlpha=1;
+        var range = levels[cur_level].location_success_range;
+        dc.context.fillStyle = "#222222";
+        self.drawBlip(hov_loc.rad/quake_s_rate,range,true,0);
+        dc.context.globalAlpha=1;
+      }
+
       self.drawQuakeBlips(self.earth.ghost_quake,true);
       for(var i = 0; i < self.earth.quakes.length; i++)
         if(self.earth.quakes[i].selected || self.earth.quakes[i] == hov_quak) self.drawQuakeBlips(self.earth.quakes[i],false)
