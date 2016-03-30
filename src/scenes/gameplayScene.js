@@ -1750,7 +1750,7 @@ triangle.context.lineTo(triangle.width,triangle.height);
 triangle.context.fill();
 
 var qmark = GenIcon();
-qmark.context.fillText("?",qmark.width/2,qmark.height-2);
+qmark.context.fillText("?",qmark.width/2-1,qmark.height-1);
 
 var xmark = GenIcon();
 xmark.context.fillStyle = "#CC2222";
