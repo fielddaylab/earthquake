@@ -19,8 +19,9 @@ var GamePlayScene = function(game, stage)
   var SPC_CLICK_TO_GUESS = ENUM; ENUM++;
   var SPC_WAIT_RESULT = ENUM; ENUM++;
   var SPC_RESULT_WRONG_TRY_CORRECT = ENUM; ENUM++;
-  var SPC_RESULT_CORRECT_TRY_2 = ENUM; ENUM++;
-  var SPC_RESULT_CORRECT_TRY_5 = ENUM; ENUM++;
+  var SPC_RESULT_CORRECT_FIND_2 = ENUM; ENUM++;
+  var SPC_RESULT_CORRECT_FIND_5 = ENUM; ENUM++;
+  var SPC_THIN_RING_FIND_3 = ENUM; ENUM++;
   var SPC_XXX = ENUM; ENUM++;
   var spc_state;
 
@@ -173,6 +174,7 @@ var GamePlayScene = function(game, stage)
     }
     else
     {
+
       //intro - guess loc
       l = new Level();
       l.reset = true;
@@ -249,7 +251,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "I think I've got it";
+      l.allow_skip_prompt = "I think I know the pattern";
       l.deselect_all_on_create = true;
       l.deselect_known_wrongs_on_create = false;
       l.lines = [
@@ -262,12 +264,103 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "Got";
+      l.allow_skip_prompt = "I've highlighted the area that cannot be ruled out";
       l.allow_radii = true;
       l.lines = [
         "So you think you see the pattern?",
         "Click and drag out from square city to highlight the area that <b>cannot be ruled out</b> as a possible originating location of the earthquake",
       ];
+      levels.push(l);
+
+      //said dragged ring - just click OK
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.allow_skip_prompt = "Ok. I'm ready to move on.";
+      l.lines = [
+        "The pattern is a ring!",
+        "From only the information of <b>when</b> a quake originated, <b>when</b> a quake was felt (at a known location), and <b>how fast</b> a quake travels,",
+        "we can <b>narrow down</b> possible <b>originating locations</b> to a <b>ring</b> around the <b>known location</b>.",
+        "The <b>radius</b> of the ring is <b>proportional</b> to the <b>difference in time between when it originated, and when it was felt</b>.",
+        "That means <b>the longer it takes to travel, the larger the circle.</b>",
+        "From now on, you'll be able to drag out these rings from locations.",
+      ];
+      levels.push(l);
+
+      //Clicked OK - Drag out more precise ring
+      l = new Level();
+      l.reset = true;
+      l.location_success_range = 20;
+      l.n_locations = 1;
+      l.loc_1_x = 0.2;
+      l.loc_1_y = -0.1;
+      l.quake_start_range = 0;
+      l.quake_x = -0.3;
+      l.quake_y = 0;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.quake_selection_r = 20;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = true;
+      l.ghost_countdown = true;
+      l.lines = [
+        "So, now that we have the ability to <b>drag a ring out from locations</b> to illuminate locations that <b>don't conflict with our known information</b>,",
+        "we'll now reduce the <b>error range</b>.",
+        "That is, now- for us to consider a location <b>plausibly correct</b>, it will have to be <b>very precise</b>.",
+        "With this new tool, and new restriction, try to find 3 <b>plausible origin locations</b> that <b>don't conflict with our known information.",
+      ];
+      l.postPromptEvt = function() { }
+      levels.push(l);
+
+      //found 3 precise locations - just click OK
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.allow_skip_prompt = "Ready to move on";
+      l.lines = [
+        "Cool. So we know how to pretty effectively narrow down a list of locations to a ring",
+        "from only the information of <b>when</b> a quake originated, <b>when</b> a quake was felt (at a known location), and <b>how fast</b> a quake travels.",
+        "But how could we narrow it down further? We want to find <b>exactly where the quake originated</b>-",
+        "narrowing it down to a ring just isn't good enough.",
+        "Unfortunately, that's the best we can do with <b>only that information</b>.",
+        "But what if we had more information?",
+        "What if there was <b>another location</b>, and we knew <b>when it felt the tremor</b> as well?",
+      ];
+      levels.push(l);
+
+      //Clicked OK - Find with 2 locations
+      l = new Level();
+      l.reset = true;
+      l.location_success_range = 20;
+      l.n_locations = 2;
+      l.loc_1_x = 0.2;
+      l.loc_1_y = -0.1;
+      l.loc_2_x = -0.2;
+      l.loc_2_y = 0.4;
+      l.quake_start_range = 0;
+      l.quake_x = -0.3;
+      l.quake_y = 0;
+      l.display_quake_start_range = false;
+      l.p_waves = false;
+      l.quake_selection_r = 10;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = true;
+      l.ghost_countdown = true;
+      l.lines = [
+        "Well good news!",
+        "Circle city just called in when <b>they felt the earthquake's tremors</b>.",
+        "Using that information, see if you can narrow the possible locations that <b>don't conflict with any known information</b> down further!",
+        "Find 2 plausible <b>origin locations</b>.",
+      ];
+      l.postPromptEvt = function() { }
       levels.push(l);
 
       //
@@ -382,6 +475,8 @@ var GamePlayScene = function(game, stage)
   self.nextLevel = function()
   {
     cur_level = (cur_level+1)%levels.length;
+    if(cur_level == 8)
+      spc_state = SPC_THIN_RING_FIND_3;
     input_state = IGNORE_INPUT;
     bmwrangler.popMessage(levels[cur_level].lines,dismissed);
     if(levels[cur_level].reset)
@@ -504,7 +599,7 @@ var GamePlayScene = function(game, stage)
             }
             else
             {
-              spc_state = SPC_RESULT_CORRECT_TRY_2;
+              spc_state = SPC_RESULT_CORRECT_FIND_2;
               levels[cur_level].complete = true;
               cur_level++; //skip a level
               play_state = STATE_PAUSE;
@@ -514,8 +609,9 @@ var GamePlayScene = function(game, stage)
         }
         break;
       case SPC_RESULT_WRONG_TRY_CORRECT:
-      case SPC_RESULT_CORRECT_TRY_2:
-      case SPC_RESULT_CORRECT_TRY_5:
+      case SPC_RESULT_CORRECT_FIND_2:
+      case SPC_RESULT_CORRECT_FIND_5:
+      case SPC_THIN_RING_FIND_3:
         var n_correct = 0;
         var q;
         for(var i = 0; i < earth.quakes.length; i++)
@@ -525,19 +621,26 @@ var GamePlayScene = function(game, stage)
         }
         if(spc_state == SPC_RESULT_WRONG_TRY_CORRECT && n_correct >= 1)
         {
-          spc_state = SPC_RESULT_CORRECT_TRY_2;
+          spc_state = SPC_RESULT_CORRECT_FIND_2;
           levels[cur_level].complete = true;
           play_state = STATE_PAUSE;
           self.nextLevel();
         }
-        if(spc_state == SPC_RESULT_CORRECT_TRY_2 && n_correct >= 2)
+        if(spc_state == SPC_RESULT_CORRECT_FIND_2 && n_correct >= 2)
         {
-          spc_state = SPC_RESULT_CORRECT_TRY_5;
+          spc_state = SPC_RESULT_CORRECT_FIND_5;
           levels[cur_level].complete = true;
           play_state = STATE_PAUSE;
           self.nextLevel();
         }
-        else if(spc_state == SPC_RESULT_CORRECT_TRY_5 && n_correct >= 5)
+        else if(spc_state == SPC_RESULT_CORRECT_FIND_5 && n_correct >= 5)
+        {
+          spc_state = SPC_NONE;
+          levels[cur_level].complete = true;
+          play_state = STATE_PAUSE;
+          self.nextLevel();
+        }
+        else if(spc_state == SPC_THIN_RING_FIND_3 && n_correct >= 3)
         {
           spc_state = SPC_NONE;
           levels[cur_level].complete = true;
@@ -606,16 +709,20 @@ var GamePlayScene = function(game, stage)
       case SPC_RESULT_WRONG_TRY_CORRECT:
         dc.context.fillText("Try to find a plausable quake location",100,100);
         break;
-      case SPC_RESULT_CORRECT_TRY_2:
+      case SPC_RESULT_CORRECT_FIND_2:
         dc.context.fillText("Try to find another plausable quake origin",100,100);
         break;
-      case SPC_RESULT_CORRECT_TRY_5:
+      case SPC_RESULT_CORRECT_FIND_5:
         var n = 0;
         for(var i = 0; i < earth.quakes.length; i++)
-        {
           if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
-        }
         dc.context.fillText("Keep finding plausible origins (found "+n+"/5)",100,100);
+        break;
+      case SPC_THIN_RING_FIND_3:
+        var n = 0;
+        for(var i = 0; i < earth.quakes.length; i++)
+          if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
+        dc.context.fillText("Find 3 plausible origins very precisely (found "+n+"/3)",100,100);
         break;
     }
     canvdom.draw(dc);
