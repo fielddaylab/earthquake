@@ -335,6 +335,7 @@ var GamePlayScene = function(game, stage)
       //Clicked OK - Find with 2 locations
       l = new Level();
       l.reset = true;
+      l.allow_skip_prompt = "NEXT";
       l.location_success_range = 20;
       l.n_locations = 2;
       l.loc_1_x = 0.2;
@@ -363,54 +364,54 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() { }
       levels.push(l);
 
-      //
+      //found only 2 possible locations - just click OK
       l = new Level();
-      l.reset = true;
-      l.location_success_range = 50;
-      l.n_locations = 2;
-      l.loc_1_x = 0;
-      l.loc_1_y = 0;
-      l.loc_2_x = 0.7;
-      l.loc_2_y = 0.3;
-      l.quake_start_range = 0;
-      l.quake_x = -0.25;
-      l.quake_y = -0.25;
-      l.display_quake_start_range = false;
-      l.p_waves = false;
-      l.quake_selection_r = 0;
-      l.deselect_all_on_create = true;
-      l.deselect_known_wrongs_on_create = false;
-      l.draw_mouse_quake = false;
-      l.click_resets_t = true;
-      l.variable_quake_t = false;
-      l.allow_radii = true;
-      l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.allow_skip_prompt = "Ready to move on";
+      l.lines = [
+        "Ok. So we've narrowed it down even more!",
+        "With one location, we can <b>reduce the possible origin location</b> to a <b>ring</b>.",
+        "With two locations, we get <b>two rings</b>.",
+        "But the origin location <b>has to fall on both</b>.",
+        "This leaves at most <b>two small areas</b> where the rings intersect as <b>the only possible origin locations</b>.",
+        "That's a big reduction!",
+        "But we still don't yet know <b>exactly</b> where the quake originated...",
+        "Which of the <b>two possible areas</b> is it?",
+        "We can answer this question by adding <b>one more location</b>...",
+      ];
       levels.push(l);
 
-      //
+      //Clicked OK - Find with 3 locations
       l = new Level();
       l.reset = true;
-      l.location_success_range = 50;
+      l.allow_skip_prompt = "NEXT";
+      l.location_success_range = 20;
       l.n_locations = 3;
-      l.loc_1_x = 0;
-      l.loc_1_y = 0;
-      l.loc_2_x = 0.7;
-      l.loc_2_y = 0.3;
-      l.loc_3_x = 0.4;
-      l.loc_3_y = 0.9;
+      l.loc_1_x = 0.2;
+      l.loc_1_y = -0.1;
+      l.loc_2_x = -0.2;
+      l.loc_2_y = 0.4;
+      l.loc_3_x = -0.6;
+      l.loc_3_y = -0.05;
       l.quake_start_range = 0;
-      l.quake_x = -0.25;
-      l.quake_y = -0.25;
+      l.quake_x = -0.3;
+      l.quake_y = 0;
       l.display_quake_start_range = false;
       l.p_waves = false;
-      l.quake_selection_r = 0;
+      l.quake_selection_r = 10;
       l.deselect_all_on_create = true;
       l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
       l.allow_radii = true;
-      l.lines = ["A location has reported a quake. What can we know about where this quake occurred?"];
+      l.ghost_countdown = true;
+      l.lines = [
+        "So now we've got 3 locations.",
+        "See if you can find <b>exactly</b> where this earthquake originated!",
+      ];
+      l.postPromptEvt = function() { }
       levels.push(l);
 
     }
