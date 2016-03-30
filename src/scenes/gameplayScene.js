@@ -939,6 +939,7 @@ var GamePlayScene = function(game, stage)
 
       if(q.selected || q == self.mouse_quake)
       {
+        dc.context.lineWidth = 2;
         dc.context.strokeStyle = "#888888";
         dc.context.beginPath();
         dc.context.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
@@ -984,6 +985,7 @@ var GamePlayScene = function(game, stage)
       var wd = 0.01;
       qx += randR(-1,1)*shake_amt*wd*dc.width;
       qy += randR(-1,1)*shake_amt*wd*dc.width;
+      dc.context.lineWidth = 2;
       dc.context.beginPath();
       dc.context.ellipse(l.cx+qx,l.cy+qy,l.w/2,l.h/2,0,0,2*Math.PI);
       dc.context.stroke();
@@ -1350,17 +1352,19 @@ var GamePlayScene = function(game, stage)
   {
     var self = this;
     self.w = dc.width;
-    self.h = 20;
+    self.h = 40;
     self.x = 0;
     self.y = dc.height-self.h;
 
     self.earth = earth;
 
-    self.play_button  = new ButtonBox(self.h*0,self.y,self.h,self.h,function(){ ui_lock = self; if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY;});
-    self.pause_button = new ButtonBox(self.h*1,self.y,self.h,self.h,function(){ ui_lock = self; if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return; play_state = STATE_PAUSE;});
+    self.play_button  = new ButtonBox((self.h/2)*0,self.y+self.h/2,self.h/2,self.h/2,function(){ ui_lock = self; if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY;});
+    self.pause_button = new ButtonBox((self.h/2)*1,self.y+self.h/2,self.h/2,self.h/2,function(){ ui_lock = self; if(spc_state == SPC_WAIT_RESULT || spc_state == SPC_CLICK_TO_GUESS) return; play_state = STATE_PAUSE;});
+    self.bogus_button = new ButtonBox(0,self.y,(self.h/2)*2,self.h/2,function() { ui_lock = self; return; });
     clicker.register(self.play_button);
     clicker.register(self.pause_button);
-    self.scrub_bar = new Box(self.h*2+5,self.y,self.w-(self.h*2+5),self.h);
+    clicker.register(self.bogus_button);
+    self.scrub_bar = new Box((self.h/2)*2+5,self.y,self.w-((self.h/2)*2+5),self.h);
     hoverer.register(self.scrub_bar);
     dragger.register(self.scrub_bar);
 
@@ -1440,32 +1444,32 @@ var GamePlayScene = function(game, stage)
 
       if(split)
       {
-        dc.context.fillRect(x-w/2,self.y,           w,self.h*0.2);
-        dc.context.fillRect(x-w/2,self.y+self.h*0.8,w,self.h*0.2);
+        dc.context.fillRect(x-w/2,self.y+self.h/2,           w,self.h*0.1);
+        dc.context.fillRect(x-w/2,self.y+self.h/2+self.h*0.4,w,self.h*0.1);
       }
-      else dc.context.fillRect(x-w/2,self.y,w,self.h);
+      else dc.context.fillRect(x-w/2,self.y+self.h/2,w,self.h/2);
 
-      if(icon) dc.context.drawImage(icon,x-icon.width/2,self.y+self.h/2-icon.height/2);
+      if(icon) dc.context.drawImage(icon,x-icon.width/2,self.y+self.h/2+self.h/4-icon.height/2);
     }
     self.labelBlip = function(t,hrt)
     {
       var x = self.scrub_bar.xForT(t);
-      dc.context.fillText(hrt,x,self.y-1);
+      dc.context.fillText(hrt,x,self.y+self.h/2-1);
     }
     self.shapeBlip = function(t,shape)
     {
       var x = self.scrub_bar.xForT(t);
-      dc.context.drawImage(shape,x-shape.width/2,self.y-5-shape.height);
+      dc.context.drawImage(shape,x-shape.width/2,self.y+self.h/2-5-shape.height);
     }
     self.drawAssumedStartBlip = function()
     {
       dc.context.textAlign = "left";
       var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
       dc.context.fillStyle = "#2277FF";
-      dc.context.fillRect(x-0.5,self.y,1,self.h);
-      dc.context.fillRect(x-0.5,self.y-15,65,15);
+      dc.context.fillRect(x-0.5,self.y+self.h/2,1,self.h/2);
+      dc.context.fillRect(x-0.5,self.y+self.h/2-15,65,15);
       dc.context.fillStyle = "#FFFFFF";
-      dc.context.fillText("Quake Origin",x+2,self.y-3);
+      dc.context.fillText("Quake Origin",x+2,self.y+self.h/2-3);
     }
     self.drawQuakeBlips = function(q,ghost)
     {
@@ -1473,24 +1477,29 @@ var GamePlayScene = function(game, stage)
       {
         var draw_s =                               (ghost || self.earth.t > q.location_s_ts[i]);
         var draw_p = (levels[cur_level].p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
-        if(i == hov_loc_i)
+        dc.context.globalAlpha = 1;
+        if(i == hov_loc_i) //hovering over location
         {
-          dc.context.globalAlpha=1;
           dc.context.fillStyle = "#000000";
           if(draw_s) self.labelBlip(q.location_s_ts[i],q.location_s_hrts[i]);
-          if(draw_p) self.labelBlip(q.location_s_ts[i],q.location_p_hrts[i]);
+          if(draw_p) self.labelBlip(q.location_p_ts[i],q.location_p_hrts[i]);
         }
-        else if(q == hov_quak)
+        else if(q == hov_quak) //hovering over quake
         {
-          dc.context.globalAlpha = 1;
-          if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
-          if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
+          if(ghost || self.earth.locations.length > 1)
+          {
+            if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
+            if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
+          }
         }
-        else
+        else //hovering over neither
         {
-          dc.context.globalAlpha=0.2;
-          if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
-          if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
+          if(ghost)
+          {
+            if(self.earth.locations.length > 1) dc.context.globalAlpha = 0.2;
+            if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
+            if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
+          }
         }
 
         var range = ghost ? levels[cur_level].location_success_range : 0;
@@ -1508,6 +1517,7 @@ var GamePlayScene = function(game, stage)
           self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
         }
       }
+      dc.context.globalAlpha = 1;
     }
     self.draw = function()
     {
@@ -1515,12 +1525,20 @@ var GamePlayScene = function(game, stage)
       dc.context.textAlign = "center";
 
       //draw self
-      dc.context.fillStyle = "#AAAAAA";
+      dc.context.fillStyle = "#CCCCCC";
       dc.context.fillRect(self.x,self.y,self.w,self.h);
+      dc.context.fillStyle = "#AAAAAA";
+      dc.context.fillRect(self.x,self.y+self.h/2,self.w,self.h/2);
+      dc.context.strokeStyle = "#000000";
+      dc.context.lineWidth = 1;
+      dc.context.beginPath();
+      dc.context.moveTo(self.x,self.y+self.h/2);
+      dc.context.lineTo(self.x+self.w,self.y+self.h/2);
+      dc.context.stroke();
       if(levels[cur_level].display_quake_start_range)
       {
         dc.context.fillStyle = "#88AAAA";
-        dc.context.fillRect(self.scrub_bar.x,self.y,self.scrub_bar.w*(levels[cur_level].quake_start_range/self.earth.recordable_t),self.h);
+        dc.context.fillRect(self.scrub_bar.x,self.y+self.h/2,self.scrub_bar.w*(levels[cur_level].quake_start_range/self.earth.recordable_t),self.h/2);
       }
       dc.context.fillStyle = "#FFFFFF";
 
@@ -1546,15 +1564,27 @@ var GamePlayScene = function(game, stage)
 
       //ui
       dc.context.fillStyle = "#000000";
+      var padding = 5;
       //play_button
       dc.context.beginPath();
-      dc.context.moveTo(self.play_button.x+2,self.play_button.y+2);
-      dc.context.lineTo(self.play_button.x+self.play_button.w-2,self.play_button.y+self.play_button.h/2);
-      dc.context.lineTo(self.play_button.x+2,self.play_button.y+self.play_button.h-2);
+      dc.context.moveTo(self.play_button.x+padding,self.play_button.y+padding);
+      dc.context.lineTo(self.play_button.x+self.play_button.w-padding,self.play_button.y+self.play_button.h/2);
+      dc.context.lineTo(self.play_button.x+padding,self.play_button.y+self.play_button.h-padding);
       dc.context.fill();
       //pause_button
-      dc.context.fillRect(self.pause_button.x+2,self.pause_button.y+2,6,self.pause_button.h-4);
-      dc.context.fillRect(self.pause_button.x+self.pause_button.w-6-2,self.pause_button.y+2,6,self.pause_button.h-4);
+      dc.context.fillRect(
+        self.pause_button.x+padding,
+        self.pause_button.y+padding,
+        (self.pause_button.w-2*padding)/2-(self.pause_button.w/20),
+        self.pause_button.h-2*padding
+      );
+      dc.context.fillRect(
+        self.pause_button.x+self.pause_button.w/2+(self.pause_button.w/20),
+        self.pause_button.y+padding,
+        (self.pause_button.w-2*padding)/2-(self.pause_button.w/20),
+        self.pause_button.h-2*padding
+      );
+      //dc.context.fillRect(self.pause_button.x+self.pause_button.w/2+self.pause_button/5,self.pause_button.y+padding,self.pause_button.w/2-padding-self.pause_button/10,self.pause_button.h-2*padding);
     }
   }
 
