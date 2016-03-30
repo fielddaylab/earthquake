@@ -200,7 +200,7 @@ var GamePlayScene = function(game, stage)
         "All we know is that the earthquake started at midnight (<b>0:00</b>),",
         "and Square City reported feeling its tremors at <b>11:47</b>.",
         "We have an <b>Earthquake Simulator</b> that allows us to <b>simulate the timing</b> of earthquakes originating at different locations.",
-        "Use it to <b>guess where the earthquake might have originated</b>, and compare the resulting experimental timing with the actual times reported.",
+        "Use it to <b>guess where the earthquake might have originated</b>, and compare the results with the information we know.",
       ];
       l.postPromptEvt = function() { spc_state = SPC_CLICK_TO_GUESS; }
       levels.push(l);
@@ -210,11 +210,11 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
       l.lines = [
-        "Looks like we can rule that location out- that is <b>not</b> the originating location of the earthquake.",
-        "Had the quake originated there, square city would have reported feeling its tremors at a different time.",
+        "Looks like we can rule that location out-",
+        "The timing of that guessed origin location <b>conflicts</b> with some of the information we know.",
+        "Had the quake originated at that location, square city would have felt the tremors at a different time.",
         "Keep guessing until we find a location that <b>doesn't conflict</b> with any of the information we know.",
         "The only information we have is <b>when</b> the earthquake originated, and <b>when it was experienced</b>.",
-        "(Don't be afraid to make guesses all over the map!)",
       ];
       l.postPromptEvt = function() {}
       levels.push(l);
@@ -226,11 +226,10 @@ var GamePlayScene = function(game, stage)
       l.deselect_known_wrongs_on_create = true;
       l.lines = [
         "Wow! Good guess!",
-        "The timing of that guessed origin <b>does not conflict</b> with the information we know.",
+        "The timing of that guessed origin location <b>does not conflict</b> with the information we know.",
         "While we <b>can't yet</b> difinitively say \"that's where the earthquake originated\", we <b>can't rule it out</b>-",
-        "There may be other locations we could try that also wouldn't conflict with our known information.",
+        "There may be other locations we could try that <b>also</b> wouldn't conflict with our known information.",
         "Try to find some other plausable originating locations.",
-        "(Don't be afraid to make guesses all over the map!)",
       ];
       levels.push(l);
 
@@ -239,8 +238,10 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
       l.lines = [
+        "Great work!",
         "So you've found a couple locations that <b>cannot be ruled out</b> as origins- that is, we've made some guesses that <b>don't conflict with what we know</b>.",
         "Make a few more guesses, and try to look for a pattern. What does the space look like where the quake might have originated?",
+        "(Don't be afraid to make guesses all over the map!)",
       ];
       levels.push(l);
 
@@ -609,7 +610,12 @@ var GamePlayScene = function(game, stage)
         dc.context.fillText("Try to find another plausable quake origin",100,100);
         break;
       case SPC_RESULT_CORRECT_TRY_5:
-        dc.context.fillText("Keep finding plausible origins until a pattern emerges",100,100);
+        var n = 0;
+        for(var i = 0; i < earth.quakes.length; i++)
+        {
+          if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
+        }
+        dc.context.fillText("Keep finding plausible origins (found "+n+"/5)",100,100);
         break;
     }
     canvdom.draw(dc);
@@ -1466,10 +1472,10 @@ var GamePlayScene = function(game, stage)
       dc.context.textAlign = "left";
       var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
       dc.context.fillStyle = "#2277FF";
-      dc.context.fillRect(x-0.5,self.y+self.h/2,1,self.h/2);
-      dc.context.fillRect(x-0.5,self.y+self.h/2-15,65,15);
+      dc.context.fillRect(x-0.5,self.y,1,self.h);
+      dc.context.fillRect(x-0.5,self.y,90,self.h/4);
       dc.context.fillStyle = "#FFFFFF";
-      dc.context.fillText("Quake Origin",x+2,self.y+self.h/2-3);
+      dc.context.fillText("Quake Origin Time",x+2,self.y+self.h/4-2);
     }
     self.drawQuakeBlips = function(q,ghost)
     {
