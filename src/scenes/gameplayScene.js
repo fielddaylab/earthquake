@@ -43,6 +43,7 @@ var GamePlayScene = function(game, stage)
 
   var levels;
   var cur_level;
+  var start_level = 6;
 
   var earth;
   var hov_loc;
@@ -130,6 +131,8 @@ var GamePlayScene = function(game, stage)
     l.reset = true;
     l.location_success_range = 0;
     l.n_locations = 0;
+    l.quake_start_range_s = 0;
+    l.quake_start_range_e = 0;
     l.display_quake_start_range = false;
     l.p_waves = false;
     l.quake_selection_r = 0;
@@ -156,7 +159,8 @@ var GamePlayScene = function(game, stage)
       l.reset = true;
       l.location_success_range = 50;
       l.n_locations = 3;
-      l.quake_start_range = 0;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
       l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 0;
@@ -180,11 +184,12 @@ var GamePlayScene = function(game, stage)
       l.n_locations = 1;
       l.loc_1_x = 0.4;
       l.loc_1_y = 0;
-      l.quake_start_range = 0;
+      l.quake_start_range_s = 100;
+      l.quake_start_range_e = 100;
       l.quake_x = -0.4;
       l.quake_y = 0;
       l.display_ghost_quake = true;
-      l.display_quake_start_range = false;
+      l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 10;
       l.deselect_all_on_create = false;
@@ -200,10 +205,10 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.imask.skip = false;
       l.lines = [
-        "What can we know about earthquakes? And how do we know it?",
+        "What can we know about earthquakes? And how can we know it?",
         "A full view of an earthquake might look something like this...",
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() { earth.assumed_start_t = levels[cur_level].quake_start_range_s; }
       l.postPromptEvt = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_ANIM_INTRO = levels.length;
@@ -233,16 +238,18 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
       l.allow_skip_prompt = "Next";
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
         "From this picture, we can see <b>where</b> the earthquake <b>originated</b>,",
-        "<b>where</b> it <b>propagated</b>,",
+        "<b>when</b> it <b>originated</b>,",
         "and <b>when</b> it was <b>experienced</b> by square city.,",
         "But with real earthquakes, we have to <b>construct</b> all of that information from a <b>limited amount of data</b>.",
         "Often, all we have is <b>the time individual locations experienced a tremor</b>.",
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_ANIM_PAUSE = levels.length;
       levels.push(l);
@@ -252,13 +259,15 @@ var GamePlayScene = function(game, stage)
       l.reset = false;
       l.allow_skip_prompt = undefined;
       l.display_ghost_quake = false;
-      l.imask.skip = false;
+      l.display_quake_start_range = false;
       l.imask.play_pause = true;
+      l.imask.scrubber = false;
+      l.imask.skip = false;
       l.lines = [
         "The real information we have looks something more like this.",
       ];
-      l.prePromptEvt = function() { earth.t = 0; }
-      l.postPromptEvt = function() { }
+      l.prePromptEvt = function() { earth.t = 0; play_state = STATE_PAUSE; }
+      l.postPromptEvt = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_EMPTY_ANIM = levels.length;
       levels.push(l);
@@ -270,7 +279,7 @@ var GamePlayScene = function(game, stage)
       l.lines = [
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function()
       {
         if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
@@ -280,22 +289,232 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_ANIM_PLAYING = levels.length;
+      lt.LVL_EMPTY_ANIM_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
       l.allow_skip_prompt = "Next";
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
         "Much less interesting.",
-        "How can we fill out all that missing <b>information</b>, from only <b>when a location felt the tremor</b>?",
+        "All we see is the location shake!",
+        "How can we fill out all the missing <b>information</b>, from only <b>when a location felt a tremor</b>?",
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function(){ return false; }
       lt.LVL_EMPTY_ANIM_PAUSE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      l.reset = true;
+      l.location_success_range = 10;
+      l.n_locations = 1;
+      l.loc_1_x = 0.4;
+      l.loc_1_y = 0;
+      l.quake_start_range_s = 50;
+      l.quake_start_range_e = 50;
+      l.quake_x = -0.4;
+      l.quake_y = 0;
+      l.display_ghost_quake = true;
+      l.display_quake_start_range = true;
+      l.p_waves = true;
+      l.quake_selection_r = 10;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.ghost_countdown = true;
+      l.imask.scrubber = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.imask.select = false;
+      l.imask.skip = false;
+      l.lines = [
+        "Let's first try to find <b>when</b> the earthquake originated <b>in relation to when it was felt</b>.",
+        "To figure this out, we first have to learn something extra about earthquakes:",
+        "Earthquakes tend to send <b>multiple</b> different kinds of shockwaves that <b>emanate from their origin</b>.",
+        "The two waves we care about are the <b>P-Wave</b>, and the <b>S-Wave</b>.",
+        "The important characteristic between them (in this scenario) is that <b>each travels at a different speed</b>.",
+        "Let's see what that might look like.",
+      ];
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
+      l.postPromptEvt = function() {}
+      l.advanceTest = function(){ return play_state == STATE_PLAY; }
+      lt.LVL_DISTANCE_FIND = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.advanceTest = function()
+      {
+        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
+        {
+          play_state = STATE_PAUSE;
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_DISTANCE_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.allow_skip_prompt = "Next";
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.skip = true;
+      l.lines = [
+        "See how the <b>P-Wave</b> (purple) travels at <b>twice the speed</b> of the <b>S-Wave</b> (blue)?",
+        "How can we use this information to help determine <b>when</b> the earthquake originated?",
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.advanceTest = function() { return false; }
+      lt.LVL_DISTANCE_PAUSE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = true;
+      l.location_success_range = 10;
+      l.n_locations = 1;
+      l.loc_1_x = 0.4;
+      l.loc_1_y = 0;
+      l.quake_start_range_s = 400;
+      l.quake_start_range_e = 400;
+      l.quake_x = 0.1;
+      l.quake_y = 0;
+      l.display_ghost_quake = true;
+      l.display_quake_start_range = true;
+      l.p_waves = true;
+      l.quake_selection_r = 10;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.ghost_countdown = true;
+      l.imask.scrubber = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.imask.select = false;
+      l.imask.skip = false;
+      l.lines = [
+        "Let's see what happens when an earthquake <b>originates</b> just slightly before a location <b>feels its tremors</b>.",
+      ];
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
+      l.postPromptEvt = function() {}
+      l.advanceTest = function(){ return play_state == STATE_PLAY; }
+      lt.LVL_DISTANCE_PAUSE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.advanceTest = function()
+      {
+        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
+        {
+          play_state = STATE_PAUSE;
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_DISTANCE_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.allow_skip_prompt = "Next";
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.skip = true;
+      l.lines = [
+        "The <b>reported times</b> of <b>experiencing</b> the <b>S-Wave</b> and the <b>P-Wave</b> are <b>very close together</b>!",
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.advanceTest = function() { return false; }
+      lt.LVL_DISTANCE_PAUSE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.display_ghost_quake = false;
+      l.display_quake_start_range = false;
+      l.imask.scrubber = false;
+      l.imask.skip = false;
+      l.lines = [
+        "Let's look at that without the distraction of the visible quake...",
+        "Keep in mind, in reality, <b>this</b> is the only information we have to start with.",
+        "See if you can visualize in your mind <b>how this information</b> means that <b>the earthquake originated near the time the city felt its tremors</b>.",
+      ];
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
+      l.postPromptEvt = function() {}
+      l.advanceTest = function(){ return play_state == STATE_PLAY; }
+      lt.LVL_DISTANCE_PAUSE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.advanceTest = function()
+      {
+        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
+        {
+          play_state = STATE_PAUSE;
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_DISTANCE_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.reset = false;
+      l.allow_skip_prompt = "Next";
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.skip = true;
+      l.lines = [
+        "Once we have this information (the <b>time</b> a location felt an earthquake's <b>P-Wave</b> and the <b>time</b> a location felt its <b>S-Wave</b>,",
+        "And because we know the <b>relative speeds</b> of the two waves,",
+        "We can find out <b>exactly when</b> the earthquake <b>originated</b>.",
+        "All it takes is a bit of math!",
+        "(Specifically <i>t_earthquake</i> = ((<i>speed_pwave</i>*<i>t_pwave_felt</i>)-(<i>speed_swave</i>*<i>t_swave_felt</i>))/<i>speed_pwave</i>-<i>speed_swave</i> -- But don't worry about that for now!)",
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.advanceTest = function() { return false; }
+      lt.LVL_DISTANCE_PAUSE = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -304,7 +523,8 @@ var GamePlayScene = function(game, stage)
       l.n_locations = 1;
       l.loc_1_x = 0;
       l.loc_1_y = 0;
-      l.quake_start_range = 0;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
       l.quake_x = -0.25;
       l.quake_y = -0.25;
       l.display_ghost_quake = false;
@@ -328,7 +548,7 @@ var GamePlayScene = function(game, stage)
         "Use it to <b>guess where the earthquake might have originated</b>, and compare the results with the information we know.",
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function()
       {
         return earth.quakes.length;
@@ -343,7 +563,7 @@ var GamePlayScene = function(game, stage)
       l.lines = [
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function()
       {
         if(earth.t > earth.quakes[0].location_s_ts[0])
@@ -362,7 +582,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_ANIM_PLAYING = levels.length;
+      lt.LVL_GUESS_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -503,7 +723,8 @@ var GamePlayScene = function(game, stage)
       l.n_locations = 1;
       l.loc_1_x = 0.2;
       l.loc_1_y = -0.1;
-      l.quake_start_range = 0;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
       l.quake_x = -0.3;
       l.quake_y = 0;
       l.display_ghost_quake = false;
@@ -524,7 +745,7 @@ var GamePlayScene = function(game, stage)
         "With this new tool, and new restriction, try to find 3 <b>plausible origin locations</b> that <b>don't conflict with our known information.",
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -570,7 +791,8 @@ var GamePlayScene = function(game, stage)
       l.loc_1_y = -0.1;
       l.loc_2_x = -0.2;
       l.loc_2_y = 0.4;
-      l.quake_start_range = 0;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
       l.quake_x = -0.3;
       l.quake_y = 0;
       l.display_ghost_quake = false;
@@ -591,7 +813,7 @@ var GamePlayScene = function(game, stage)
         "Find 2 plausible <b>origin locations</b>.",
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_2_LOCATIONS = levels.length;
       levels.push(l);
@@ -626,7 +848,8 @@ var GamePlayScene = function(game, stage)
       l.loc_2_y = 0.4;
       l.loc_3_x = -0.6;
       l.loc_3_y = -0.05;
-      l.quake_start_range = 0;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
       l.quake_x = -0.3;
       l.quake_y = 0;
       l.display_ghost_quake = false;
@@ -645,14 +868,14 @@ var GamePlayScene = function(game, stage)
         "See if you can find <b>exactly</b> where this earthquake originated!",
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { }
+      l.postPromptEvt = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_3_LOCATIONS = levels.length;
       levels.push(l);
 
     }
 
-    cur_level = 0;
+    cur_level = start_level;
 
     earth = new Earth();
     earth.reset();
@@ -711,6 +934,8 @@ var GamePlayScene = function(game, stage)
   self.nextLevel = function()
   {
     cur_level = (cur_level+1)%levels.length;
+    if(levels[cur_level].reset)
+      earth.reset();
     levels[cur_level].prePromptEvt();
     if(levels[cur_level].lines.length)
     {
@@ -719,8 +944,6 @@ var GamePlayScene = function(game, stage)
     }
     else
       levels[cur_level].postPromptEvt();
-    if(levels[cur_level].reset)
-      earth.reset();
   }
 
   self.manuallyFlushQueues = function()
@@ -879,16 +1102,16 @@ var GamePlayScene = function(game, stage)
         else dc.context.fillText("Watch the quake",100,100);
         break;
       case lt.LVL_EMPTY_ANIM:
-        dc.context.fillText("Click play to gather info",100,100);
+        dc.context.fillText("Click play",100,100);
         break;
-      case lt.LVL_ANIM_PLAYING:
+      case lt.LVL_EMPTY_ANIM_PLAYING:
         if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
         else dc.context.fillText("Watch the quake",100,100);
         break;
       case lt.LVL_GUESS_LOC:
         dc.context.fillText("Click to guess where the earthquake might have originated",100,100);
         break;
-      case lt.LVL_ANIM_PLAYING:
+      case lt.LVL_GUESS_PLAYING:
         if(play_speed == 1) dc.context.fillText("Wait for it... (click 8x speed to speed up)",100,100);
         else dc.context.fillText("Wait for it...",100,100);
         break;
@@ -934,7 +1157,8 @@ var GamePlayScene = function(game, stage)
     self.loc_3_y = undefined;
     self.loc_4_x = undefined;
     self.loc_4_y = undefined;
-    self.quake_start_range = 0;
+    self.quake_start_range_s = 0;
+    self.quake_start_range_e = 0;
     self.quake_x = undefined;
     self.quake_y = undefined;
     self.display_ghost_quake = false;
@@ -981,7 +1205,8 @@ var GamePlayScene = function(game, stage)
     toLvl.loc_3_y = fromLvl.loc_3_y;
     toLvl.loc_4_x = fromLvl.loc_4_x;
     toLvl.loc_4_y = fromLvl.loc_4_y;
-    toLvl.quake_start_range = fromLvl.quake_start_range;
+    toLvl.quake_start_range_s = fromLvl.quake_start_range_s;
+    toLvl.quake_start_range_e = fromLvl.quake_start_range_e;
     toLvl.quake_x = fromLvl.quake_x;
     toLvl.quake_y = fromLvl.quake_y;
     toLvl.display_ghost_quake = fromLvl.display_ghost_quake;
@@ -1118,13 +1343,15 @@ var GamePlayScene = function(game, stage)
       var accomplished = false;
       while(!accomplished)
       {
-        if(levels[cur_level].quake_x !== undefined) self.ghost_quake = new Quake(levels[cur_level].quake_x, levels[cur_level].quake_y, Math.round(Math.random()*levels[cur_level].quake_start_range));
-        else                                        self.ghost_quake = new Quake(          randR(-0.3,0.3),           randR(-0.3,0.3), Math.round(Math.random()*levels[cur_level].quake_start_range));
-        self.ghost_quake.selected = true;
         accomplished = true;
+        if(levels[cur_level].quake_x !== undefined) self.ghost_quake = new Quake(levels[cur_level].quake_x, levels[cur_level].quake_y, Math.round(randR(levels[cur_level].quake_start_range_s,levels[cur_level].quake_start_range_e)));
+        else                                        self.ghost_quake = new Quake(          randR(-0.3,0.3),           randR(-0.3,0.3), Math.round(randR(levels[cur_level].quake_start_range_s,levels[cur_level].quake_start_range_e)));
+        self.ghost_quake.knows_c = false;
+        self.ghost_quake.selected = true;
         for(var i = 0; accomplished && i < self.locations.length; i++)
           accomplished = (wdist(self.locations[i],self.ghost_quake) > min_dist);
         if(accomplished) self.ghost_quake.eval_loc_ts(self.locations);
+        self.ghost_quake.c = true; //by definition
       }
     }
 
@@ -1862,11 +2089,14 @@ var GamePlayScene = function(game, stage)
       if(levels[cur_level].display_quake_start_range)
       {
         dc.context.fillStyle = "#88AAAA";
-        dc.context.fillRect(self.scrub_bar.x,self.y+self.h/2,self.scrub_bar.w*(levels[cur_level].quake_start_range/self.earth.recordable_t),self.h/2);
+        var s = self.scrub_bar.w*(levels[cur_level].quake_start_range_s/self.earth.recordable_t);
+        var e = self.scrub_bar.w*(levels[cur_level].quake_start_range_e/self.earth.recordable_t);
+        dc.context.fillRect(self.scrub_bar.x+s,self.y+self.h/2,e-s,self.h/2);
+
+        self.drawAssumedStartBlip();
       }
       dc.context.fillStyle = "#FFFFFF";
 
-      self.drawAssumedStartBlip();
       dc.context.textAlign = "center";
 
       self.drawBlip(self.earth.t,0,0,0);
