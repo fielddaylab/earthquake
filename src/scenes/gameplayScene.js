@@ -206,7 +206,7 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = false;
       l.lines = [
         "What can we know about earthquakes? And how can we know it?",
-        "A full view of an earthquake might look something like this...",
+        "Imagine that the little black square is actually <b>Square City</b> and an earthquake it about to make it rumble!",
       ];
       l.prePromptEvt = function() { earth.assumed_start_t = levels[cur_level].quake_start_range_s; }
       l.postPromptEvt = function() {}
@@ -242,11 +242,13 @@ var GamePlayScene = function(game, stage)
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "From this picture, we can see <b>where</b> the earthquake <b>originated</b>,",
-        "<b>when</b> it <b>originated</b>,",
-        "and <b>when</b> it was <b>experienced</b> by square city.,",
+        "Did you see how a wave moved out from the earthquake's <b>origin</b> and expanded until it hit the city?",
+        "From that animation we know <b>where</b> the earthquake came from.",  
+        "We also can see <b>when</b> it started,",
+        "As it moves out, we see a delay, then we can see <b>when</b> it was <b>experienced</b> by square city.,",
         "But with real earthquakes, we have to <b>construct</b> all of that information from a <b>limited amount of data</b>.",
-        "Often, all we have is <b>the time individual locations experienced a tremor</b>.",
+        "Often, all we have is the reports from cities that they <b>felt</b> the earthquake at a certian <b>time</b>.",
+        "Play around if you like, then touch the <b>Done</b> button",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -300,8 +302,8 @@ var GamePlayScene = function(game, stage)
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "Much less interesting.",
-        "All we see is <b>when</b> the location shakes!",
+        "They didn't even see it coming! All we see is <b>when</b> <b>Square City</b> feels the shake!",
+        "When and where did the earthquake come from?",
         "How can we fill out all the missing <b>information</b>, from only <b>when a location felt a tremor</b>?",
       ];
       l.prePromptEvt = function() {}
@@ -337,11 +339,12 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.imask.skip = false;
       l.lines = [
-        "Let's first try to find <b>when the earthquake originated</b> in relation to <b>when it was felt</b>.",
-        "To figure this out, we first have to learn something extra about earthquakes:",
-        "Earthquakes tend to send <b>multiple</b> different kinds of shockwaves <b>from their origin</b>.",
-        "The two waves we care about are the <b>P-Wave</b>, and the <b>S-Wave</b>.",
-        "The important characteristic between them (in this scenario) is that <b>each travels at a different speed</b>.",
+        "Let's start with time.",
+        "We can figure out <b>when the earthquake originated</b> from <b>when it was felt</b>.",
+        "Sound like magic? Well, first have to learn something extra about earthquakes:",
+        "Earthquakes actually to send <b>multiple</b> shockwaves <b>from their origin</b>.",
+        "The two waves we care about are the <b>P-Wave</b> or Primary-wave and the <b>S-Wave</b> or Secondary-wave",
+        "They <b>each travel at a different speed</b>. The <b>P-wave</b> is much faster than the <b>S-Wave</b>",
         "Let's see what that might look like.",
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
