@@ -43,7 +43,7 @@ var GamePlayScene = function(game, stage)
 
   var levels;
   var cur_level;
-  var start_level = 6;
+  var start_level = 0;
 
   var earth;
   var hov_loc;
@@ -339,7 +339,7 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "Let's first try to find <b>when</b> the earthquake originated <b>in relation to when it was felt</b>.",
         "To figure this out, we first have to learn something extra about earthquakes:",
-        "Earthquakes tend to send <b>multiple</b> different kinds of shockwaves that <b>emanate from their origin</b>.",
+        "Earthquakes tend to send <b>multiple</b> different kinds of shockwaves <b>from their origin</b>.",
         "The two waves we care about are the <b>P-Wave</b>, and the <b>S-Wave</b>.",
         "The important characteristic between them (in this scenario) is that <b>each travels at a different speed</b>.",
         "Let's see what that might look like.",
@@ -379,7 +379,8 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = true;
       l.lines = [
         "See how the <b>P-Wave</b> (purple) travels at <b>twice the speed</b> of the <b>S-Wave</b> (blue)?",
-        "How can we use this information to help determine <b>when</b> the earthquake originated?",
+        "Look at <b>when</b> each wave was <b>reported</b> (shown on the timeline).",
+        "How can we use this information to help determine <b>when</b> the earthquake <b>originated</b>?",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -415,7 +416,7 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.imask.skip = false;
       l.lines = [
-        "Let's see what happens when an earthquake <b>originates</b> just slightly before a location <b>feels its tremors</b>.",
+        "Let's compare that last example to what happens when an earthquake <b>originates</b> just <b>slightly before</b> a location <b>feels its tremors</b>.",
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
@@ -451,7 +452,8 @@ var GamePlayScene = function(game, stage)
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "The <b>reported times</b> of <b>experiencing</b> the <b>S-Wave</b> and the <b>P-Wave</b> are <b>very close together</b>!",
+        "Look where on the timeline the <b>tremors were reported</b>-",
+        "They are <b>very close together</b>!",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -462,14 +464,15 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
+      l.allow_skip_prompt = undefined;
       l.display_ghost_quake = false;
       l.display_quake_start_range = false;
       l.imask.scrubber = false;
       l.imask.skip = false;
       l.lines = [
-        "Let's look at that without the distraction of the visible quake...",
+        "Now we'll look at that without the distraction of the visible quake...",
         "Keep in mind, in reality, <b>this</b> is the only information we have to start with.",
-        "See if you can visualize in your mind <b>how this information</b> means that <b>the earthquake originated near the time the city felt its tremors</b>.",
+        "See if you can visualize in your mind <b>how this information</b> (the reported times) means that <b>the earthquake originated near the time the city felt its tremors</b>.",
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
@@ -506,10 +509,10 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = true;
       l.lines = [
         "Once we have this information (the <b>time</b> a location felt an earthquake's <b>P-Wave</b> and the <b>time</b> a location felt its <b>S-Wave</b>,",
-        "And because we know the <b>relative speeds</b> of the two waves,",
-        "We can find out <b>exactly when</b> the earthquake <b>originated</b>.",
+        "and because we know the <b>relative speeds</b> of the two waves,",
+        "we can find out <b>exactly when</b> the earthquake <b>originated</b>.",
         "All it takes is a bit of math!",
-        "(Specifically <i>t_earthquake</i> = ((<i>speed_pwave</i>*<i>t_pwave_felt</i>)-(<i>speed_swave</i>*<i>t_swave_felt</i>))/<i>speed_pwave</i>-<i>speed_swave</i> -- But don't worry about that for now!)",
+        "(Specifically:<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;<i>t_earthquake</i> = <div style=\"position:relative; left:100px;\"><div>(<i>speed_pwave</i>*<i>t_pwave_felt</i>)-(<i>speed_swave</i>*<i>t_swave_felt</i>)</div>/<div>(<i>speed_pwave</i>-<i>speed_swave</i>)</div></div><br /> -- But don't worry about that for now!)",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1695,14 +1698,14 @@ var GamePlayScene = function(game, stage)
           if(levels[cur_level].p_waves)
           {
             var t_til = g.location_p_ts[i]-self.t;
-            if(t_til > 0 && t_til < 200)
+            if(t_til > 0 && t_til < 100)
             {
               ellipse.wx = l.wx;
               ellipse.wy = l.wy;
               ellipse.ww = t_til*quake_p_rate;
               ellipse.wh = t_til*quake_p_rate;
               screenSpace(cam,dc,ellipse);
-              dc.context.globalAlpha=1-(t_til/200);
+              dc.context.globalAlpha=1-(t_til/100);
               dc.context.beginPath();
               dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
               dc.context.stroke();
@@ -2092,8 +2095,6 @@ var GamePlayScene = function(game, stage)
         var s = self.scrub_bar.w*(levels[cur_level].quake_start_range_s/self.earth.recordable_t);
         var e = self.scrub_bar.w*(levels[cur_level].quake_start_range_e/self.earth.recordable_t);
         dc.context.fillRect(self.scrub_bar.x+s,self.y+self.h/2,e-s,self.h/2);
-
-        self.drawAssumedStartBlip();
       }
       dc.context.fillStyle = "#FFFFFF";
 
@@ -2124,6 +2125,9 @@ var GamePlayScene = function(game, stage)
       for(var i = 0; i < self.earth.quakes.length; i++)
         if(self.earth.quakes[i].selected || self.earth.quakes[i] == hov_quak) self.drawQuakeBlips(self.earth.quakes[i],false)
       dc.context.globalAlpha=1;
+
+      if(levels[cur_level].display_quake_start_range)
+        self.drawAssumedStartBlip();
 
       //ui
       dc.context.fillStyle = "#000000";
