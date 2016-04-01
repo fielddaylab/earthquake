@@ -121,6 +121,7 @@ var BottomMessageWrangler = function()
     }
   }
 
+  var fade = document.getElementById("fade");
   var el = document.getElementById("bottom_display");
   var text_el = document.getElementById("bottom_text");
   var button_el = document.getElementById("bottom_button")
@@ -152,6 +153,8 @@ var BottomMessageWrangler = function()
       visd = 0;
     }
     el.style.bottom = ((vis-1)*height)+"px";
+    if(vis) fade.style.display = "block";
+    else    fade.style.display = "none";
   }
 
   self.popMessage = function(newlines,callback)
