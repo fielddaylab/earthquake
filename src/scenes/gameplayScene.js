@@ -1242,14 +1242,14 @@ var GamePlayScene = function(game, stage)
     switch(cur_level)
     {
       case lt.LVL_ANIM_INTRO:
-        dc.context.fillText("Click play to watch quake",100,100);
+        dc.context.fillText("Click the play button to watch quake",100,100);
         break;
       case lt.LVL_ANIM_PLAYING:
         if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
         else dc.context.fillText("Watch the quake",100,100);
         break;
       case lt.LVL_EMPTY_ANIM:
-        dc.context.fillText("Click play",100,100);
+        dc.context.fillText("Click the play button",100,100);
         break;
       case lt.LVL_EMPTY_ANIM_PLAYING:
         if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
@@ -1715,7 +1715,7 @@ var GamePlayScene = function(game, stage)
       {
         t_delta = self.t - q.location_p_ts[i];
         if(t_delta > 0 && t_delta < q_t)
-          shake_amt += ((q_t-t_delta)/q_t)/10;
+          shake_amt += ((q_t-t_delta)/q_t)/2;
       }
 
       return shake_amt;
@@ -1827,7 +1827,7 @@ var GamePlayScene = function(game, stage)
         self.mouse_quake.eval_pos(self.hovering_wx,self.hovering_wy);
         self.drawQuake(self.mouse_quake);
       }
-      if(levels[cur_level].ghost_countdown)
+      if(false && levels[cur_level].ghost_countdown)
       {
         var l;
         var g = self.ghost_quake;
