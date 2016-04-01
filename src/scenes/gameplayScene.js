@@ -43,7 +43,7 @@ var GamePlayScene = function(game, stage)
 
   var levels;
   var cur_level;
-  var start_level = 24;
+  var start_level = 0;
 
   var earth;
   var hov_loc;
