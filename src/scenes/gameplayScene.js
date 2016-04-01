@@ -913,7 +913,11 @@ var GamePlayScene = function(game, stage)
         for(var i = 0; i < earth.quakes.length; i++)
         {
           var q = earth.quakes[i];
-          if(earth.t > q.location_s_ts[0] && q.location_s_cs[0]) n_correct++;
+          if(
+            earth.t > q.location_s_ts[0] && q.location_s_cs[0] &&
+            earth.t > q.location_s_ts[1] && q.location_s_cs[1] &&
+            )
+            n_correct++;
         }
         if(n_correct >= 2)
         {
@@ -985,7 +989,12 @@ var GamePlayScene = function(game, stage)
         for(var i = 0; i < earth.quakes.length; i++)
         {
           var q = earth.quakes[i];
-          if(earth.t > q.location_s_ts[0] && q.location_s_cs[0]) n_correct++;
+          if(
+            earth.t > q.location_s_ts[0] && q.location_s_cs[0] &&
+            earth.t > q.location_s_ts[1] && q.location_s_cs[1] &&
+            earth.t > q.location_s_ts[2] && q.location_s_cs[2] &&
+            )
+            n_correct++;
         }
         if(n_correct >= 1)
         {
