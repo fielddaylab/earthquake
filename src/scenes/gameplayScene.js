@@ -237,7 +237,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "Next";
+      l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
@@ -295,7 +295,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "Next";
+      l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
@@ -373,7 +373,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "Next";
+      l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
@@ -446,7 +446,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "Next";
+      l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
@@ -502,7 +502,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "Next";
+      l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
@@ -579,7 +579,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
-      l.allow_skip_prompt = "Next";
+      l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
