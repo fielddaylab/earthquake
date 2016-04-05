@@ -714,7 +714,7 @@ var GamePlayScene = function(game, stage)
       l.drawExtra = function() { dc.context.fillText("Click and Drag out a pattern from Square City",100,100); }
       l.advanceTest = function()
       {
-        return (!earth.locations[0].dragging && Math.abs(Math.round(earth.locations[0].rad/quake_s_rate)-earth.ghost_quake.location_s_ts[0]) < 20);
+        return (!earth.locations[0].dragging && Math.abs(Math.round(earth.locations[0].rad/quake_s_rate)-earth.ghost_quake.location_s_ts[0]) < 30);
       }
       lt.LVL_DRAG_PATTERN_INTRO = levels.length;
       levels.push(l);
@@ -958,22 +958,100 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
-      l.postPromptEvt = function() { game.setScene(2); }
+      l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_CONCLUSION = levels.length;
+      lt.LVL_TRIANGULATION_CONCLUSION = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      l.return_on_complete = false;
+      l.reset = true;
+      l.location_success_range = 10;
+      l.n_locations = 3;
+      l.loc_1_x = 0.4;
+      l.loc_1_y = 0;
+      l.loc_2_x = 0.0;
+      l.loc_2_y = 0.2;
+      l.loc_3_x = -0.2;
+      l.loc_3_y = -0.3;
+      l.quake_start_range_s = 100;
+      l.quake_start_range_e = 100;
+      l.quake_x = -0.4;
+      l.quake_y = 0;
+      l.display_ghost_quake = true;
+      l.display_quake_start_range = true;
+      l.p_waves = false;
+      l.quake_selection_r = 10;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.ghost_countdown = true;
+      l.imask.scrubber = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.imask.select = false;
+      l.imask.skip = false;
+      l.lines = [
+        "Triangulation has applications beyond <b>finding the epicenter of earthquakes</b>.",
+        "It's also the <b>underlying technology</b> behind using a <b>GPS</b>!",
+        "A key difference is that, rather than a wave <b>emitting from the unknown location</b>, towards a set of <b>known locations</b>,",
+        "waves instead <b>are emitted from known locations</b>, toward an <b>unknown location</b>.",
+        "Click Play to see what this might look like",
+      ];
+      l.prePromptEvt = function() { earth.assumed_start_t = levels[cur_level].quake_start_range_s; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function() { dc.context.fillText("Click the play button to watch quake",100,100); }
+      l.advanceTest = function(){ return play_state == STATE_PLAY; }
+      lt.LVL_GPS_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = true;
+      l.return_on_complete = false;
       l.reset = false;
+      l.imask.play_pause = false;
       l.lines = [
-        "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(play_speed == 1) dc.context.fillText("Watch the radio waves (click 8x speed to speed up)",100,100);
+        else dc.context.fillText("Watch the radio waves",100,100);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
+        {
+          play_state = STATE_PAUSE;
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_GPS_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.allow_skip_prompt = "Done";
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.skip = true;
+      l.lines = [
+        "See how each <b>Satellite</b> emits a wave <b>toward</b> the GPS device?",
+        "Watching the waves propagate, it's more visibly clear <b>where they all intersect</b>- even without dragging out circles!",
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_GPS = levels.length;
+      lt.LVL_GPS_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -997,7 +1075,7 @@ var GamePlayScene = function(game, stage)
         case 0: cur_level = lt.LVL_INTRO_INTRO-1;       break;
         case 1: cur_level = lt.LVL_SP_INTRO-1;          break;
         case 2: cur_level = lt.LVL_BLIND_GUESS_INTRO-1; break;
-        case 3: cur_level = lt.LVL_GPS-1;               break;
+        case 3: cur_level = lt.LVL_GPS_INTRO-1;               break;
         case 4: cur_level = lt.LVL_FREE-1;              break;
       }
     }
