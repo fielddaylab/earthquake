@@ -1191,7 +1191,7 @@ var GamePlayScene = function(game, stage)
 
     input_state = RESUME_INPUT;
 
-    self.nextLevel();
+    self.nextLevel(true);
   };
 
   var dismissed = function()
@@ -1200,9 +1200,12 @@ var GamePlayScene = function(game, stage)
     levels[cur_level].postPromptEvt();
   }
 
-  self.nextLevel = function()
+  self.nextLevel = function(skip_scene_check)
   {
-    if(levels[cur_level].return_on_complete) { game.setScene(2); return; }
+    if(!skip_scene_check) //lazy hack
+    {
+      if(levels[cur_level].return_on_complete) { game.setScene(2); return; }
+    }
     cur_level = (cur_level+1)%levels.length;
     if(levels[cur_level].reset)
       earth.reset();
