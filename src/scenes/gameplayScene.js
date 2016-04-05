@@ -526,10 +526,11 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = false;
       l.imask.earthdrag = false;
       l.lines = [
-        "Going forward, we'll now just assume we know <b>when</b> the quake originated, and will no longer show the <b>P-Waves</b>- Just for simplification.",
-        "(After all, we now know exactly how to calculate it!)",
-        "Anyways. Now, we need to figure out a way to calculate <b>where</b> the earthquake originated (or find its <b>epicenter</b>).",
-        "Knowing <b>when</b> the earthquake started, and <b>when</b> it hit Square City,",
+        "Another earthquake has hit <b>Square City</b>!",
+        "To figure out <b>where</b> the earthquake originated (or \"to find its <b>epicenter</b>\"),",
+        "we're going to assume we already know <b>when</b> it originated.",
+        "(This means we'll no longer need to visualize both the <b>P-Waves</b> <i>and</i> the <b>S-Waves</b> going forward.)",
+        "Only knowing <b>when</b> the earthquake started, and <b>when</b> it hit Square City,",
         "place a guess <b>where</b> you think the earthquake might have occurred!",
       ];
       l.prePromptEvt = function() {}
@@ -621,7 +622,7 @@ var GamePlayScene = function(game, stage)
         "The timing of that guessed epicenter <b>does not conflict</b> with the information we know.",
         "While we <b>can't yet</b> difinitively say \"that is the earthquake's epicenter\", we <b>can't rule it out</b>-",
         "There may be other locations we could try that <b>also</b> wouldn't conflict with our known information.",
-        "Try to find some other plausable epicenters.",
+        "Try to find some other <b>plausable epicenters</b>.",
       ];
       l.drawExtra = function() { dc.context.fillText("Try to find another plausable epicenter",100,100); }
       l.advanceTest = function()
@@ -649,8 +650,9 @@ var GamePlayScene = function(game, stage)
       l.reset = false;
       l.lines = [
         "Great work!",
-        "So you've found a couple locations that <b>cannot be ruled out</b> as epicenters- that is, we've made some guesses that <b>don't conflict with what we know</b>.",
-        "Make a few more guesses, and try to look for a pattern. What does the space look like where the quake might have originated?",
+        "So you've found a couple locations that <b>cannot be ruled out</b> as epicenters-",
+        "that is, we've made some guesses that <b>don't conflict with what we know</b>.",
+        "Make a few more guesses, and try to look for a pattern. <b>What does the space look like</b> where the quake might have originated?",
         "(Don't be afraid to make guesses all over the map!)",
       ];
       l.drawExtra = function()
@@ -761,7 +763,7 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "So, now that we have the ability to <b>drag a ring out from locations</b> to illuminate locations that <b>don't conflict with our known information</b>,",
         "we'll now reduce the <b>error range</b>.",
-        "That is, now- for us to consider a location <b>plausibly correct</b>, it will have to be <b>very precise</b>.",
+        "That is, for us to consider a location <b>plausibly correct</b>, it will have to be <b>very precise</b>.",
         "With this new tool, and new restriction, try to find 3 <b>plausible epicenters</b> that <b>don't conflict with our known information.",
       ];
       l.prePromptEvt = function() {}
@@ -799,11 +801,10 @@ var GamePlayScene = function(game, stage)
       l.reset = false;
       l.allow_skip_prompt = "Ready to move on";
       l.lines = [
-        "Cool. So we know how to pretty effectively narrow down a list of locations to a ring",
+        "Cool. So we know how to pretty effectively narrow down <b>possible epicenters</b> to a ring",
         "from only the information of <b>when</b> a quake originated, <b>when</b> a quake was felt (at a known location), and <b>how fast</b> a quake travels.",
-        "But how could we narrow it down further? We want to find <b>exactly where the quake originated</b>-",
-        "narrowing it down to a ring just isn't good enough.",
-        "Unfortunately, that's the best we can do with <b>only that information</b>.",
+        "But how could we narrow it down further? We want to find <b>exactly where the quake originated</b>.",
+        "Unfortunately, <b>a ring</b> is the best we can narrow the possibilities down with <b>only that information</b>.",
         "But what if we had more information?",
         "What if there was <b>another location</b>, and we knew <b>when it felt the tremor</b> as well?",
       ];
@@ -952,11 +953,12 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = true;
+      l.return_on_complete = false;
       l.reset = false;
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
+      l.postPromptEvt = function() { game.setScene(2); }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_CONCLUSION = levels.length;
