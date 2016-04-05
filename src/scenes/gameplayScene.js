@@ -8,7 +8,6 @@ var GamePlayScene = function(game, stage)
   var play_state;
   var play_speed;
 
-
   ENUM = 0;
   var IGNORE_INPUT = ENUM; ENUM++;
   var RESUME_INPUT = ENUM; ENUM++;
@@ -128,6 +127,7 @@ var GamePlayScene = function(game, stage)
     levels = [];
 
     l = new Level();
+    l.return_on_complete = false;
     l.reset = true;
     l.location_success_range = 0;
     l.n_locations = 0;
@@ -156,6 +156,7 @@ var GamePlayScene = function(game, stage)
     if(debug_levels)
     {
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 50;
       l.n_locations = 3;
@@ -179,6 +180,7 @@ var GamePlayScene = function(game, stage)
     {
 
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 10;
       l.n_locations = 1;
@@ -217,6 +219,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.play_pause = false;
       l.lines = [
@@ -242,6 +245,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
@@ -264,6 +268,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = undefined;
       l.display_ghost_quake = false;
@@ -283,6 +288,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.play_pause = false;
       l.lines = [
@@ -308,6 +314,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = true;
       l.reset = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
@@ -326,6 +333,7 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 10;
       l.n_locations = 1;
@@ -369,6 +377,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.play_pause = false;
       l.lines = [
@@ -390,6 +399,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
@@ -408,6 +418,7 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 10;
       l.n_locations = 1;
@@ -445,6 +456,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.play_pause = false;
       l.lines = [
@@ -466,6 +478,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
@@ -484,6 +497,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = undefined;
       l.display_ghost_quake = false;
@@ -504,6 +518,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.play_pause = false;
       l.lines = [
@@ -525,6 +540,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
@@ -541,6 +557,7 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 10;
       l.n_locations = 2;
@@ -584,6 +601,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.play_pause = false;
       l.lines = [
@@ -605,6 +623,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = true;
       l.reset = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
@@ -625,8 +644,8 @@ var GamePlayScene = function(game, stage)
       lt.LVL_SP_RECAP_OUTRO = levels.length;
       levels.push(l);
 
-
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 60;
       l.n_locations = 1;
@@ -670,6 +689,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.earth = false;
       l.lines = [
@@ -704,6 +724,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.imask.play_pause = true;
       l.imask.scrubber = true;
@@ -737,6 +758,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.deselect_known_wrongs_on_create = true;
       l.lines = [
@@ -768,6 +790,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.lines = [
         "Great work!",
@@ -803,6 +826,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "I think I know the pattern";
       l.deselect_all_on_create = true;
@@ -821,6 +845,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = undefined;
       l.allow_radii = true;
@@ -839,6 +864,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "Ok. I'm ready to move on.";
       l.imask.skip = true;
@@ -856,6 +882,7 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 20;
       l.n_locations = 1;
@@ -913,6 +940,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "Ready to move on";
       l.lines = [
@@ -930,6 +958,7 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 20;
       l.n_locations = 2;
@@ -987,6 +1016,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
       l.reset = false;
       l.allow_skip_prompt = "Ready to move on";
       l.imask.next = true;
@@ -1007,6 +1037,7 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
+      l.return_on_complete = false;
       l.reset = true;
       l.allow_skip_prompt = undefined;
       l.location_success_range = 20;
@@ -1066,6 +1097,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = true;
       l.reset = false;
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
@@ -1074,9 +1106,44 @@ var GamePlayScene = function(game, stage)
       l.advanceTest = function() { return false; }
       lt.LVL_CONCLUSION = levels.length;
       levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = true;
+      l.reset = false;
+      l.lines = [
+        "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
+      ];
+      l.drawExtra = function() {}
+      l.advanceTest = function() { return false; }
+      lt.LVL_GPS = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = true;
+      l.reset = false;
+      l.lines = [
+        "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
+      ];
+      l.drawExtra = function() {}
+      l.advanceTest = function() { return false; }
+      lt.LVL_FREE = levels.length;
+      levels.push(l);
     }
 
-    cur_level = start_level;
+    if(start_level) cur_level = start_level;
+    else
+    {
+      switch(game.start)
+      {
+        case 0: cur_level = lt.LVL_INTRO_INTRO-1;       break;
+        case 1: cur_level = lt.LVL_SP_INTRO-1;          break;
+        case 2: cur_level = lt.LVL_BLIND_GUESS_INTRO-1; break;
+        case 3: cur_level = lt.LVL_GPS-1;               break;
+        case 4: cur_level = lt.LVL_FREE-1;              break;
+      }
+    }
 
     earth = new Earth();
     earth.reset();
@@ -1135,6 +1202,7 @@ var GamePlayScene = function(game, stage)
 
   self.nextLevel = function()
   {
+    if(levels[cur_level].return_on_complete) { game.setScene(2); return; }
     cur_level = (cur_level+1)%levels.length;
     if(levels[cur_level].reset)
       earth.reset();
@@ -1228,13 +1296,13 @@ var GamePlayScene = function(game, stage)
       hoverer.flush();
       clicker.flush();
 
-      //dragger.flush();
-
-      drag_qs = dragger.requestManualFlush();
-
-      self.manuallyFlushQueues();
-
-      dragger.manualFlush();
+      if(dragger) //because clicker might switch scenes
+      {
+        //dragger.flush();
+        drag_qs = dragger.requestManualFlush();
+        self.manuallyFlushQueues();
+        dragger.manualFlush();
+      }
     }
 
     ui_lock = undefined;
@@ -1247,7 +1315,8 @@ var GamePlayScene = function(game, stage)
 
     bmwrangler.tick();
 
-    if(levels[cur_level].advanceTest()) self.nextLevel();
+    if(levels[cur_level].advanceTest())
+      self.nextLevel();
   };
 
   self.draw = function()
@@ -1302,12 +1371,17 @@ var GamePlayScene = function(game, stage)
 
   self.cleanup = function()
   {
+    hoverer.detach(); hoverer = undefined;
+    dragger.detach(); dragger = undefined;
+    clicker.detach(); clicker = undefined;
+    canvdom_clicker.detach(); canvdom_clicker = undefined;
   };
 
   var Level = function()
   {
     var self = this;
     self.complete = false;
+    self.return_on_complete = false;
     self.reset = true;
     self.allow_skip_prompt = false;
     self.location_success_range = 10;
@@ -1522,7 +1596,7 @@ var GamePlayScene = function(game, stage)
         self.ghost_quake.knows_c = false;
         self.ghost_quake.selected = true;
         if(accomplished) self.ghost_quake.eval_loc_ts(self.locations);
-        self.ghost_quake.c = true; //must occur after eval loc ts.
+        self.ghost_quake.c = true; //must occur after eval loc ts
       }
     }
 
