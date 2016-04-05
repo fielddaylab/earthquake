@@ -1026,7 +1026,7 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = false;
       l.lines = [
         "Triangulation has applications beyond <b>finding the epicenter of earthquakes</b>.",
-        "It's also the <b>underlying technology</b> behind using a <b>GPS</b>!",
+        "It's also the <b>underlying mechanics</b> behind using a <b>GPS</b>!",
         "A key difference is that, rather than a wave <b>emitting from the unknown location</b>, towards a set of <b>known locations</b>,",
         "waves instead <b>are emitted from known locations</b>, toward an <b>unknown location</b>.",
         "Click Play to see what this might look like",
