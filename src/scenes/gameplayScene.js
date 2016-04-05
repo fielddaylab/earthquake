@@ -360,12 +360,10 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.imask.skip = false;
       l.lines = [
-        "Let's start with time.",
-        "We can figure out <b>when the earthquake originated</b> from <b>when it was felt</b>.",
-        "Sound like magic? Well, first have to learn something extra about earthquakes:",
-        "Earthquakes actually to send <b>multiple</b> shockwaves <b>from their epicenter</b>.",
-        "The two waves we care about are the <b>P-Wave</b> or Primary-wave and the <b>S-Wave</b> or Secondary-wave",
-        "They <b>each travel at a different speed</b>. The <b>P-wave</b> is much faster than the <b>S-Wave</b>",
+        "How can we figure out <b>when an earthquake originated</b> from only <b>when it was felt</b>?",
+        "Before we can answer, we have to quickly learn <b>just a bit more</b> about earthquakes.",
+        "Earthquakes send <b>multiple</b> shockwaves <b>from their epicenter</b>.",
+        "Each travels at a <b>different speed</b>- The <b>P-wave</b> (or Primary Wave) is much faster than the <b>S-Wave</b> (or Secondary Wave)",
         "Let's see what that might look like.",
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
@@ -408,7 +406,7 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "See how the <b>P-Wave</b> (purple) travels at <b>twice the speed</b> of the <b>S-Wave</b> (blue)?",
         "Look at <b>when</b> each wave was <b>reported</b> (shown on the timeline).",
-        "How can we use this information to help determine <b>when</b> the earthquake <b>originated</b>?",
+        "How can we use this to help determine <b>when</b> the earthquake <b>originated</b>?",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -421,149 +419,10 @@ var GamePlayScene = function(game, stage)
       l.return_on_complete = false;
       l.reset = true;
       l.location_success_range = 10;
-      l.n_locations = 1;
+      l.n_locations = 2;
       l.loc_1_x = 0.4;
       l.loc_1_y = 0;
-      l.quake_start_range_s = 400;
-      l.quake_start_range_e = 400;
-      l.quake_x = 0.1;
-      l.quake_y = 0;
-      l.display_ghost_quake = true;
-      l.display_quake_start_range = true;
-      l.p_waves = true;
-      l.quake_selection_r = 10;
-      l.deselect_all_on_create = false;
-      l.deselect_known_wrongs_on_create = false;
-      l.draw_mouse_quake = false;
-      l.click_resets_t = true;
-      l.variable_quake_t = false;
-      l.allow_radii = false;
-      l.ghost_countdown = true;
-      l.imask.scrubber = false;
-      l.imask.earth = false;
-      l.imask.earthdrag = false;
-      l.imask.select = false;
-      l.imask.skip = false;
-      l.lines = [
-        "Let's compare that last example to what happens when an earthquake <b>originates</b> just <b>slightly before</b> a location <b>feels its tremors</b>.",
-      ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
-      l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
-      l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_SP_CLOSE_INTRO = levels.length;
-      levels.push(l);
-
-      l = new Level();
-      cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = false;
-      l.reset = false;
-      l.imask.play_pause = false;
-      l.lines = [
-      ];
-      l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
-      l.advanceTest = function()
-      {
-        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
-        {
-          play_state = STATE_PAUSE;
-          return true;
-        }
-        return false;
-      }
-      lt.LVL_SP_CLOSE_PLAYING = levels.length;
-      levels.push(l);
-
-      l = new Level();
-      cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = false;
-      l.reset = false;
-      l.allow_skip_prompt = "Done";
-      l.imask.play_pause = true;
-      l.imask.scrubber = true;
-      l.imask.skip = true;
-      l.lines = [
-        "Look where on the timeline the <b>tremors were reported</b>-",
-        "They are <b>very close together</b>!",
-      ];
-      l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
-      l.advanceTest = function() { return false; }
-      lt.LVL_SP_CLOSE_OUTRO = levels.length;
-      levels.push(l);
-
-      l = new Level();
-      cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = false;
-      l.reset = false;
-      l.allow_skip_prompt = undefined;
-      l.display_ghost_quake = false;
-      l.display_quake_start_range = false;
-      l.imask.scrubber = false;
-      l.imask.skip = false;
-      l.lines = [
-        "Now we'll look at that without the distraction of the visible quake...",
-        "Keep in mind, in reality, <b>this</b> is the only information we have to start with.",
-        "See if you can visualize in your mind <b>how this information</b> (the reported times) means that <b>the earthquake originated near the time the city felt its tremors</b>.",
-      ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
-      l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
-      l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_SP_INVISIBLE_INTRO = levels.length;
-      levels.push(l);
-
-      l = new Level();
-      cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = false;
-      l.reset = false;
-      l.imask.play_pause = false;
-      l.lines = [
-      ];
-      l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
-      l.advanceTest = function()
-      {
-        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
-        {
-          play_state = STATE_PAUSE;
-          return true;
-        }
-        return false;
-      }
-      lt.LVL_SP_INVISIBLE_PLAYING = levels.length;
-      levels.push(l);
-
-      l = new Level();
-      cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = false;
-      l.reset = false;
-      l.allow_skip_prompt = "Done";
-      l.imask.play_pause = true;
-      l.imask.scrubber = true;
-      l.imask.skip = true;
-      l.lines = [
-        "Can you see why <b>a more recently originating earthquake</b> equates to <b>feeling the tremors close together</b>?",
-      ];
-      l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
-      l.advanceTest = function() { return false; }
-      lt.LVL_SP_INVISIBLE_OUTRO = levels.length;
-      levels.push(l);
-
-      l = new Level();
-      l.return_on_complete = false;
-      l.reset = true;
-      l.location_success_range = 10;
-      l.n_locations = 2;
-      l.loc_1_x = -0.15;
-      l.loc_1_y = 0;
-      l.loc_2_x = 0.4;
+      l.loc_2_x = -0.15;
       l.loc_2_y = 0;
       l.quake_start_range_s = 20;
       l.quake_start_range_e = 20;
@@ -586,11 +445,10 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.imask.skip = false;
       l.lines = [
-        "We'll watch this <i>one more time</i>-",
-        "But this time, we'll have <b>two</b> locations.",
+        "Let's show that same earthquake, but this time, with <b>two locations</b>.",
         "One will feel the tremors <b>shortly after</b> the quake originates,",
         "And one will feel the tremors <b>long after</b> the quake has originated.",
-        "Which will feel the <b>S-Wave</b> and the <b>P-Wave</b> close together?",
+        "See how each experiences the shockwaves <b>differently</b> (watch the timeline!).",
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
@@ -611,7 +469,7 @@ var GamePlayScene = function(game, stage)
       l.drawExtra = function() {}
       l.advanceTest = function()
       {
-        if(earth.t > earth.ghost_quake.location_s_ts[1]+20)
+        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
         {
           play_state = STATE_PAUSE;
           return true;
@@ -630,12 +488,9 @@ var GamePlayScene = function(game, stage)
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "Do you see how the difference matters?",
-        "Once we have this information (the <b>time</b> a location felt an earthquake's <b>P-Wave</b> and the <b>time</b> a location felt its <b>S-Wave</b>),",
-        "and because we know the <b>relative speeds</b> of the two waves,",
-        "we can can use this difference to find out <b>exactly when</b> the earthquake <b>originated</b>.",
-        "All it takes is a bit of math!",
-        "(Specifically:<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;<i>t_earthquake</i> = <div style=\"position:relative; left:100px;\"><div>(<i>speed_pwave</i>*<i>t_pwave_felt</i>)-(<i>speed_swave</i>*<i>t_swave_felt</i>)</div>/<div>(<i>speed_pwave</i>-<i>speed_swave</i>)</div></div><br /><b>-- But don't worry about that for now!</b>)",
+        "Do you see the <b>difference</b>?",
+        "One feels the tremors <b>one soon after the other</b>, and the other <b>longer apart</b>.",
+        "We can use <b>how far apart</b> the <b>S-Wave</b> and the <b>P-Wave</b> were experienced to determine <b>how long ago</b> the quake <b>originated</b>.",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -2266,9 +2121,9 @@ var GamePlayScene = function(game, stage)
       var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
       dc.context.fillStyle = "#2277FF";
       dc.context.fillRect(x-0.5,self.y,1,self.h);
-      dc.context.fillRect(x-0.5,self.y,90,self.h/4);
+      dc.context.fillRect(x-0.5,self.y,67,self.h/4);
       dc.context.fillStyle = "#FFFFFF";
-      dc.context.fillText("Quake Origin Time",x+2,self.y+self.h/4-2);
+      dc.context.fillText("Quake Origin",x+2,self.y+self.h/4-2);
     }
     self.drawQuakeBlips = function(q,ghost)
     {
