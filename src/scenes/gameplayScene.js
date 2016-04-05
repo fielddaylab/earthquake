@@ -129,6 +129,7 @@ var GamePlayScene = function(game, stage)
     l = new Level();
     l.return_on_complete = false;
     l.reset = true;
+    l.GPS = false;
     l.location_success_range = 0;
     l.n_locations = 0;
     l.quake_start_range_s = 0;
@@ -158,6 +159,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.location_success_range = 50;
       l.n_locations = 3;
       l.quake_start_range_s = 0;
@@ -182,6 +184,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.location_success_range = 10;
       l.n_locations = 1;
       l.loc_1_x = 0.4;
@@ -221,6 +224,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
       ];
@@ -247,6 +251,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
@@ -270,6 +275,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = undefined;
       l.display_ghost_quake = false;
       l.display_quake_start_range = false;
@@ -290,6 +296,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
       ];
@@ -316,6 +323,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = true;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
@@ -335,6 +343,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.location_success_range = 10;
       l.n_locations = 1;
       l.loc_1_x = 0.4;
@@ -377,6 +386,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
       ];
@@ -399,6 +409,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
@@ -418,6 +429,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.location_success_range = 10;
       l.n_locations = 2;
       l.loc_1_x = 0.4;
@@ -461,6 +473,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
       ];
@@ -483,6 +496,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = true;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
@@ -502,6 +516,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.location_success_range = 60;
       l.n_locations = 1;
       l.loc_1_x = 0;
@@ -547,6 +562,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.imask.earth = false;
       l.lines = [
       ];
@@ -582,6 +598,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.earth = true;
@@ -616,6 +633,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.deselect_known_wrongs_on_create = true;
       l.lines = [
         "Wow! Good guess!",
@@ -648,6 +666,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.lines = [
         "Great work!",
         "So you've found a couple locations that <b>cannot be ruled out</b> as epicenters-",
@@ -685,6 +704,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "I think I know the pattern";
       l.deselect_all_on_create = true;
       l.deselect_known_wrongs_on_create = false;
@@ -704,6 +724,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = undefined;
       l.allow_radii = true;
       l.imask.skip = false;
@@ -723,6 +744,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "Ok. I'm ready to move on.";
       l.imask.skip = true;
       l.lines = [
@@ -741,6 +763,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.location_success_range = 20;
       l.n_locations = 1;
       l.loc_1_x = 0.2;
@@ -799,6 +822,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "Ready to move on";
       l.lines = [
         "Cool. So we know how to pretty effectively narrow down <b>possible epicenters</b> to a ring",
@@ -816,6 +840,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.location_success_range = 20;
       l.n_locations = 2;
       l.loc_1_x = 0.2;
@@ -874,6 +899,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.allow_skip_prompt = "Ready to move on";
       l.imask.next = true;
       l.lines = [
@@ -895,6 +921,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = false;
       l.allow_skip_prompt = undefined;
       l.location_success_range = 20;
       l.n_locations = 3;
@@ -955,6 +982,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = false;
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
@@ -967,6 +995,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       l.return_on_complete = false;
       l.reset = true;
+      l.GPS = true;
       l.location_success_range = 10;
       l.n_locations = 3;
       l.loc_1_x = 0.4;
@@ -975,12 +1004,12 @@ var GamePlayScene = function(game, stage)
       l.loc_2_y = 0.2;
       l.loc_3_x = -0.2;
       l.loc_3_y = -0.3;
-      l.quake_start_range_s = 100;
-      l.quake_start_range_e = 100;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
       l.quake_x = -0.4;
       l.quake_y = 0;
       l.display_ghost_quake = true;
-      l.display_quake_start_range = true;
+      l.display_quake_start_range = false;
       l.p_waves = false;
       l.quake_selection_r = 10;
       l.deselect_all_on_create = false;
@@ -1013,6 +1042,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = true;
       l.imask.play_pause = false;
       l.lines = [
       ];
@@ -1039,13 +1069,13 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
       l.reset = false;
+      l.GPS = true;
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
         "See how each <b>Satellite</b> emits a wave <b>toward</b> the GPS device?",
-        "Watching the waves propagate, it's more visibly clear <b>where they all intersect</b>- even without dragging out circles!",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1058,6 +1088,7 @@ var GamePlayScene = function(game, stage)
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = true;
       l.reset = false;
+      l.GPS = false;
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
@@ -1321,6 +1352,7 @@ var GamePlayScene = function(game, stage)
     self.complete = false;
     self.return_on_complete = false;
     self.reset = true;
+    self.GPS = false;
     self.allow_skip_prompt = false;
     self.location_success_range = 10;
     self.n_locations = 3;
@@ -1677,27 +1709,46 @@ var GamePlayScene = function(game, stage)
         dc.context.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
         dc.context.stroke();
 
-        ellipse.wx = q.wx;
-        ellipse.wy = q.wy;
-        ellipse.ww = (self.t-q.t)*quake_s_rate;
-        ellipse.wh = (self.t-q.t)*quake_s_rate;
-        screenSpace(cam,dc,ellipse);
-        dc.context.strokeStyle = s_color;
-        dc.context.beginPath();
-        dc.context.ellipse(q.cx, q.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
-        dc.context.stroke();
-
-        if(levels[cur_level].p_waves)
+        if(levels[cur_level].GPS)
         {
-          dc.context.strokeStyle = p_color;
+          for(var i = 0; i < self.locations.length; i++)
+          {
+            var l = self.locations[i];
+            ellipse.wx = l.wx;
+            ellipse.wy = l.wy;
+            ellipse.ww = self.t*quake_s_rate; //doesn't need to be "quake_s"- just a constant rate
+            ellipse.wh = self.t*quake_s_rate;
+            screenSpace(cam,dc,ellipse);
+            dc.context.strokeStyle = s_color;
+            dc.context.beginPath();
+            dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+            dc.context.stroke();
+          }
+        }
+        else
+        {
           ellipse.wx = q.wx;
           ellipse.wy = q.wy;
-          ellipse.ww = (self.t-q.t)*quake_p_rate;
-          ellipse.wh = (self.t-q.t)*quake_p_rate;
+          ellipse.ww = (self.t-q.t)*quake_s_rate;
+          ellipse.wh = (self.t-q.t)*quake_s_rate;
           screenSpace(cam,dc,ellipse);
+          dc.context.strokeStyle = s_color;
           dc.context.beginPath();
           dc.context.ellipse(q.cx, q.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
           dc.context.stroke();
+
+          if(levels[cur_level].p_waves)
+          {
+            dc.context.strokeStyle = p_color;
+            ellipse.wx = q.wx;
+            ellipse.wy = q.wy;
+            ellipse.ww = (self.t-q.t)*quake_p_rate;
+            ellipse.wh = (self.t-q.t)*quake_p_rate;
+            screenSpace(cam,dc,ellipse);
+            dc.context.beginPath();
+            dc.context.ellipse(q.cx, q.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+            dc.context.stroke();
+          }
         }
       }
 
