@@ -206,12 +206,13 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = false;
       l.lines = [
         "What can we know about earthquakes? And how can we know it?",
-        "Imagine that the little black square is actually <b>Square City</b> and an earthquake it about to make it rumble!",
+        "Imagine that the little black square is <b>Square City</b>, and an earthquake is about to make it rumble!",
       ];
       l.prePromptEvt = function() { earth.assumed_start_t = levels[cur_level].quake_start_range_s; }
       l.postPromptEvt = function() {}
+      l.drawExtra = function() { dc.context.fillText("Click the play button to watch quake",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_ANIM_INTRO = levels.length;
+      lt.LVL_INTRO_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -222,6 +223,11 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
+        else dc.context.fillText("Watch the quake",100,100);
+      }
       l.advanceTest = function()
       {
         if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
@@ -231,7 +237,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_ANIM_PLAYING = levels.length;
+      lt.LVL_INTRO_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -242,18 +248,18 @@ var GamePlayScene = function(game, stage)
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "Did you see how a wave moved out from the earthquake's <b>origin</b> and expanded until it hit the city?",
-        "From that animation we know <b>where</b> the earthquake came from.",  
-        "We also can see <b>when</b> it started,",
-        "As it moves out, we see a delay, then we can see <b>when</b> it was <b>experienced</b> by square city.,",
+        "Did you see how a wave moved out from the earthquake's <b>epicenter</b> and expanded until it hit the city?",
+        "We can see <b>where</b> the earthquake started,",
+        "we can see <b>when</b> it started,",
+        "and we can see <b>when</b> it was <b>experienced</b> by Square City.",
         "But with real earthquakes, we have to <b>construct</b> all of that information from a <b>limited amount of data</b>.",
-        "Often, all we have is the reports from cities that they <b>felt</b> the earthquake at a certian <b>time</b>.",
-        "Play around if you like, then touch the <b>Done</b> button",
+        "Often, all we have is the <b>reports</b> that cities <b>felt</b> the earthquake at a certian <b>time</b>.",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_ANIM_PAUSE = levels.length;
+      lt.LVL_INTRO_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -270,8 +276,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() { earth.t = 0; play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
+      l.drawExtra = function() { dc.context.fillText("Click the play button",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_EMPTY_ANIM = levels.length;
+      lt.LVL_EMPTY_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -282,6 +289,11 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
+        else dc.context.fillText("Watch the quake",100,100);
+      }
       l.advanceTest = function()
       {
         if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
@@ -291,7 +303,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_EMPTY_ANIM_PLAYING = levels.length;
+      lt.LVL_EMPTY_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -302,14 +314,15 @@ var GamePlayScene = function(game, stage)
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "They didn't even see it coming! All we see is <b>when</b> <b>Square City</b> feels the shake!",
-        "When and where did the earthquake come from?",
+        "All we see is <b>when</b> <b>Square City</b> feels the shake!",
+        "<b>When</b> and <b>where</b> did the earthquake come from?",
         "How can we fill out all the missing <b>information</b>, from only <b>when a location felt a tremor</b>?",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function(){ return false; }
-      lt.LVL_EMPTY_ANIM_PAUSE = levels.length;
+      lt.LVL_EMPTY_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -342,15 +355,16 @@ var GamePlayScene = function(game, stage)
         "Let's start with time.",
         "We can figure out <b>when the earthquake originated</b> from <b>when it was felt</b>.",
         "Sound like magic? Well, first have to learn something extra about earthquakes:",
-        "Earthquakes actually to send <b>multiple</b> shockwaves <b>from their origin</b>.",
+        "Earthquakes actually to send <b>multiple</b> shockwaves <b>from their epicenter</b>.",
         "The two waves we care about are the <b>P-Wave</b> or Primary-wave and the <b>S-Wave</b> or Secondary-wave",
         "They <b>each travel at a different speed</b>. The <b>P-wave</b> is much faster than the <b>S-Wave</b>",
         "Let's see what that might look like.",
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_DISTANCE_FIND = levels.length;
+      lt.LVL_SP_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -361,6 +375,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function()
       {
         if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
@@ -370,7 +385,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_DISTANCE_PLAYING = levels.length;
+      lt.LVL_SP_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -387,8 +402,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_DISTANCE_PAUSE = levels.length;
+      lt.LVL_SP_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -422,8 +438,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_DISTANCE_PAUSE = levels.length;
+      lt.LVL_SP_CLOSE_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -434,6 +451,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function()
       {
         if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
@@ -443,7 +461,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_DISTANCE_PLAYING = levels.length;
+      lt.LVL_SP_CLOSE_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -459,8 +477,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_DISTANCE_PAUSE = levels.length;
+      lt.LVL_SP_CLOSE_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -478,8 +497,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_DISTANCE_PAUSE = levels.length;
+      lt.LVL_SP_INVISIBLE_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -490,6 +510,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function()
       {
         if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
@@ -499,7 +520,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_DISTANCE_PLAYING = levels.length;
+      lt.LVL_SP_INVISIBLE_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -514,8 +535,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_DISTANCE_PAUSE = levels.length;
+      lt.LVL_SP_INVISIBLE_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -555,8 +577,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
-      lt.LVL_DISTANCE_PAUSE = levels.length;
+      lt.LVL_SP_RECAP_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -567,6 +590,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function()
       {
         if(earth.t > earth.ghost_quake.location_s_ts[1]+20)
@@ -576,7 +600,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_DISTANCE_PLAYING = levels.length;
+      lt.LVL_SP_RECAP_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -596,8 +620,9 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_DISTANCE_PAUSE = levels.length;
+      lt.LVL_SP_RECAP_OUTRO = levels.length;
       levels.push(l);
 
 
@@ -629,17 +654,18 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "Going forward, we'll now just assume we know <b>when</b> the quake originated, and will no longer show the <b>P-Waves</b>- Just for simplification.",
         "(After all, we now know exactly how to calculate it!)",
-        "Anyways. Now, we need to figure out a way to calculate <b>where</b> the earthquake originated.",
+        "Anyways. Now, we need to figure out a way to calculate <b>where</b> the earthquake originated (or find its <b>epicenter</b>).",
         "Knowing <b>when</b> the earthquake started, and <b>when</b> it hit Square City,",
         "place a guess <b>where</b> you think the earthquake might have occurred!",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() { dc.context.fillText("Click to guess the earthquake's epicenter",100,100); }
       l.advanceTest = function()
       {
         return earth.quakes.length;
       }
-      lt.LVL_GUESS_LOC = levels.length;
+      lt.LVL_BLIND_GUESS_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -650,6 +676,11 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(play_speed == 1) dc.context.fillText("Wait for it... (click 8x speed to speed up)",100,100);
+        else dc.context.fillText("Wait for it...",100,100);
+      }
       l.advanceTest = function()
       {
         if(earth.t > earth.quakes[0].location_s_ts[0]+20)
@@ -668,7 +699,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_GUESS_PLAYING = levels.length;
+      lt.LVL_BLIND_GUESS_PLAYING = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -684,6 +715,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() { dc.context.fillText("Try to find a plausable quake location",100,100); }
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -700,7 +732,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_INCORRECT_GUESS_FIND_CORRECT = levels.length;
+      lt.LVL_BLIND_GUESS_INCORRECT = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -709,11 +741,12 @@ var GamePlayScene = function(game, stage)
       l.deselect_known_wrongs_on_create = true;
       l.lines = [
         "Wow! Good guess!",
-        "The timing of that guessed origin location <b>does not conflict</b> with the information we know.",
-        "While we <b>can't yet</b> difinitively say \"that's where the earthquake originated\", we <b>can't rule it out</b>-",
+        "The timing of that guessed epicenter <b>does not conflict</b> with the information we know.",
+        "While we <b>can't yet</b> difinitively say \"that is the earthquake's epicenter\", we <b>can't rule it out</b>-",
         "There may be other locations we could try that <b>also</b> wouldn't conflict with our known information.",
-        "Try to find some other plausable originating locations.",
+        "Try to find some other plausable epicenters.",
       ];
+      l.drawExtra = function() { dc.context.fillText("Try to find another plausable epicenter",100,100); }
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -730,7 +763,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_CORRECT_GUESS_FIND_ANOTHER = levels.length;
+      lt.LVL_BLIND_GUESS_ENCOURAGE = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -738,10 +771,17 @@ var GamePlayScene = function(game, stage)
       l.reset = false;
       l.lines = [
         "Great work!",
-        "So you've found a couple locations that <b>cannot be ruled out</b> as origins- that is, we've made some guesses that <b>don't conflict with what we know</b>.",
+        "So you've found a couple locations that <b>cannot be ruled out</b> as epicenters- that is, we've made some guesses that <b>don't conflict with what we know</b>.",
         "Make a few more guesses, and try to look for a pattern. What does the space look like where the quake might have originated?",
         "(Don't be afraid to make guesses all over the map!)",
       ];
+      l.drawExtra = function()
+      {
+        var n = 0;
+        for(var i = 0; i < earth.quakes.length; i++)
+          if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
+        dc.context.fillText("Keep finding plausible epicenters (found "+n+"/5)",100,100);
+      }
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -758,7 +798,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_FOUND_2_CORRECT_FIND_5 = levels.length;
+      lt.LVL_BLIND_GUESS_ENCOURAGE_AGAIN = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -771,11 +811,12 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "Do you see the pattern starting to emerge?",
         "Because <b>we know when the earthquake originated</b>, and <b>when Square City felt its tremors</b>,",
-        "we can <b>rule out some locations as possible origins</b>, and <b>cannot rule out</b> others.",
+        "we can <b>rule out some locations as possible epicenters</b>, and <b>cannot rule out</b> others.",
         "Keep guessing until the pattern is obvious.",
       ];
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_FOUND_5_CORRECT_KEEP_FINDING = levels.length;
+      lt.LVL_BLIND_GUESS_COMPLETE = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -786,13 +827,14 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = false;
       l.lines = [
         "So you think you see the pattern?",
-        "Click and drag out from Square City to highlight the area that <b>cannot be ruled out</b> as a possible originating location of the earthquake",
+        "Click and drag out from Square City to highlight the area that <b>cannot be ruled out</b> as a possible epicenter of the earthquake",
       ];
+      l.drawExtra = function() { dc.context.fillText("Click and Drag out a pattern from Square City",100,100); }
       l.advanceTest = function()
       {
         return (!earth.locations[0].dragging && Math.abs(Math.round(earth.locations[0].rad/quake_s_rate)-earth.ghost_quake.location_s_ts[0]) < 20);
       }
-      lt.LVL_DRAG_TO_PATTERN = levels.length;
+      lt.LVL_DRAG_PATTERN_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -803,13 +845,14 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "The pattern is a ring!",
         "From only the information of <b>when</b> a quake originated, <b>when</b> a quake was felt (at a known location), and <b>how fast</b> a quake travels,",
-        "we can <b>narrow down</b> possible <b>originating locations</b> to a <b>ring</b> around the <b>known location</b>.",
+        "we can <b>narrow down</b> possible <b>epicenters</b> to a <b>ring</b> around the <b>known location</b>.",
         "The <b>radius</b> of the ring is <b>proportional</b> to the <b>difference in time between when it originated, and when it was felt</b>.",
         "In other words, <b>the longer it takes to travel, the larger the circle.</b>",
         "From now on, you'll be able to <b>drag out these rings</b> from locations.",
       ];
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_FOUND_PATTERN_PLAY = levels.length;
+      lt.LVL_DRAG_PATTERN_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -837,10 +880,18 @@ var GamePlayScene = function(game, stage)
         "So, now that we have the ability to <b>drag a ring out from locations</b> to illuminate locations that <b>don't conflict with our known information</b>,",
         "we'll now reduce the <b>error range</b>.",
         "That is, now- for us to consider a location <b>plausibly correct</b>, it will have to be <b>very precise</b>.",
-        "With this new tool, and new restriction, try to find 3 <b>plausible origin locations</b> that <b>don't conflict with our known information.",
+        "With this new tool, and new restriction, try to find 3 <b>plausible epicenters</b> that <b>don't conflict with our known information.",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        var n = 0;
+        for(var i = 0; i < earth.quakes.length; i++)
+          if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
+        dc.context.fillText("Find 3 plausible epicenters very precisely (found "+n+"/3)",100,100);
+        dc.context.fillText("(Drag out a ring from the location to help!)",100,120);
+      }
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -850,14 +901,14 @@ var GamePlayScene = function(game, stage)
           var q = earth.quakes[i];
           if(earth.t > q.location_s_ts[0] && q.location_s_cs[0]) n_correct++;
         }
-        if(n_correct >= 2)
+        if(n_correct >= 3)
         {
           play_state = STATE_PAUSE;
           return true;
         }
         return false;
       }
-      lt.LVL_FIND_TIGHT_RING = levels.length;
+      lt.LVL_TIGHT_GUESS_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -873,8 +924,9 @@ var GamePlayScene = function(game, stage)
         "But what if we had more information?",
         "What if there was <b>another location</b>, and we knew <b>when it felt the tremor</b> as well?",
       ];
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_FOUND_TIGHT_RING_PLAY = levels.length;
+      lt.LVL_TIGHT_GUESS_COMPLETE = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -905,10 +957,11 @@ var GamePlayScene = function(game, stage)
         "Well good news!",
         "Circle city just called in when <b>they felt the earthquake's tremors</b>.",
         "Using that information, see if you can narrow the possible locations that <b>don't conflict with any known information</b> down further!",
-        "Find 2 plausible <b>origin locations</b>.",
+        "Find 2 plausible <b>epicenters</b>.",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -929,7 +982,7 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_2_LOCATIONS = levels.length;
+      lt.LVL_2LOC_GUESS_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -939,17 +992,18 @@ var GamePlayScene = function(game, stage)
       l.imask.next = true;
       l.lines = [
         "Ok. So we've narrowed it down even more!",
-        "With one location, we can <b>reduce the possible origin location</b> to a <b>ring</b>.",
+        "With one location, we can <b>reduce the possible epicenter</b> to a <b>ring</b>.",
         "With two locations, we get <b>two rings</b>.",
-        "But the origin location <b>has to fall on both rings</b>.",
-        "This leaves at most <b>two small areas</b> where the rings intersect as <b>the only possible origin locations</b>.",
+        "But the epicenter <b>has to fall on both rings</b>.",
+        "This leaves at most <b>two small areas</b> where the rings intersect as <b>the only possible epicenters</b>.",
         "That's a big reduction!",
-        "But we still don't yet know <b>exactly</b> where the quake originated...",
+        "But we still don't yet know <b>exactly</b> where the quake's epicenter is located...",
         "Which of the <b>two possible areas</b> is it?",
         "We can answer this question by adding <b>one more location</b>...",
       ];
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_2_LOCATIONS_PLAY = levels.length;
+      lt.LVL_2LOC_GUESS_COMPLETE = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -981,10 +1035,11 @@ var GamePlayScene = function(game, stage)
       l.imask.next = false;
       l.lines = [
         "So now we've got 3 locations.",
-        "See if you can find <b>exactly</b> where this earthquake originated!",
+        "See if you can find the <b>exact</b> epicenter!",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -1006,16 +1061,18 @@ var GamePlayScene = function(game, stage)
         }
         return false;
       }
-      lt.LVL_3_LOCATIONS = levels.length;
+      lt.LVL_3LOC_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.reset = false;
       l.lines = [
-        "Ok! Now you know how to <b>triangulate</b> the origin location of an earthquake!",
+        "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
+      l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
+      lt.LVL_CONCLUSION = levels.length;
       levels.push(l);
     }
 
@@ -1239,52 +1296,7 @@ var GamePlayScene = function(game, stage)
     if(input_state != IGNORE_INPUT) fake_mouse.draw();
     dc.context.fillStyle = "#000000";
     dc.context.textAlign = "left";
-    switch(cur_level)
-    {
-      case lt.LVL_ANIM_INTRO:
-        dc.context.fillText("Click the play button to watch quake",100,100);
-        break;
-      case lt.LVL_ANIM_PLAYING:
-        if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
-        break;
-      case lt.LVL_EMPTY_ANIM:
-        dc.context.fillText("Click the play button",100,100);
-        break;
-      case lt.LVL_EMPTY_ANIM_PLAYING:
-        if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
-        break;
-      case lt.LVL_GUESS_LOC:
-        dc.context.fillText("Click to guess where the earthquake might have originated",100,100);
-        break;
-      case lt.LVL_GUESS_PLAYING:
-        if(play_speed == 1) dc.context.fillText("Wait for it... (click 8x speed to speed up)",100,100);
-        else dc.context.fillText("Wait for it...",100,100);
-        break;
-      case lt.LVL_INCORRECT_GUESS_FIND_CORRECT:
-        dc.context.fillText("Try to find a plausable quake location",100,100);
-        break;
-      case lt.LVL_CORRECT_GUESS_FIND_ANOTHER:
-        dc.context.fillText("Try to find another plausable quake origin",100,100);
-        break;
-      case lt.LVL_FOUND_2_CORRECT_FIND_5:
-        var n = 0;
-        for(var i = 0; i < earth.quakes.length; i++)
-          if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
-        dc.context.fillText("Keep finding plausible origins (found "+n+"/5)",100,100);
-        break;
-      case lt.LVL_FIND_TIGHT_RING:
-        var n = 0;
-        for(var i = 0; i < earth.quakes.length; i++)
-          if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
-        dc.context.fillText("Find 3 plausible origins very precisely (found "+n+"/3)",100,100);
-        dc.context.fillText("(Drag out a ring from the location to help!)",100,120);
-        break;
-      case lt.LVL_DRAG_TO_PATTERN:
-        dc.context.fillText("Click and Drag out a pattern from Square City",100,100);
-        break;
-    }
+    levels[cur_level].drawExtra();
     canvdom.draw(dc);
   };
 
@@ -1327,6 +1339,7 @@ var GamePlayScene = function(game, stage)
     self.lines = ["what's up?"];
     self.prePromptEvt = function(){};
     self.postPromptEvt = function(){};
+    self.drawExtra = function(){};
     self.advanceTest = function(){return false;}
   }
 
@@ -1380,6 +1393,7 @@ var GamePlayScene = function(game, stage)
     toLvl.lines = fromLvl.lines;
     toLvl.prePromptEvt = fromLvl.prePromptEvt;
     toLvl.postPromptEvt = fromLvl.postPromptEvt;
+    toLvl.drawExtra = fromLvl.drawExtra;
     toLvl.advanceTest = fromLvl.advanceTest;
   }
 
@@ -1507,8 +1521,8 @@ var GamePlayScene = function(game, stage)
         }
         self.ghost_quake.knows_c = false;
         self.ghost_quake.selected = true;
-        self.ghost_quake.c = true; //by definition
         if(accomplished) self.ghost_quake.eval_loc_ts(self.locations);
+        self.ghost_quake.c = true; //must occur after eval loc ts.
       }
     }
 
