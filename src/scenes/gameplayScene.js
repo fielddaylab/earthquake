@@ -57,10 +57,11 @@ var GamePlayScene = function(game, stage)
   var scrubber;
   var speed_normal_button;
   var speed_fast_button;
-  var reset_button;
-  var del_all_quakes_button;
-  var del_sel_quakes_button;
+
   var desel_quakes_button;
+  var del_sel_quakes_button;
+  var del_all_quakes_button;
+  var new_button;
 
   var dom;
   var canvdom;
@@ -147,6 +148,7 @@ var GamePlayScene = function(game, stage)
     l.imask.earth = false;
     l.imask.earthdrag = false;
     l.imask.select = false;
+    l.imask.new = false;
     l.imask.skip = false;
     l.lines = [];
     l.advanceTest = function(){return true;}
@@ -207,6 +209,7 @@ var GamePlayScene = function(game, stage)
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
+      l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
         "What can we know about earthquakes? And how can we know it?",
@@ -366,6 +369,7 @@ var GamePlayScene = function(game, stage)
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
+      l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
         "How can we figure out <b>when an earthquake originated</b> from only <b>when it was felt</b>?",
@@ -454,6 +458,7 @@ var GamePlayScene = function(game, stage)
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
+      l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
         "Let's show that same earthquake, but this time, with <b>two locations</b>.",
@@ -537,6 +542,8 @@ var GamePlayScene = function(game, stage)
       l.ghost_countdown = true;
       l.imask.play_pause = false;
       l.imask.scrubber = false;
+      l.imask.select = false;
+      l.imask.new = false;
       l.imask.skip = false;
       l.imask.earthdrag = false;
       l.lines = [
@@ -601,6 +608,7 @@ var GamePlayScene = function(game, stage)
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.earth = true;
+      l.imask.select = true;
       l.lines = [
         "It looks like the earthquake <b>could not have</b> originated at that location.",
         "If it had, Square City would have reported <b>experiencing its tremors</b> at a <b>different time</b>.",
@@ -782,6 +790,7 @@ var GamePlayScene = function(game, stage)
       l.variable_quake_t = false;
       l.allow_radii = true;
       l.ghost_countdown = true;
+      l.imask.new = true;
       l.lines = [
         "So, now that we have the ability to <b>drag a ring out from locations</b> to illuminate locations that <b>don't conflict with our known information</b>,",
         "we'll now reduce the <b>error range</b>.",
@@ -862,6 +871,7 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = true;
       l.ghost_countdown = true;
       l.imask.next = false;
+      l.imask.new = false;
       l.lines = [
         "Well good news!",
         "Circle city just called in when <b>they felt the earthquake's tremors</b>.",
@@ -946,6 +956,7 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = true;
       l.ghost_countdown = true;
       l.imask.next = false;
+      l.imask.new = false;
       l.lines = [
         "So now we've got 3 locations.",
         "See if you can find the <b>exact</b> epicenter!",
@@ -1022,6 +1033,7 @@ var GamePlayScene = function(game, stage)
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
+      l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
         "Triangulation has applications beyond <b>finding the epicenter of earthquakes</b>.",
@@ -1149,17 +1161,17 @@ var GamePlayScene = function(game, stage)
     speed_normal_button = new ToggleBox(dc.width-60, dc.height-70,20,20,true, function(on) { ui_lock = self; if(on) { play_speed = 1.5;   speed_fast_button.on = false; } });
     speed_fast_button   = new ToggleBox(dc.width-30, dc.height-70,20,20,false,function(on) { ui_lock = self; if(on) { play_speed =   6; speed_normal_button.on = false; } });
 
-    reset_button          = new ButtonBox(dc.width-30, 10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.reset(); play_state = STATE_PAUSE;});
-    del_all_quakes_button = new ButtonBox(dc.width-60, 10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteQuakes(); play_state = STATE_PAUSE;});
-    del_sel_quakes_button = new ButtonBox(dc.width-90, 10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
-    desel_quakes_button   = new ButtonBox(dc.width-120,10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deselectQuakes();});
+    desel_quakes_button   = new ButtonBox(dc.width-120, 10,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deselectQuakes();});
+    del_sel_quakes_button = new ButtonBox(dc.width-120, 40,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
+    del_all_quakes_button = new ButtonBox(dc.width-120, 70,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteQuakes(); play_state = STATE_PAUSE;});
+    new_button            = new ButtonBox(dc.width-120,100,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.new)    return; earth.reset(); play_state = STATE_PAUSE;});
 
     clicker.register(speed_normal_button);
     clicker.register(speed_fast_button);
-    clicker.register(reset_button);
-    clicker.register(del_all_quakes_button);
-    clicker.register(del_sel_quakes_button);
     clicker.register(desel_quakes_button);
+    clicker.register(del_sel_quakes_button);
+    clicker.register(del_all_quakes_button);
+    clicker.register(new_button);
     hoverer.register(earth);
     dragger.register(earth);
 
@@ -1333,14 +1345,26 @@ var GamePlayScene = function(game, stage)
     b = speed_fast_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText(">>",b.x+b.w/2,b.y+b.h-2);
 
-    b = reset_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("new",b.x+b.w/2,b.y+b.h-2);
-    b = del_all_quakes_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("clear",b.x+b.w/2,b.y+b.h-2);
-    b = del_sel_quakes_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("delete",b.x+b.w/2,b.y+b.h-2);
-    b = desel_quakes_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect",b.x+b.w/2,b.y+b.h-2);
+    if(earth.quakes.length && levels[cur_level].imask.select)
+    {
+      var sel = false;
+      for(var i = 0; i < earth.quakes.length && !sel; i++)
+        if(earth.quakes[i].selected) sel = true;
+      if(sel)
+      {
+        b = desel_quakes_button;
+        b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect all",b.x+b.w/2,b.y+b.h-2);
+        b = del_sel_quakes_button;
+        b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("delete selected",b.x+b.w/2,b.y+b.h-2);
+      }
+      b = del_all_quakes_button;
+      b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("delete all",b.x+b.w/2,b.y+b.h-2);
+    }
+    if(levels[cur_level].imask.new)
+    {
+      b = new_button;
+      b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("new",b.x+b.w/2,b.y+b.h-2);
+    }
 
     if(input_state != IGNORE_INPUT) fake_mouse.draw();
     dc.context.fillStyle = "#000000";
@@ -1406,6 +1430,7 @@ var GamePlayScene = function(game, stage)
     self.earth = true;
     self.earthdrag = true;
     self.select = true;
+    self.new = true;
     self.skip = true;
   }
 
@@ -1444,6 +1469,7 @@ var GamePlayScene = function(game, stage)
     toLvl.imask.earth = fromLvl.imask.earth;
     toLvl.imask.earthdrag = fromLvl.imask.earthdrag;
     toLvl.imask.select = fromLvl.imask.select;
+    toLvl.imask.new = fromLvl.imask.new;
     toLvl.imask.skip = fromLvl.imask.skip;
     toLvl.lines = fromLvl.lines;
     toLvl.prePromptEvt = fromLvl.prePromptEvt;
