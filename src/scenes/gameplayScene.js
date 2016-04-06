@@ -1855,7 +1855,6 @@ var GamePlayScene = function(game, stage)
     }
     self.draw = function()
     {
-      dc.context.font = "10px Helvetica";
       dc.context.textAlign = "center";
 
       //draw distance viz
@@ -2365,7 +2364,6 @@ var GamePlayScene = function(game, stage)
     }
     self.draw = function()
     {
-      dc.context.font = "10px Helvetica";
       dc.context.textAlign = "center";
 
       //draw self

@@ -31,6 +31,8 @@ var Stage = function(init)
   self.dispCanv.canvas.style.width = self.width+"px";
   self.dispCanv.canvas.style.height = self.height+"px";
 
+  self.drawCanv.context.font = "10px Helvetica";
+
   self.draw = function()
   {
     self.drawCanv.blitTo(self.dispCanv);
