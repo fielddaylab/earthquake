@@ -25,8 +25,8 @@ var ChooseScene = function(game, stage)
     clicker.register(btn_intro);
     clicker.register(btn_sp);
     clicker.register(btn_triangulate);
-    //clicker.register(btn_GPS);
-    //clicker.register(btn_free);
+    clicker.register(btn_GPS);
+    clicker.register(btn_free);
   };
 
   self.tick = function()
@@ -39,8 +39,8 @@ var ChooseScene = function(game, stage)
     btn_intro.draw(dc);       dc.context.fillStyle = "#000000"; dc.context.fillText("Intro",btn_intro.x+8,btn_intro.y+btn_intro.h-4);
     btn_sp.draw(dc);          dc.context.fillStyle = "#000000"; dc.context.fillText("S&P",btn_sp.x+8,btn_sp.y+btn_sp.h-4);
     btn_triangulate.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("Triangulate",btn_triangulate.x+8,btn_triangulate.y+btn_triangulate.h-4);
-    //btn_GPS.draw(dc);         dc.context.fillStyle = "#000000"; dc.context.fillText("GPS",btn_GPS.x+8,btn_GPS.y+btn_GPS.h-4);
-    //btn_free.draw(dc);        dc.context.fillStyle = "#000000"; dc.context.fillText("Free",btn_free.x+8,btn_free.y+btn_free.h-4);
+    btn_GPS.draw(dc);         dc.context.fillStyle = "#000000"; dc.context.fillText("GPS",btn_GPS.x+8,btn_GPS.y+btn_GPS.h-4);
+    btn_free.draw(dc);        dc.context.fillStyle = "#000000"; dc.context.fillText("Free",btn_free.x+8,btn_free.y+btn_free.h-4);
   };
 
   self.cleanup = function()
@@ -49,3 +49,4 @@ var ChooseScene = function(game, stage)
     clicker = undefined;
   };
 };
+

@@ -43,6 +43,7 @@ var GamePlayScene = function(game, stage)
   var levels;
   var cur_level;
   var start_level = 0;
+  var heard_freeplay_prompt;
 
   var earth;
   var hov_loc;
@@ -174,7 +175,7 @@ var GamePlayScene = function(game, stage)
       l.variable_quake_t = false;
       l.allow_radii = true;
       l.ghost_countdown = true;
-      l.lines = ["test this!"];
+      l.lines = [];
       lt.LVL_DEBUG = levels.length;
       levels.push(l);
     }
@@ -1026,14 +1027,14 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = false;
       l.lines = [
         "Triangulation has applications beyond <b>finding the epicenter of earthquakes</b>.",
-        "It's also the <b>underlying mechanics</b> behind using a <b>GPS</b>!",
+        "It's also used by <b>Global Positioning Systems</b> (or <b>GPS</b>)!",
         "A key difference is that, rather than a wave <b>emitting from the unknown location</b>, towards a set of <b>known locations</b>,",
         "waves instead <b>are emitted from known locations</b>, toward an <b>unknown location</b>.",
         "Click Play to see what this might look like",
       ];
       l.prePromptEvt = function() { earth.assumed_start_t = levels[cur_level].quake_start_range_s; }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { dc.context.fillText("Click the play button to watch quake",100,100); }
+      l.drawExtra = function() { dc.context.fillText("Click the play button to watch the radio waves",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_GPS_INTRO = levels.length;
       levels.push(l);
@@ -1055,7 +1056,7 @@ var GamePlayScene = function(game, stage)
       }
       l.advanceTest = function()
       {
-        if(earth.t > earth.ghost_quake.location_s_ts[0]+20)
+        if(earth.t > earth.ghost_quake.location_s_ts[0]+150)
         {
           play_state = STATE_PAUSE;
           return true;
@@ -1067,7 +1068,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = false;
+      l.return_on_complete = true;
       l.reset = false;
       l.GPS = true;
       l.allow_skip_prompt = "Done";
@@ -1076,6 +1077,9 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = true;
       l.lines = [
         "See how each <b>Satellite</b> emits a wave <b>toward</b> the GPS device?",
+        "Whenever the device <b>receives a signal</b> from any of the <b>known locations</b>, it marks down <b>how far away</b> it is from <b>the location sending the signal</b>.",
+        "Just like with earthquakes- when you have a <b>known distance</b> to a <b>known location</b>, you have reduced your <b>possible position</b> to <b>a ring</b>.",
+        "<b>3 distances</b> from <b>3 locations</b> means <b>3 rings</b>, which is enough to find <b>exactly where you are</b>!",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1085,13 +1089,32 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
-      cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = true;
-      l.reset = false;
+      l.reset = true;
       l.GPS = false;
+      l.allow_skip_prompt = "Done";
+      l.location_success_range = 10;
+      l.n_locations = 3;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
+      l.display_quake_start_range = true;
+      l.p_waves = false;
+      l.quake_selection_r = 0;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = true;
+      l.ghost_countdown = true;
       l.lines = [
-        "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
+        "This area allows you to play around with <b>random</b> configurations of locations and quakes.",
+        "See if you can figure anything out about <b>what positioning of locations</b> works best, and what doesn't.",
+        "You'll be able to play as many different <b>random scenarios</b> as you'd like-",
+        "Good luck!",
       ];
+      l.prePromptEvt = function(){ if(heard_freeplay_prompt) levels[lt.LVL_FREE].lines = []; };
+      l.postPromptEvt = function(){ heard_freeplay_prompt = true; };
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_FREE = levels.length;
@@ -1106,10 +1129,11 @@ var GamePlayScene = function(game, stage)
         case 0: cur_level = lt.LVL_INTRO_INTRO-1;       break;
         case 1: cur_level = lt.LVL_SP_INTRO-1;          break;
         case 2: cur_level = lt.LVL_BLIND_GUESS_INTRO-1; break;
-        case 3: cur_level = lt.LVL_GPS_INTRO-1;               break;
+        case 3: cur_level = lt.LVL_GPS_INTRO-1;         break;
         case 4: cur_level = lt.LVL_FREE-1;              break;
       }
     }
+    heard_freeplay_prompt = false;
 
     earth = new Earth();
     earth.reset();
@@ -1567,6 +1591,12 @@ var GamePlayScene = function(game, stage)
         self.ghost_quake.selected = true;
         if(accomplished) self.ghost_quake.eval_loc_ts(self.locations);
         self.ghost_quake.c = true; //must occur after eval loc ts
+        //hack in correct "c_aware_t"
+        for(var i = 0; i < self.ghost_quake.location_s_ts.length; i++)
+        {
+          if(self.ghost_quake.location_s_ts[i] > self.ghost_quake.c_aware_t)
+            self.ghost_quake.c_aware_t = self.ghost_quake.location_s_ts[i];
+        }
       }
     }
 
@@ -1703,11 +1733,14 @@ var GamePlayScene = function(game, stage)
 
       if(q.selected)
       {
-        dc.context.lineWidth = 2;
-        dc.context.strokeStyle = "#888888";
-        dc.context.beginPath();
-        dc.context.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
-        dc.context.stroke();
+        if(!levels[cur_level].GPS || earth.t > q.c_aware_t)
+        {
+          dc.context.lineWidth = 2;
+          dc.context.strokeStyle = "#888888";
+          dc.context.beginPath();
+          dc.context.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
+          dc.context.stroke();
+        }
 
         if(levels[cur_level].GPS)
         {
@@ -1723,6 +1756,16 @@ var GamePlayScene = function(game, stage)
             dc.context.beginPath();
             dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
             dc.context.stroke();
+            if(earth.t >= q.location_s_ts[i])
+            {
+              ellipse.ww = q.location_s_ts[i]*quake_s_rate; //doesn't need to be "quake_s"- just a constant rate
+              ellipse.wh = q.location_s_ts[i]*quake_s_rate;
+              screenSpace(cam,dc,ellipse);
+              dc.context.strokeStyle = "#FF8888";
+              dc.context.beginPath();
+              dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+              dc.context.stroke();
+            }
           }
         }
         else
@@ -1758,7 +1801,7 @@ var GamePlayScene = function(game, stage)
         else    dc.context.drawImage(xmark,q.cx-xmark.width/2,q.cy-xmark.height/2);
         q.player_knows_c = true;
       }
-      else
+      else if(!levels[cur_level].GPS)
         dc.context.drawImage(qmark,q.cx-qmark.width/2,q.cy-qmark.height/2);
     }
     self.drawLoc = function(l,shake_amt)
@@ -1887,9 +1930,12 @@ var GamePlayScene = function(game, stage)
         l = self.locations[i];
         var shake_amt = 0;
 
-        for(var j = 0; j < self.quakes.length; j++)
-          if(self.quakes[j].selected) shake_amt += self.quakeShakes(self.quakes[j],i);
-        shake_amt += self.quakeShakes(self.ghost_quake,i);
+        if(!levels[cur_level].GPS)
+        {
+          for(var j = 0; j < self.quakes.length; j++)
+            if(self.quakes[j].selected) shake_amt += self.quakeShakes(self.quakes[j],i);
+          shake_amt += self.quakeShakes(self.ghost_quake,i);
+        }
 
         self.drawLoc(l,shake_amt);
       }
