@@ -55,10 +55,8 @@ var GamePlayScene = function(game, stage)
   var record_button;
 
   var scrubber;
-  var speed_1x_button;
-  var speed_2x_button;
-  var speed_4x_button;
-  var speed_8x_button;
+  var speed_normal_button;
+  var speed_fast_button;
   var reset_button;
   var del_all_quakes_button;
   var del_sel_quakes_button;
@@ -121,7 +119,7 @@ var GamePlayScene = function(game, stage)
     };
 
     play_state = STATE_PAUSE;
-    play_speed = 1;
+    play_speed = 1.5;
 
     lt = {};
     var l;
@@ -233,7 +231,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
         else dc.context.fillText("Watch the quake",100,100);
       }
       l.advanceTest = function()
@@ -305,7 +303,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(play_speed == 1) dc.context.fillText("Watch the quake (click 8x speed to speed up)",100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
         else dc.context.fillText("Watch the quake",100,100);
       }
       l.advanceTest = function()
@@ -376,7 +374,7 @@ var GamePlayScene = function(game, stage)
         "Each travels at a <b>different speed</b>- The <b>P-wave</b> (or Primary Wave) is much faster than the <b>S-Wave</b> (or Secondary Wave)",
         "Let's see what that might look like.",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -463,7 +461,7 @@ var GamePlayScene = function(game, stage)
         "And one will feel the tremors <b>long after</b> the quake has originated.",
         "See how each experiences the shockwaves <b>differently</b> (watch the timeline!).",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_1x_button.click({}); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -504,7 +502,7 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = true;
       l.lines = [
         "Do you see the <b>difference</b>?",
-        "One feels the tremors <b>one soon after the other</b>, and the other <b>longer apart</b>.",
+        "Circle City feels the tremors <b>one soon after the other</b>, and Square City feels them <b>longer apart</b>.",
         "We can use <b>how far apart</b> the <b>S-Wave</b> and the <b>P-Wave</b> were experienced to determine <b>how long ago</b> the quake <b>originated</b>.",
       ];
       l.prePromptEvt = function() {}
@@ -571,7 +569,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(play_speed == 1) dc.context.fillText("Wait for it... (click 8x speed to speed up)",100,100);
+        if(speed_normal_button.on) dc.context.fillText("Wait for it... (click >> to speed up)",100,100);
         else dc.context.fillText("Wait for it...",100,100);
       }
       l.advanceTest = function()
@@ -1051,7 +1049,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(play_speed == 1) dc.context.fillText("Watch the radio waves (click 8x speed to speed up)",100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the radio waves (click >> to speed up)",100,100);
         else dc.context.fillText("Watch the radio waves",100,100);
       }
       l.advanceTest = function()
@@ -1148,21 +1146,16 @@ var GamePlayScene = function(game, stage)
     scrubber = new Scrubber(earth);
     hoverer.register(scrubber);
 
-    //speed_1x_button = new ToggleBox(dc.width-120,dc.height-60,20,20,true, function(on) { ui_lock = self; if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
-    speed_1x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,true, function(on) { ui_lock = self; if(on) play_speed = 1; else if(play_speed == 1) speed_1x_button.on = true; speed_2x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
-    speed_2x_button = new ToggleBox(dc.width-90, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 2; else if(play_speed == 2) speed_2x_button.on = true; speed_1x_button.on = false; speed_4x_button.on = false; speed_8x_button.on = false; });
-    speed_4x_button = new ToggleBox(dc.width-60, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 4; else if(play_speed == 4) speed_4x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_8x_button.on = false; });
-    speed_8x_button = new ToggleBox(dc.width-30, dc.height-60,20,20,false,function(on) { ui_lock = self; if(on) play_speed = 8; else if(play_speed == 8) speed_8x_button.on = true; speed_1x_button.on = false; speed_2x_button.on = false; speed_4x_button.on = false; });
+    speed_normal_button = new ToggleBox(dc.width-60, dc.height-70,20,20,true, function(on) { ui_lock = self; if(on) { play_speed = 1.5;   speed_fast_button.on = false; } });
+    speed_fast_button   = new ToggleBox(dc.width-30, dc.height-70,20,20,false,function(on) { ui_lock = self; if(on) { play_speed =   6; speed_normal_button.on = false; } });
 
     reset_button          = new ButtonBox(dc.width-30, 10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.reset(); play_state = STATE_PAUSE;});
     del_all_quakes_button = new ButtonBox(dc.width-60, 10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteQuakes(); play_state = STATE_PAUSE;});
     del_sel_quakes_button = new ButtonBox(dc.width-90, 10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
     desel_quakes_button   = new ButtonBox(dc.width-120,10,20,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deselectQuakes();});
 
-    clicker.register(speed_1x_button);
-    //clicker.register(speed_2x_button);
-    //clicker.register(speed_4x_button);
-    clicker.register(speed_8x_button);
+    clicker.register(speed_normal_button);
+    clicker.register(speed_fast_button);
     clicker.register(reset_button);
     clicker.register(del_all_quakes_button);
     clicker.register(del_sel_quakes_button);
@@ -1335,16 +1328,10 @@ var GamePlayScene = function(game, stage)
     //speed_buttons
     var b;
 
-    b = speed_1x_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("1x",b.x+b.w/2,b.y+b.h-2);
-    /*
-    b = speed_2x_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("2x",b.x+b.w/2,b.y+b.h-2);
-    b = speed_4x_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("4x",b.x+b.w/2,b.y+b.h-2);
-    */
-    b = speed_8x_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("8x",b.x+b.w/2,b.y+b.h-2);
+    b = speed_normal_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText(">",b.x+b.w/2,b.y+b.h-2);
+    b = speed_fast_button;
+    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText(">>",b.x+b.w/2,b.y+b.h-2);
 
     b = reset_button;
     b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("new",b.x+b.w/2,b.y+b.h-2);
@@ -2037,8 +2024,8 @@ var GamePlayScene = function(game, stage)
         var d = wdist(l,self);
         self.location_s_ts[i] = self.t+(d/quake_s_rate);
         self.location_p_ts[i] = self.t+(d/quake_p_rate);
-        self.location_s_hrts[i] = timeForT(Math.round(self.t+(d/quake_s_rate)));
-        self.location_p_hrts[i] = timeForT(Math.round(self.t+(d/quake_p_rate)));
+        self.location_s_hrts[i] = clockForT(Math.round(self.t+(d/quake_s_rate)));
+        self.location_p_hrts[i] = clockForT(Math.round(self.t+(d/quake_p_rate)));
         self.location_s_cs[i] = (ghost != undefined && Math.abs(self.location_s_ts[i]-ghost.location_s_ts[i]) < levels[cur_level].location_success_range);
         self.location_p_cs[i] = (ghost != undefined && Math.abs(self.location_p_ts[i]-ghost.location_p_ts[i]) < levels[cur_level].location_success_range);
 
@@ -2379,14 +2366,14 @@ var GamePlayScene = function(game, stage)
 
       self.drawBlip(self.earth.t,0,0,0);
       dc.context.fillStyle = "#000000";
-      self.labelBlip(self.earth.t,timeForT(self.earth.t));
+      self.labelBlip(self.earth.t,clockForT(Math.round(self.earth.t)));
 
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
         dc.context.fillStyle = "#888888";
         self.drawBlip(self.scrub_bar.hovering_t,0,0,0);
         dc.context.fillStyle = "#000000";
-        self.labelBlip(self.scrub_bar.hovering_t,timeForT(self.scrub_bar.hovering_t));
+        self.labelBlip(self.scrub_bar.hovering_t,clockForT(Math.round(self.scrub_bar.hovering_t)));
       }
 
       if(hov_loc && hov_loc.rad)
@@ -2438,6 +2425,17 @@ var GamePlayScene = function(game, stage)
     var mins = t%60;
     if(mins < 10) mins = "0"+mins;
     return hrs+":"+mins;
+  }
+  var clockForT = function(t)
+  {
+    var hrs = (Math.floor(t/60)%24);
+    var mins = t%60;
+    if(mins < 10) mins = "0"+mins;
+    var post = " AM";
+    if(hrs > 11) post = " PM"
+    hrs = hrs%12;
+    if(hrs == 0) hrs = 12;
+    return hrs+":"+mins+post;
   }
 
 };
