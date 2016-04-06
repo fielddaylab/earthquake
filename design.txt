@@ -1,0 +1,12 @@
+Considerations:
+- UI ought be usable via touch devices
+  - Can't make use of hover
+  - Need big, touchable buttons (or gestures)
+- Game might be played in iframe
+  - Shouldn't treat game as full browser web page- isolated rectangle more naturally iframe-able
+- Variable interactivity throughout game
+  - Many screens only allow "play" to be clicked
+  - Multiple different combinations of "what interactions are allowed"
+- Variable visualization throughout game
+  - Some levels/visualizations can be big and explicit based on there only being one earthquake or one location
+  - Others, with dynamic # earthquakes, dynamic # quakes selected, > 1 location, etc... need to vary viz by interaction so to not get crowded
