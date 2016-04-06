@@ -372,7 +372,7 @@ var GamePlayScene = function(game, stage)
       l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
-        "How can we figure out <b>when an earthquake originated</b> from only <b>when it was felt</b>?",
+        "How can we figure out <b>when</b> an earthquake </b>originated</b> from only <b>when</b> it was <b>felt</b>?",
         "Before we can answer, we have to quickly learn <b>just a bit more</b> about earthquakes.",
         "Earthquakes send <b>multiple</b> shockwaves <b>from their epicenter</b>.",
         "Each travels at a <b>different speed</b>- The <b>P-wave</b> (or Primary Wave) is much faster than the <b>S-Wave</b> (or Secondary Wave)",
@@ -509,6 +509,7 @@ var GamePlayScene = function(game, stage)
         "Do you see the <b>difference</b>?",
         "Circle City feels the tremors <b>one soon after the other</b>, and Square City feels them <b>longer apart</b>.",
         "We can use <b>how far apart</b> the <b>S-Wave</b> and the <b>P-Wave</b> were experienced to determine <b>how long ago</b> the quake <b>originated</b>.",
+        "Once we have <b>how long ago</b> the quake originated, it's not too hard to figure out <b>how far away</b> it originated..."
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
