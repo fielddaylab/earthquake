@@ -378,7 +378,7 @@ var GamePlayScene = function(game, stage)
         "Each travels at a <b>different speed</b>- The <b>P-wave</b> (or Primary Wave) is much faster than the <b>S-Wave</b> (or Secondary Wave)",
         "Let's see what that might look like.",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.set(true); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -466,7 +466,7 @@ var GamePlayScene = function(game, stage)
         "And one will feel the tremors <b>long after</b> the quake has originated.",
         "See how each experiences the shockwaves <b>differently</b> (watch the timeline!).",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.set(true); play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -557,7 +557,7 @@ var GamePlayScene = function(game, stage)
       {
         earth.t = 0;
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
-        speed_fast_button.click({});
+        speed_fast_button.set(true);
         play_state = STATE_PAUSE;
         var q;
         q = new Quake(earth.ghost_quake.wx,earth.ghost_quake.wy,earth.assumed_start_t,earth.ghost_quake);
@@ -568,7 +568,7 @@ var GamePlayScene = function(game, stage)
         earth.quakes.push(q);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
+      l.drawExtra = function() { dc.context.fillText("Click Play",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_SP_SINGLE_INTRO = levels.length;
       levels.push(l);
@@ -581,7 +581,7 @@ var GamePlayScene = function(game, stage)
       l.imask.play_pause = false;
       l.lines = [
       ];
-      l.prePromptEvt = function() { speed_fast_button.click({}); }
+      l.prePromptEvt = function() { speed_fast_button.set(true); }
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
@@ -616,7 +616,10 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
+      l.drawExtra = function() {
+        dc.context.fillText("Slide the \"Quake Origin\" marker on the timeline",100,100);
+        dc.context.fillText("closer to the time of impact.",100,120);
+      }
       l.advanceTest = function() { return (earth.quakes[0].wx >= 0.1 && !scrubber.scrub_bar.dragging_quake_start); }
       lt.LVL_SP_SINGLE_MOVE_CLOSE = levels.length;
       levels.push(l);
@@ -633,14 +636,14 @@ var GamePlayScene = function(game, stage)
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "The quake could have been <b>very close</b> and <b>very recent</b>, and it <b>still</b> would have hit Square City <b>at the same time</b>!",
-        "That means <b>we can't know</b> which scenario was true <b>without</b> the S and P waves.",
+        "The quake could have been <b>very close</b> and <b>very recent</b>, and it <b>still</b> would have hit Square City <b>at the reported time</b>!",
+        "That means <b>we can't know</b> which scenario was true <b>with only this information</b>.",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
-      lt.LVL_SP_SINGLE_MOVE_CLOSE = levels.length;
+      lt.LVL_SP_SINGLE_MOVE_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -653,22 +656,22 @@ var GamePlayScene = function(game, stage)
       l.loc_1_y = 0;
       l.quake_start_range_s = 50;
       l.quake_start_range_e = 50;
-      l.quake_x = -0.4;
+      l.quake_x = 0;
       l.quake_y = 0;
-      l.display_ghost_quake = true;
+      l.display_ghost_quake = false;
       l.display_quake_start_range = true;
-      l.p_waves = false;
+      l.p_waves = true;
       l.quake_selection_r = 10;
       l.deselect_all_on_create = false;
       l.deselect_known_wrongs_on_create = false;
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
-      l.variable_quake_t = false;
-      l.move_q_around_s = false;
+      l.variable_quake_t = true;
+      l.move_q_around_p = true;
       l.allow_radii = false;
       l.ghost_countdown = true;
       l.imask.play_pause = true;
-      l.imask.scrubber = false;
+      l.imask.scrubber = true;
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
@@ -678,11 +681,58 @@ var GamePlayScene = function(game, stage)
         "Let's see that <b>same scenario</b>, but this time, with <b>both S and P waves</b>.",
         "Move the <b>origin time</b> until <b>both</b> the S wave <b>and</b> the P wave <b>hit Square City at the reported times</b>.",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function()
+      {
+        earth.assumed_start_t = levels[cur_level].quake_start_range_s;
+        speed_fast_button.set(true);
+        play_state = STATE_PAUSE;
+        var q;
+        q = new Quake(earth.ghost_quake.wx,earth.ghost_quake.wy,earth.assumed_start_t,earth.ghost_quake);
+        q.eval_loc_ts(earth.locations);
+        q.selected = true;
+        hov_quak = q;
+        hoverer.register(q);
+        earth.quakes.push(q);
+        earth.t = earth.ghost_quake.location_s_ts[0]+10;
+        //hack drag it forward
+        var t = earth.assumed_start_t+100;
+        var goal_t = earth.quakes[0].location_p_ts[0];
+        var rate = quake_p_rate;
+        var td = goal_t - t;
+        if(td < 0) { t = goal_t; td = 0; }
+        var lx = earth.locations[0].wx;
+        var qx = lx-td*rate;
+        earth.quakes[0].eval_pos(qx,earth.quakes[0].wy);
+        earth.quakes[0].t = t;
+        earth.quakes[0].eval_loc_ts(earth.locations);
+        earth.assumed_start_t = t;
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
-      l.advanceTest = function(){ return play_state == STATE_PLAY; }
+      l.advanceTest = function(){ return (earth.quakes[0].c && !scrubber.scrub_bar.dragging_quake_start); }
       lt.LVL_SP_DOUBLE_INTRO = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = true;
+      l.reset = false;
+      l.GPS = false;
+      l.allow_skip_prompt = "Done";
+      l.variable_quake_t = true;
+      l.move_q_around_s = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.skip = true;
+      l.lines = [
+        "See how with reports of <b>both</b> the time of experiencing the <b>P Wave</b>, <b>and</b> the time of experiencing the <b>S Wave</b>, we can <b>narrow down</b> the <b>origin time</b> to a single possibility!",
+        "Once we've achieved that, we're <b>one step closer</b> to discovering <b>where</b> the earthquake originated.",
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; }
+      l.drawExtra = function() {}
+      l.advanceTest = function() { return false; }
+      lt.LVL_SP_DOUBLE_OUTRO = levels.length;
       levels.push(l);
 
       l = new Level();
