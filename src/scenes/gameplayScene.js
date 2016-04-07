@@ -529,7 +529,7 @@ var GamePlayScene = function(game, stage)
       l.quake_start_range_e = 50;
       l.quake_x = -0.4;
       l.quake_y = 0;
-      l.display_ghost_quake = true;
+      l.display_ghost_quake = false;
       l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 10;
@@ -538,7 +538,7 @@ var GamePlayScene = function(game, stage)
       l.draw_mouse_quake = false;
       l.click_resets_t = true;
       l.variable_quake_t = false;
-      l.move_ghost_around_s = false;
+      l.move_q_around_s = false;
       l.allow_radii = false;
       l.ghost_countdown = true;
       l.imask.play_pause = true;
@@ -553,7 +553,20 @@ var GamePlayScene = function(game, stage)
         "Was it <b>very close</b> and <b>very recent</b>? Or was it <b>very far away</b> and <b>very long ago</b>?",
         "Here's an example of a <b>far away</b> quake that started <b>long ago</b>, hitting Square City-",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function()
+      {
+        earth.t = 0;
+        earth.assumed_start_t = levels[cur_level].quake_start_range_s;
+        speed_fast_button.click({});
+        play_state = STATE_PAUSE;
+        var q;
+        q = new Quake(earth.ghost_quake.wx,earth.ghost_quake.wy,earth.assumed_start_t,earth.ghost_quake);
+        q.eval_loc_ts(earth.locations);
+        q.selected = true;
+        hov_quak = q;
+        hoverer.register(q);
+        earth.quakes.push(q);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -565,6 +578,7 @@ var GamePlayScene = function(game, stage)
       l.return_on_complete = false;
       l.reset = false;
       l.GPS = false;
+      l.imask.play_pause = false;
       l.lines = [
       ];
       l.prePromptEvt = function() { speed_fast_button.click({}); }
@@ -592,7 +606,7 @@ var GamePlayScene = function(game, stage)
       l.reset = false;
       l.GPS = false;
       l.variable_quake_t = true;
-      l.move_ghost_around_s = true;
+      l.move_q_around_s = true;
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = false;
@@ -603,7 +617,7 @@ var GamePlayScene = function(game, stage)
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
-      l.advanceTest = function() { return earth.ghost_quake.wx >= 0.3; }
+      l.advanceTest = function() { return (earth.quakes[0].wx >= 0.1 && !scrubber.scrub_bar.dragging_quake_start); }
       lt.LVL_SP_SINGLE_MOVE_CLOSE = levels.length;
       levels.push(l);
 
@@ -614,19 +628,61 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.allow_skip_prompt = "Done";
       l.variable_quake_t = true;
-      l.move_ghost_around_s = true;
+      l.move_q_around_s = true;
       l.imask.play_pause = true;
       l.imask.scrubber = true;
       l.imask.skip = true;
       l.lines = [
-        "The quake could have been <b>very close</b> and <b>very recent</b>, and it <b>still</b> would have hit Square City at the same time!",
-        "That means <b>we can't know</b> which scenario was true, without the S and P waves.",
+        "The quake could have been <b>very close</b> and <b>very recent</b>, and it <b>still</b> would have hit Square City <b>at the same time</b>!",
+        "That means <b>we can't know</b> which scenario was true <b>without</b> the S and P waves.",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_SP_SINGLE_MOVE_CLOSE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      l.return_on_complete = false;
+      l.reset = true;
+      l.GPS = false;
+      l.location_success_range = 10;
+      l.n_locations = 1;
+      l.loc_1_x = 0.4;
+      l.loc_1_y = 0;
+      l.quake_start_range_s = 50;
+      l.quake_start_range_e = 50;
+      l.quake_x = -0.4;
+      l.quake_y = 0;
+      l.display_ghost_quake = true;
+      l.display_quake_start_range = true;
+      l.p_waves = false;
+      l.quake_selection_r = 10;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.move_q_around_s = false;
+      l.allow_radii = false;
+      l.ghost_countdown = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.imask.select = false;
+      l.imask.next = false;
+      l.imask.new = false;
+      l.lines = [
+        "Let's see that <b>same scenario</b>, but this time, with <b>both S and P waves</b>.",
+        "Move the <b>origin time</b> until <b>both</b> the S wave <b>and</b> the P wave <b>hit Square City at the reported times</b>.",
+      ];
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
+      l.advanceTest = function(){ return play_state == STATE_PLAY; }
+      lt.LVL_SP_DOUBLE_INTRO = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -1527,8 +1583,8 @@ var GamePlayScene = function(game, stage)
     self.draw_mouse_quake = false;
     self.click_resets_t = true;
     self.variable_quake_t = false;
-    self.move_ghost_around_p = false;
-    self.move_ghost_around_s = false;
+    self.move_q_around_p = false;
+    self.move_q_around_s = false;
     self.allow_radii = true;
     self.ghost_countdown = false;
     self.imask = new InputMask();
@@ -1579,8 +1635,8 @@ var GamePlayScene = function(game, stage)
     toLvl.draw_mouse_quake = fromLvl.draw_mouse_quake;
     toLvl.click_resets_t = fromLvl.click_resets_t;
     toLvl.variable_quake_t = fromLvl.variable_quake_t;
-    toLvl.move_ghost_around_p = toLvl.move_ghost_around_p;
-    toLvl.move_ghost_around_s = toLvl.move_ghost_around_s;
+    toLvl.move_q_around_p = toLvl.move_q_around_p;
+    toLvl.move_q_around_s = toLvl.move_q_around_s;
     toLvl.allow_radii = fromLvl.allow_radii;
     toLvl.ghost_countdown = fromLvl.ghost_countdown;
     toLvl.imask.play_pause = fromLvl.imask.play_pause;
@@ -2384,24 +2440,17 @@ var GamePlayScene = function(game, stage)
       {
         var goal_t = 0;
         var rate = 0;
-        if(levels[cur_level].move_ghost_around_p) { goal_t = self.earth.ghost_quake.location_p_ts[0]; rate = quake_p_rate; }
-        if(levels[cur_level].move_ghost_around_s) { goal_t = self.earth.ghost_quake.location_s_ts[0]; rate = quake_s_rate; }
+        if(levels[cur_level].move_q_around_p) { goal_t = self.earth.quakes[0].location_p_ts[0]; rate = quake_p_rate; }
+        if(levels[cur_level].move_q_around_s) { goal_t = self.earth.quakes[0].location_s_ts[0]; rate = quake_s_rate; }
         if(goal_t)
         {
           var td = goal_t - t;
           if(td < 0) { t = goal_t; td = 0; }
           var lx = self.earth.locations[0].wx;
           var qx = lx-td*rate;
-          self.earth.ghost_quake.eval_pos(qx,self.earth.ghost_quake.wy);
-          self.earth.ghost_quake.t = t;
-          self.earth.ghost_quake.eval_loc_ts(self.earth.locations);
-          self.earth.ghost_quake.c = true; //must occur after eval loc ts
-          //hack in correct "c_aware_t"
-          for(var i = 0; i < self.earth.ghost_quake.location_s_ts.length; i++)
-          {
-            if(self.earth.ghost_quake.location_s_ts[i] > self.earth.ghost_quake.c_aware_t)
-              self.earth.ghost_quake.c_aware_t = self.earth.ghost_quake.location_s_ts[i];
-          }
+          self.earth.quakes[0].eval_pos(qx,self.earth.quakes[0].wy);
+          self.earth.quakes[0].t = t;
+          self.earth.quakes[0].eval_loc_ts(self.earth.locations);
         }
         self.earth.assumed_start_t = t;
       }
