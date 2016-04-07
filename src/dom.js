@@ -153,6 +153,7 @@ var BottomMessageWrangler = function()
       visd = 0;
     }
     el.style.bottom = ((vis-1)*height)+"px";
+    fade.style.backgroundColor = "rgba(255,255,255,"+(vis/2)+")";
     if(vis) fade.style.display = "block";
     else    fade.style.display = "none";
   }
