@@ -145,6 +145,7 @@ var GamePlayScene = function(game, stage)
     l.allow_radii = false;
     l.imask.play_pause = false;
     l.imask.scrubber = false;
+    l.imask.origin_flag = false;
     l.imask.earth = false;
     l.imask.earthdrag = false;
     l.imask.select = false;
@@ -206,6 +207,7 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = false;
       l.ghost_countdown = true;
       l.imask.scrubber = false;
+      l.imask.origin_flag = false;
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
@@ -257,6 +259,7 @@ var GamePlayScene = function(game, stage)
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
         "Did you see how a wave moved out from the earthquake's <b>epicenter</b> and expanded until it hit the city?",
@@ -283,6 +286,7 @@ var GamePlayScene = function(game, stage)
       l.display_quake_start_range = false;
       l.imask.play_pause = true;
       l.imask.scrubber = false;
+      l.imask.origin_flag = false;
       l.imask.skip = false;
       l.lines = [
         "The real information we have looks something more like this.",
@@ -329,6 +333,7 @@ var GamePlayScene = function(game, stage)
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
         "All we see is <b>when</b> <b>Square City</b> feels the shake!",
@@ -366,6 +371,7 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = false;
       l.ghost_countdown = true;
       l.imask.scrubber = false;
+      l.imask.origin_flag = false;
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
@@ -416,6 +422,7 @@ var GamePlayScene = function(game, stage)
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
         "See how the <b>P-Wave</b> (purple) travels at <b>twice the speed</b> of the <b>S-Wave</b> (blue)?",
@@ -455,6 +462,7 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = false;
       l.ghost_countdown = true;
       l.imask.scrubber = false;
+      l.imask.origin_flag = false;
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
@@ -504,6 +512,7 @@ var GamePlayScene = function(game, stage)
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
         "Do you see the <b>difference</b>?",
@@ -543,6 +552,7 @@ var GamePlayScene = function(game, stage)
       l.ghost_countdown = true;
       l.imask.play_pause = true;
       l.imask.scrubber = false;
+      l.imask.origin_flag = false;
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
@@ -607,8 +617,7 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.variable_quake_t = true;
       l.move_q_around_s = true;
-      l.imask.play_pause = true;
-      l.imask.scrubber = true;
+      l.imask.origin_flag = true;
       l.imask.skip = false;
       l.lines = [
         "Let's see if there could have been another scenario that <b>doesn't conflict with what we know</b> (exactly <b>when</b> Square City was hit).",
@@ -616,7 +625,8 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
-      l.drawExtra = function() {
+      l.drawExtra = function()
+      {
         dc.context.fillText("Slide the \"Quake Origin\" marker on the timeline",100,100);
         dc.context.fillText("closer to the time of impact.",100,120);
       }
@@ -634,13 +644,14 @@ var GamePlayScene = function(game, stage)
       l.move_q_around_s = true;
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = true;
       l.imask.skip = true;
       l.lines = [
         "The quake could have been <b>very close</b> and <b>very recent</b>, and it <b>still</b> would have hit Square City <b>at the reported time</b>!",
         "That means <b>we can't know</b> which scenario was true <b>with only this information</b>.",
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
+      l.postPromptEvt = function() { earth.t = 0; play_state = STATE_PLAY; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_SP_SINGLE_MOVE_OUTRO = levels.length;
@@ -670,8 +681,9 @@ var GamePlayScene = function(game, stage)
       l.move_q_around_p = true;
       l.allow_radii = false;
       l.ghost_countdown = true;
-      l.imask.play_pause = true;
-      l.imask.scrubber = true;
+      l.imask.play_pause = false;
+      l.imask.scrubber = false;
+      l.imask.origin_flag = true;
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
@@ -708,7 +720,11 @@ var GamePlayScene = function(game, stage)
         earth.assumed_start_t = t;
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() {}
+      l.drawExtra = function()
+      {
+        dc.context.fillText("Slide the \"Quake Origin\" marker on the timeline",100,100);
+        dc.context.fillText("until both the S Wave and P Wave match the times reported",100,120);
+      }
       l.advanceTest = function(){ return (earth.quakes[0].c && !scrubber.scrub_bar.dragging_quake_start); }
       lt.LVL_SP_DOUBLE_INTRO = levels.length;
       levels.push(l);
@@ -723,6 +739,7 @@ var GamePlayScene = function(game, stage)
       l.move_q_around_s = true;
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = true;
       l.imask.skip = true;
       l.lines = [
         "See how with reports of <b>both</b> the time of experiencing the <b>P Wave</b>, <b>and</b> the time of experiencing the <b>S Wave</b>, we can <b>narrow down</b> the <b>origin time</b> to a single possibility!",
@@ -760,6 +777,7 @@ var GamePlayScene = function(game, stage)
       l.ghost_countdown = true;
       l.imask.play_pause = false;
       l.imask.scrubber = false;
+      l.imask.origin_flag = false;
       l.imask.select = false;
       l.imask.new = false;
       l.imask.skip = false;
@@ -825,6 +843,7 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = false;
       l.imask.earth = true;
       l.imask.select = true;
       l.lines = [
@@ -1250,6 +1269,7 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = false;
       l.ghost_countdown = true;
       l.imask.scrubber = false;
+      l.imask.origin_flag = false;
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
@@ -1304,6 +1324,7 @@ var GamePlayScene = function(game, stage)
       l.allow_skip_prompt = "Done";
       l.imask.play_pause = true;
       l.imask.scrubber = true;
+      l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
         "See how each <b>Satellite</b> emits a wave <b>toward</b> the GPS device?",
@@ -1363,7 +1384,6 @@ var GamePlayScene = function(game, stage)
         case 4: cur_level = lt.LVL_FREE-1;              break;
       }
     }
-    cur_level = lt.LVL_SP_SINGLE_INTRO-1;
     heard_freeplay_prompt = false;
 
     earth = new Earth();
@@ -1650,6 +1670,7 @@ var GamePlayScene = function(game, stage)
     var self = this;
     self.play_pause = true;
     self.scrubber = true;
+    self.origin_flag = true;
     self.earth = true;
     self.earthdrag = true;
     self.select = true;
@@ -1691,6 +1712,7 @@ var GamePlayScene = function(game, stage)
     toLvl.ghost_countdown = fromLvl.ghost_countdown;
     toLvl.imask.play_pause = fromLvl.imask.play_pause;
     toLvl.imask.scrubber = fromLvl.imask.scrubber;
+    toLvl.imask.origin_flag = fromLvl.imask.origin_flag;
     toLvl.imask.earth = fromLvl.imask.earth;
     toLvl.imask.earthdrag = fromLvl.imask.earthdrag;
     toLvl.imask.select = fromLvl.imask.select;
@@ -2469,24 +2491,25 @@ var GamePlayScene = function(game, stage)
     self.scrub_bar.dragStart = function(evt)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
-      if(!levels[cur_level].imask.scrubber) return;
-      self.scrub_bar.dragging = true;
-      var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
-      if(levels[cur_level].variable_quake_t && evt.doY < self.scrub_bar.y+20 && t-self.earth.assumed_start_t < 100 && t-self.earth.assumed_start_t > 0)
-        self.scrub_bar.dragging_quake_start = true;
-      saved_state = play_state;
-      play_state = STATE_PAUSE;
-      self.scrub_bar.drag(evt);
+      if(levels[cur_level].imask.scrubber || levels[cur_level].imask.origin_flag)
+      {
+        var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
+        if(levels[cur_level].imask.origin_flag && levels[cur_level].variable_quake_t && evt.doY < self.scrub_bar.y+20 && t-self.earth.assumed_start_t < 100 && t-self.earth.assumed_start_t > 0)
+          self.scrub_bar.dragging_quake_start = true;
+        self.scrub_bar.dragging = true;
+        saved_state = play_state;
+        play_state = STATE_PAUSE;
+        self.scrub_bar.drag(evt);
+      }
     }
     self.scrub_bar.drag = function(evt)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
-      if(!levels[cur_level].imask.scrubber) return;
       if(!self.scrub_bar.dragging) return;
       var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t)
       if(t < 0) t = 0;
       if(t > self.earth.recordable_t) t = self.earth.recordable_t;
-      if(self.scrub_bar.dragging_quake_start)
+      if(levels[cur_level].imask.origin_flag && self.scrub_bar.dragging_quake_start)
       {
         var goal_t = 0;
         var rate = 0;
@@ -2504,7 +2527,7 @@ var GamePlayScene = function(game, stage)
         }
         self.earth.assumed_start_t = t;
       }
-      else
+      else if(levels[cur_level].imask.scrubber)
         self.earth.t = t;
     }
     self.scrub_bar.dragFinish = function(evt)
@@ -2512,7 +2535,7 @@ var GamePlayScene = function(game, stage)
       self.scrub_bar.dragging = false;
       self.scrub_bar.dragging_quake_start = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
-      if(!levels[cur_level].imask.scrubber) return;
+      if(!levels[cur_level].imask.scrubber && !levels[cur_level].imask.origin_flag) return;
       play_state = saved_state;
     }
 
