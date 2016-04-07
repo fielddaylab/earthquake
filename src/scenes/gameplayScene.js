@@ -498,7 +498,7 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = true;
+      l.return_on_complete = false;
       l.reset = false;
       l.GPS = false;
       l.allow_skip_prompt = "Done";
@@ -509,13 +509,124 @@ var GamePlayScene = function(game, stage)
         "Do you see the <b>difference</b>?",
         "Circle City feels the tremors <b>one soon after the other</b>, and Square City feels them <b>longer apart</b>.",
         "We can use <b>how far apart</b> the <b>S-Wave</b> and the <b>P-Wave</b> were experienced to determine <b>how long ago</b> the quake <b>originated</b>.",
-        "Once we have <b>how long ago</b> the quake originated, it's not too hard to figure out <b>how far away</b> it originated..."
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_SP_RECAP_OUTRO = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      l.return_on_complete = false;
+      l.reset = true;
+      l.GPS = false;
+      l.location_success_range = 10;
+      l.n_locations = 1;
+      l.loc_1_x = 0.4;
+      l.loc_1_y = 0;
+      l.quake_start_range_s = 50;
+      l.quake_start_range_e = 50;
+      l.quake_x = -0.4;
+      l.quake_y = 0;
+      l.display_ghost_quake = true;
+      l.display_quake_start_range = true;
+      l.p_waves = false;
+      l.quake_selection_r = 10;
+      l.deselect_all_on_create = false;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.move_ghost_around_s = false;
+      l.allow_radii = false;
+      l.ghost_countdown = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.imask.select = false;
+      l.imask.next = false;
+      l.imask.new = false;
+      l.lines = [
+        "<b>Without both</b> the S and P Waves, <b>we can't figure out when the quake originated</b>.",
+        "Was it <b>very close</b> and <b>very recent</b>? Or was it <b>very far away</b> and <b>very long ago</b>?",
+        "Here's an example of a <b>far away</b> quake that started <b>long ago</b>, hitting Square City-",
+      ];
+      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.click({}); play_state = STATE_PAUSE; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
+      l.advanceTest = function(){ return play_state == STATE_PLAY; }
+      lt.LVL_SP_SINGLE_INTRO = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.GPS = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() { speed_fast_button.click({}); }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(speed_normal_button.on) dc.context.fillText("Wait for it... (click >> to speed up)",100,100);
+        else dc.context.fillText("Wait for it...",100,100);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.t > earth.ghost_quake.location_s_ts[0]+10)
+        {
+          play_state = STATE_PAUSE;
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_SP_SINGLE_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.GPS = false;
+      l.variable_quake_t = true;
+      l.move_ghost_around_s = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.skip = false;
+      l.lines = [
+        "Let's see if there could have been another scenario that <b>doesn't conflict with what we know</b> (exactly <b>when</b> Square City was hit).",
+        "Slide the <b>Quake Origin</b> on the timeline to start the quake <b>closer to when</b> Square City felt its tremors.",
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
+      l.advanceTest = function() { return earth.ghost_quake.wx >= 0.3; }
+      lt.LVL_SP_SINGLE_MOVE_CLOSE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.GPS = false;
+      l.allow_skip_prompt = "Done";
+      l.variable_quake_t = true;
+      l.move_ghost_around_s = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.skip = true;
+      l.lines = [
+        "The quake could have been <b>very close</b> and <b>very recent</b>, and it <b>still</b> would have hit Square City at the same time!",
+        "That means <b>we can't know</b> which scenario was true, without the S and P waves.",
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function() {}
+      l.advanceTest = function() { return false; }
+      lt.LVL_SP_SINGLE_MOVE_CLOSE = levels.length;
       levels.push(l);
 
       l = new Level();
@@ -1146,6 +1257,7 @@ var GamePlayScene = function(game, stage)
         case 4: cur_level = lt.LVL_FREE-1;              break;
       }
     }
+    cur_level = lt.LVL_SP_SINGLE_INTRO-1;
     heard_freeplay_prompt = false;
 
     earth = new Earth();
@@ -1415,6 +1527,8 @@ var GamePlayScene = function(game, stage)
     self.draw_mouse_quake = false;
     self.click_resets_t = true;
     self.variable_quake_t = false;
+    self.move_ghost_around_p = false;
+    self.move_ghost_around_s = false;
     self.allow_radii = true;
     self.ghost_countdown = false;
     self.imask = new InputMask();
@@ -1465,6 +1579,8 @@ var GamePlayScene = function(game, stage)
     toLvl.draw_mouse_quake = fromLvl.draw_mouse_quake;
     toLvl.click_resets_t = fromLvl.click_resets_t;
     toLvl.variable_quake_t = fromLvl.variable_quake_t;
+    toLvl.move_ghost_around_p = toLvl.move_ghost_around_p;
+    toLvl.move_ghost_around_s = toLvl.move_ghost_around_s;
     toLvl.allow_radii = fromLvl.allow_radii;
     toLvl.ghost_countdown = fromLvl.ghost_countdown;
     toLvl.imask.play_pause = fromLvl.imask.play_pause;
@@ -2250,7 +2366,7 @@ var GamePlayScene = function(game, stage)
       if(!levels[cur_level].imask.scrubber) return;
       self.scrub_bar.dragging = true;
       var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
-      if(levels[cur_level].variable_quake_t && Math.abs(t-self.earth.assumed_start_t) < 20)
+      if(levels[cur_level].variable_quake_t && evt.doY < self.scrub_bar.y+20 && t-self.earth.assumed_start_t < 100 && t-self.earth.assumed_start_t > 0)
         self.scrub_bar.dragging_quake_start = true;
       saved_state = play_state;
       play_state = STATE_PAUSE;
@@ -2261,13 +2377,36 @@ var GamePlayScene = function(game, stage)
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       if(!levels[cur_level].imask.scrubber) return;
       if(!self.scrub_bar.dragging) return;
-      self.earth.t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
-      if(self.earth.t < 0) self.earth.t = 0;
-      if(self.earth.t > self.earth.recordable_t) self.earth.t = self.earth.recordable_t;
+      var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t)
+      if(t < 0) t = 0;
+      if(t > self.earth.recordable_t) t = self.earth.recordable_t;
       if(self.scrub_bar.dragging_quake_start)
       {
-        self.earth.assumed_start_t = self.earth.t;
+        var goal_t = 0;
+        var rate = 0;
+        if(levels[cur_level].move_ghost_around_p) { goal_t = self.earth.ghost_quake.location_p_ts[0]; rate = quake_p_rate; }
+        if(levels[cur_level].move_ghost_around_s) { goal_t = self.earth.ghost_quake.location_s_ts[0]; rate = quake_s_rate; }
+        if(goal_t)
+        {
+          var td = goal_t - t;
+          if(td < 0) { t = goal_t; td = 0; }
+          var lx = self.earth.locations[0].wx;
+          var qx = lx-td*rate;
+          self.earth.ghost_quake.eval_pos(qx,self.earth.ghost_quake.wy);
+          self.earth.ghost_quake.t = t;
+          self.earth.ghost_quake.eval_loc_ts(self.earth.locations);
+          self.earth.ghost_quake.c = true; //must occur after eval loc ts
+          //hack in correct "c_aware_t"
+          for(var i = 0; i < self.earth.ghost_quake.location_s_ts.length; i++)
+          {
+            if(self.earth.ghost_quake.location_s_ts[i] > self.earth.ghost_quake.c_aware_t)
+              self.earth.ghost_quake.c_aware_t = self.earth.ghost_quake.location_s_ts[i];
+          }
+        }
+        self.earth.assumed_start_t = t;
       }
+      else
+        self.earth.t = t;
     }
     self.scrub_bar.dragFinish = function(evt)
     {
