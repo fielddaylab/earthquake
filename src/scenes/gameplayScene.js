@@ -264,7 +264,7 @@ var GamePlayScene = function(game, stage)
         "we can see <b>when</b> it started,",
         "and we can see <b>when</b> it was <b>experienced</b> by Square City.",
         "But with real earthquakes, we have to <b>construct</b> all of that information from a <b>limited amount of data</b>.",
-        "Often, all we have is the <b>reports</b> that cities <b>felt</b> the earthquake at a certian <b>time</b>.",
+        "Often, all we have is the <b>reports</b> that cities <b>felt</b> the earthquake at a certain <b>time</b>.",
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -991,9 +991,11 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = false;
+      l.allow_skip_prompt = "Done";
+      l.return_on_complete = true;
       l.reset = false;
       l.GPS = false;
+      l.imask.next = true;
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
