@@ -43,6 +43,8 @@ var GamePlayScene = function(game, stage)
   var levels;
   var cur_level;
   var start_level = 0;
+  var game_guesses;
+  var game_known_locs;
 
   var earth;
   var hov_loc;
@@ -573,7 +575,7 @@ var GamePlayScene = function(game, stage)
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
-      l.imask.next = false;
+      l.imask.skip = false;
       l.imask.new = false;
       l.lines = [
         "<b>Without both</b> the S and P Waves, <b>we can't figure out when the quake originated</b>.",
@@ -698,7 +700,7 @@ var GamePlayScene = function(game, stage)
       l.imask.earth = false;
       l.imask.earthdrag = false;
       l.imask.select = false;
-      l.imask.next = false;
+      l.imask.skip = false;
       l.imask.new = false;
       l.lines = [
         "Let's see that <b>same scenario</b>, but this time, with <b>both S and P waves</b>.",
@@ -1111,7 +1113,7 @@ var GamePlayScene = function(game, stage)
       l.variable_quake_t = false;
       l.allow_radii = true;
       l.ghost_countdown = true;
-      l.imask.next = false;
+      l.imask.skip = false;
       l.imask.new = false;
       l.lines = [
         "Well good news!",
@@ -1151,7 +1153,7 @@ var GamePlayScene = function(game, stage)
       l.reset = false;
       l.GPS = false;
       l.allow_skip_prompt = "Ready to move on";
-      l.imask.next = true;
+      l.imask.skip = true;
       l.lines = [
         "Ok. So we've narrowed it down even more!",
         "With one location, we can <b>reduce the possible epicenter</b> to a <b>ring</b>.",
@@ -1196,7 +1198,7 @@ var GamePlayScene = function(game, stage)
       l.variable_quake_t = false;
       l.allow_radii = true;
       l.ghost_countdown = true;
-      l.imask.next = false;
+      l.imask.skip = false;
       l.imask.new = false;
       l.lines = [
         "So now we've got 3 locations.",
@@ -1235,7 +1237,7 @@ var GamePlayScene = function(game, stage)
       l.return_on_complete = true;
       l.reset = false;
       l.GPS = false;
-      l.imask.next = true;
+      l.imask.skip = true;
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
       ];
@@ -1348,6 +1350,352 @@ var GamePlayScene = function(game, stage)
       levels.push(l);
 
       l = new Level();
+      l.return_on_complete = false;
+      l.reset = true;
+      l.GPS = false;
+      l.location_success_range = 10;
+      l.n_locations = 3;
+      l.quake_start_range_s = 0;
+      l.quake_start_range_e = 0;
+      l.display_quake_start_range = true;
+      l.p_waves = false;
+      l.quake_selection_r = 0;
+      l.deselect_all_on_create = true;
+      l.deselect_known_wrongs_on_create = false;
+      l.draw_mouse_quake = false;
+      l.click_resets_t = true;
+      l.variable_quake_t = false;
+      l.allow_radii = false;
+      l.ghost_countdown = true;
+      l.imask.new = false;
+      l.imask.skip = false;
+      l.lines = [
+        "Time to <b>test your intuition</b>!",
+        "Only showing <b>when each location was hit</b>, <b>guess</b> where you think the earthquake <b>originated</b>.",
+        "You <b>won't be able</b> to <b>drag out circles</b> from the locations until you guess!",
+      ];
+      l.prePromptEvt = function(){ game_guesses = 0; if(game.heard_game_prompt) levels[lt.LVL_GAME_GUESS_1].lines = []; };
+      l.postPromptEvt = function(){ game.heard_game_prompt = true; };
+      l.drawExtra = function()
+      {
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
+        dc.context.fillText("(No using the location's radius tool!)",100,120);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.quakes.length > game_known_locs)
+        {
+          game_known_locs = earth.quakes.length;
+          return true;
+        }
+        game_known_locs = earth.quakes.length;
+      }
+      lt.LVL_GAME_GUESS_1 = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.imask.scrubber = false;
+      l.imask.origin_flag = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() { game_guesses++; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
+        else dc.context.fillText("Watch the quake",100,100);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.t >= earth.recordable_t)
+        {
+          if(earth.quakes[earth.quakes.length-1].c) cur_level = lt.LVL_GAME_GUESS_CORRECT-1; //jump to correct level
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_GAME_GUESS_1_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.allow_radii = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.origin_flag = true;
+      l.imask.earth = true;
+      l.imask.earthdrag = true;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
+        dc.context.fillText("You are allowed to use 1 location's radius tool.",100,120);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.quakes.length > game_known_locs)
+        {
+          game_known_locs = earth.quakes.length;
+          return true;
+        }
+        game_known_locs = earth.quakes.length;
+      }
+      lt.LVL_GAME_GUESS_2 = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.imask.scrubber = false;
+      l.imask.origin_flag = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() { game_guesses++; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
+        else dc.context.fillText("Watch the quake",100,100);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.t >= earth.recordable_t)
+        {
+          if(earth.quakes[earth.quakes.length-1].c) cur_level = lt.LVL_GAME_GUESS_CORRECT-1; //jump to correct level
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_GAME_GUESS_2_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.allow_radii = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.origin_flag = true;
+      l.imask.earth = true;
+      l.imask.earthdrag = true;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
+        dc.context.fillText("You are allowed to use 2 location's radius tool.",100,120);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.quakes.length > game_known_locs)
+        {
+          game_known_locs = earth.quakes.length;
+          return true;
+        }
+        game_known_locs = earth.quakes.length;
+      }
+      lt.LVL_GAME_GUESS_3 = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.imask.scrubber = false;
+      l.imask.origin_flag = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() { game_guesses++; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
+        else dc.context.fillText("Watch the quake",100,100);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.t >= earth.recordable_t)
+        {
+          if(earth.quakes[earth.quakes.length-1].c) cur_level = lt.LVL_GAME_GUESS_CORRECT-1; //jump to correct level
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_GAME_GUESS_3_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.allow_radii = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.origin_flag = true;
+      l.imask.earth = true;
+      l.imask.earthdrag = true;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
+        dc.context.fillText("You are allowed to use all location's radius tool.",100,120);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.quakes.length > game_known_locs)
+        {
+          game_known_locs = earth.quakes.length;
+          return true;
+        }
+        game_known_locs = earth.quakes.length;
+      }
+      lt.LVL_GAME_GUESS_4 = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.imask.scrubber = false;
+      l.imask.origin_flag = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() { game_guesses++; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
+        else dc.context.fillText("Watch the quake",100,100);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.t >= earth.recordable_t)
+        {
+          if(earth.quakes[earth.quakes.length-1].c) cur_level = lt.LVL_GAME_GUESS_CORRECT-1; //jump to correct level
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_GAME_GUESS_4_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.allow_radii = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.origin_flag = true;
+      l.imask.earth = true;
+      l.imask.earthdrag = true;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
+        dc.context.fillText("You are allowed to use all location's radius tool.",100,120);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.quakes.length > game_known_locs)
+        {
+          game_known_locs = earth.quakes.length;
+          return true;
+        }
+        game_known_locs = earth.quakes.length;
+      }
+      lt.LVL_GAME_GUESS_INDEFINITE = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = false;
+      l.reset = false;
+      l.imask.play_pause = false;
+      l.imask.scrubber = false;
+      l.imask.origin_flag = false;
+      l.imask.earth = false;
+      l.imask.earthdrag = false;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() { game_guesses++; }
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
+        else dc.context.fillText("Watch the quake",100,100);
+      }
+      l.advanceTest = function()
+      {
+        if(earth.t >= earth.recordable_t)
+        {
+          if(earth.quakes[earth.quakes.length-1].c) cur_level = lt.LVL_GAME_GUESS_CORRECT-1; //jump to correct level
+          else cur_level = lt.LVL_GAME_GUESS_INDEFINITE-1; //jump back to indefinite guessing
+          return true;
+        }
+        return false;
+      }
+      lt.LVL_GAME_GUESS_INDEFINITE_PLAYING = levels.length;
+      levels.push(l);
+
+      l = new Level();
+      cloneLevel(levels[levels.length-1],l);
+      l.return_on_complete = true;
+      l.allow_skip_prompt = "Done";
+      l.reset = false;
+      l.allow_radii = true;
+      l.imask.play_pause = true;
+      l.imask.scrubber = true;
+      l.imask.origin_flag = true;
+      l.imask.earth = true;
+      l.imask.earthdrag = true;
+      l.imask.skip = true;
+      l.lines = [
+      ];
+      l.prePromptEvt = function() {}
+      l.postPromptEvt = function() {}
+      l.drawExtra = function()
+      {
+        dc.context.fillText("You've guessed correctly!",100,100);
+      }
+      l.advanceTest = function()
+      {
+        return false;
+      }
+      lt.LVL_GAME_GUESS_CORRECT = levels.length;
+      levels.push(l);
+
+      l = new Level();
       l.return_on_complete = true;
       l.reset = true;
       l.GPS = false;
@@ -1389,9 +1737,13 @@ var GamePlayScene = function(game, stage)
         case 1: cur_level = lt.LVL_SP_INTRO-1;          break;
         case 2: cur_level = lt.LVL_BLIND_GUESS_INTRO-1; break;
         case 3: cur_level = lt.LVL_GPS_INTRO-1;         break;
-        case 4: cur_level = lt.LVL_FREE-1;              break;
+        case 4: cur_level = lt.LVL_GAME_GUESS_1-1;              break;
+        case 5: cur_level = lt.LVL_FREE-1;              break;
       }
     }
+
+    game_guesses = 0;
+    game_known_locs = 0;
 
     earth = new Earth();
     earth.reset();
