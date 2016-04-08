@@ -22,6 +22,7 @@ var Game = function(init)
   var old_cur_scene = -1;
 
   self.start = 0;
+  self.heard_freeplay_prompt = false;
 
   self.begin = function()
   {

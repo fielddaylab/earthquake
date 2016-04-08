@@ -43,7 +43,6 @@ var GamePlayScene = function(game, stage)
   var levels;
   var cur_level;
   var start_level = 0;
-  var heard_freeplay_prompt;
 
   var earth;
   var hov_loc;
@@ -1373,8 +1372,8 @@ var GamePlayScene = function(game, stage)
         "You'll be able to play as many different <b>random scenarios</b> as you'd like-",
         "Good luck!",
       ];
-      l.prePromptEvt = function(){ if(heard_freeplay_prompt) levels[lt.LVL_FREE].lines = []; };
-      l.postPromptEvt = function(){ heard_freeplay_prompt = true; };
+      l.prePromptEvt = function(){ if(game.heard_freeplay_prompt) levels[lt.LVL_FREE].lines = []; };
+      l.postPromptEvt = function(){ game.heard_freeplay_prompt = true; };
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_FREE = levels.length;
@@ -1393,7 +1392,6 @@ var GamePlayScene = function(game, stage)
         case 4: cur_level = lt.LVL_FREE-1;              break;
       }
     }
-    heard_freeplay_prompt = false;
 
     earth = new Earth();
     earth.reset();
