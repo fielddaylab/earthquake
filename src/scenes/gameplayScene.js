@@ -134,7 +134,7 @@ var GamePlayScene = function(game, stage)
     l.n_locations = 0;
     l.quake_start_range_s = 0;
     l.quake_start_range_e = 0;
-    l.display_quake_start_range = false;
+    l.display_quake_start_range = true;
     l.p_waves = false;
     l.quake_selection_r = 0;
     l.deselect_all_on_create = false;
@@ -166,7 +166,7 @@ var GamePlayScene = function(game, stage)
       l.n_locations = 3;
       l.quake_start_range_s = 0;
       l.quake_start_range_e = 0;
-      l.display_quake_start_range = false;
+      l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 0;
       l.deselect_all_on_create = true;
@@ -195,7 +195,7 @@ var GamePlayScene = function(game, stage)
       l.quake_start_range_e = 100;
       l.quake_x = -0.4;
       l.quake_y = 0;
-      l.display_ghost_quake = true;
+      l.display_ghost_quake = false;
       l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 10;
@@ -217,7 +217,11 @@ var GamePlayScene = function(game, stage)
         "What can we know about earthquakes? And how can we know it?",
         "Imagine that the little black square is <b>Square City</b>, and an earthquake is about to make it rumble!",
       ];
-      l.prePromptEvt = function() { earth.assumed_start_t = levels[cur_level].quake_start_range_s; }
+      l.prePromptEvt = function()
+      {
+        earth.assumed_start_t = levels[cur_level].quake_start_range_s;
+        earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() { dc.context.fillText("Click the play button to watch quake",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -279,7 +283,7 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.return_on_complete = false;
-      l.reset = false;
+      l.reset = true;
       l.GPS = false;
       l.allow_skip_prompt = undefined;
       l.display_ghost_quake = false;
@@ -359,7 +363,7 @@ var GamePlayScene = function(game, stage)
       l.quake_start_range_e = 50;
       l.quake_x = -0.4;
       l.quake_y = 0;
-      l.display_ghost_quake = true;
+      l.display_ghost_quake = false;
       l.display_quake_start_range = true;
       l.p_waves = true;
       l.quake_selection_r = 10;
@@ -384,7 +388,14 @@ var GamePlayScene = function(game, stage)
         "Each travels at a <b>different speed</b>- The <b>P-wave</b> (or Primary Wave) is much faster than the <b>S-Wave</b> (or Secondary Wave)",
         "Let's see what that might look like.",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.set(true); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function()
+      {
+        earth.t = 0;
+        earth.assumed_start_t = levels[cur_level].quake_start_range_s;
+        speed_normal_button.set(true);
+        play_state = STATE_PAUSE;
+        earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -450,7 +461,7 @@ var GamePlayScene = function(game, stage)
       l.quake_start_range_e = 20;
       l.quake_x = -0.4;
       l.quake_y = 0;
-      l.display_ghost_quake = true;
+      l.display_ghost_quake = false;
       l.display_quake_start_range = true;
       l.p_waves = true;
       l.quake_selection_r = 10;
@@ -474,7 +485,14 @@ var GamePlayScene = function(game, stage)
         "And one will feel the tremors <b>long after</b> the quake has originated.",
         "See how each experiences the shockwaves <b>differently</b> (watch the timeline!).",
       ];
-      l.prePromptEvt = function() { earth.t = 0; earth.assumed_start_t = levels[cur_level].quake_start_range_s; speed_normal_button.set(true); play_state = STATE_PAUSE; }
+      l.prePromptEvt = function()
+      {
+        earth.t = 0;
+        earth.assumed_start_t = levels[cur_level].quake_start_range_s;
+        speed_normal_button.set(true);
+        play_state = STATE_PAUSE;
+        earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -569,13 +587,7 @@ var GamePlayScene = function(game, stage)
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         speed_fast_button.set(true);
         play_state = STATE_PAUSE;
-        var q;
-        q = new Quake(earth.ghost_quake.wx,earth.ghost_quake.wy,earth.assumed_start_t,earth.ghost_quake);
-        q.eval_loc_ts(earth.locations);
-        q.selected = true;
-        hov_quak = q;
-        hoverer.register(q);
-        earth.quakes.push(q);
+        earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
       l.drawExtra = function() { dc.context.fillText("Click Play",100,100); }
@@ -698,13 +710,7 @@ var GamePlayScene = function(game, stage)
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         speed_fast_button.set(true);
         play_state = STATE_PAUSE;
-        var q;
-        q = new Quake(earth.ghost_quake.wx,earth.ghost_quake.wy,earth.assumed_start_t,earth.ghost_quake);
-        q.eval_loc_ts(earth.locations);
-        q.selected = true;
-        hov_quak = q;
-        hoverer.register(q);
-        earth.quakes.push(q);
+        earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
         earth.t = earth.ghost_quake.location_s_ts[0]+10;
         //hack drag it forward
         var t = earth.assumed_start_t+100;
@@ -1016,7 +1022,7 @@ var GamePlayScene = function(game, stage)
       l.quake_x = -0.3;
       l.quake_y = 0;
       l.display_ghost_quake = false;
-      l.display_quake_start_range = false;
+      l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 20;
       l.deselect_all_on_create = true;
@@ -1026,7 +1032,7 @@ var GamePlayScene = function(game, stage)
       l.variable_quake_t = false;
       l.allow_radii = true;
       l.ghost_countdown = true;
-      l.imask.new = true;
+      l.imask.new = false;
       l.lines = [
         "So, now that we have the ability to <b>drag a ring out from locations</b> to illuminate locations that <b>don't conflict with our known information</b>,",
         "we'll now reduce the <b>error range</b>.",
@@ -1096,7 +1102,7 @@ var GamePlayScene = function(game, stage)
       l.quake_x = -0.3;
       l.quake_y = 0;
       l.display_ghost_quake = false;
-      l.display_quake_start_range = false;
+      l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 10;
       l.deselect_all_on_create = true;
@@ -1181,7 +1187,7 @@ var GamePlayScene = function(game, stage)
       l.quake_x = -0.3;
       l.quake_y = 0;
       l.display_ghost_quake = false;
-      l.display_quake_start_range = false;
+      l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 10;
       l.deselect_all_on_create = true;
@@ -1256,8 +1262,8 @@ var GamePlayScene = function(game, stage)
       l.quake_start_range_e = 0;
       l.quake_x = -0.4;
       l.quake_y = 0;
-      l.display_ghost_quake = true;
-      l.display_quake_start_range = false;
+      l.display_ghost_quake = false;
+      l.display_quake_start_range = true;
       l.p_waves = false;
       l.quake_selection_r = 10;
       l.deselect_all_on_create = false;
@@ -1281,7 +1287,11 @@ var GamePlayScene = function(game, stage)
         "waves instead <b>are emitted from known locations</b>, toward an <b>unknown location</b>.",
         "Click Play to see what this might look like",
       ];
-      l.prePromptEvt = function() { earth.assumed_start_t = levels[cur_level].quake_start_range_s; }
+      l.prePromptEvt = function()
+      {
+        earth.assumed_start_t = levels[cur_level].quake_start_range_s;
+        earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() { dc.context.fillText("Click the play button to watch the radio waves",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -1829,6 +1839,17 @@ var GamePlayScene = function(game, stage)
         }
       }
     }
+    self.genQuake = function(wx,wy)
+    {
+      var q;
+      q = new Quake(wx,wy,self.assumed_start_t,self.ghost_quake);
+      q.eval_loc_ts(self.locations);
+      q.selected = true;
+      hov_quak = q;
+      hoverer.register(q);
+      self.quakes.push(q);
+      return q;
+    }
     self.popGhost = function()
     {
       var min_dist = location_size+quake_size;
@@ -1956,15 +1977,11 @@ var GamePlayScene = function(game, stage)
           play_state = STATE_PLAY;
         }
 
-        var q;
-        q = new Quake(self.drag_obj.wx,self.drag_obj.wy,self.assumed_start_t,self.ghost_quake);
-        q.eval_loc_ts(self.locations);
+        var q = self.genQuake(self.drag_obj.wx,self.drag_obj.wy);
         if(levels[cur_level].deselect_all_on_create) self.deselectQuakes();
         if(levels[cur_level].deselect_known_wrongs_on_create) self.deselectKnownWrongQuakes();
         q.selected = true;
         hov_quak = q;
-        hoverer.register(q);
-        self.quakes.push(q);
       }
 
       var min_x = self.drag_origin_obj.wx; if(self.drag_obj.wx < min_x) min_x = self.drag_obj.wx;
