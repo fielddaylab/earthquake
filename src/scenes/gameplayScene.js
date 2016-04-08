@@ -1382,8 +1382,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function(){ game.heard_game_prompt = true; };
       l.drawExtra = function()
       {
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
-        dc.context.fillText("(No using the locations' radius tool!)",100,120);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        dc.context.fillText("(No using the locations' radius tool!)",100,140);
       }
       l.advanceTest = function()
       {
@@ -1414,8 +1415,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
+        else dc.context.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1446,8 +1448,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
-        dc.context.fillText("You are allowed to use 1 location's radius tool.",100,120);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        dc.context.fillText("You are allowed to use 1 location's radius tool.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1478,8 +1481,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
+        else dc.context.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1510,8 +1514,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
-        dc.context.fillText("You are allowed to use 2 locations' radius tools.",100,120);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        dc.context.fillText("You are allowed to use 2 locations' radius tools.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1542,8 +1547,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
+        else dc.context.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1574,8 +1580,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
-        dc.context.fillText("You are allowed to use all locations' radius tools.",100,120);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        dc.context.fillText("You are allowed to use all locations' radius tools.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1606,8 +1613,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
+        else dc.context.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1638,8 +1646,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,100);
-        dc.context.fillText("You are allowed to use all locations' radius tools.",100,120);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        dc.context.fillText("You are allowed to use all locations' radius tools.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1670,8 +1679,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
+        else dc.context.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1705,7 +1715,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("You've guessed correctly in "+game_guesses+" turns!",100,100);
+        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
+        dc.context.fillText("You've guessed correctly in "+game_guesses+" turns!",100,120);
       }
       l.advanceTest = function()
       {
