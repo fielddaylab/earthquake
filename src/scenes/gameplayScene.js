@@ -15,6 +15,7 @@ var GamePlayScene = function(game, stage)
 
   var self = this;
   var dc = stage.drawCanv;
+  var ctx = stage.drawCanv.context;
 
   var location_size = 0.1;
   var quake_size = 0.03;
@@ -68,9 +69,10 @@ var GamePlayScene = function(game, stage)
   var del_all_quakes_button;
   var new_button;
 
-  var dom;
   var canvdom;
-  var bmwrangler;
+  var blurb_w;
+  var blurb_x;
+  var blurb_y;
 
   var lt; //level title object. just to correctly namespace them.
 
@@ -108,7 +110,7 @@ var GamePlayScene = function(game, stage)
       }
       self.draw = function()
       {
-        dc.context.fillRect(self.sx-2,self.sy-2,4,4);
+        ctx.fillRect(self.sx-2,self.sy-2,4,4);
       }
     }
     fake_mouse = new Mouse();
@@ -228,7 +230,7 @@ var GamePlayScene = function(game, stage)
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { dc.context.fillText("Click the play button to watch quake",100,100); }
+      l.drawExtra = function() { ctx.fillText("Click the play button to watch quake",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_INTRO_INTRO = levels.length;
       levels.push(l);
@@ -245,8 +247,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,100);
+        else ctx.fillText("Watch the quake",100,100);
       }
       l.advanceTest = function()
       {
@@ -302,7 +304,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() { earth.t = 0; play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { dc.context.fillText("Click the play button",100,100); }
+      l.drawExtra = function() { ctx.fillText("Click the play button",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_EMPTY_INTRO = levels.length;
       levels.push(l);
@@ -319,8 +321,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the quake",100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,100);
+        else ctx.fillText("Watch the quake",100,100);
       }
       l.advanceTest = function()
       {
@@ -595,7 +597,7 @@ var GamePlayScene = function(game, stage)
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { dc.context.fillText("Click Play",100,100); }
+      l.drawExtra = function() { ctx.fillText("Click Play",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_SP_SINGLE_INTRO = levels.length;
       levels.push(l);
@@ -612,8 +614,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Wait for it... (click >> to speed up)",100,100);
-        else dc.context.fillText("Wait for it...",100,100);
+        if(speed_normal_button.on) ctx.fillText("Wait for it... (click >> to speed up)",100,100);
+        else ctx.fillText("Wait for it...",100,100);
       }
       l.advanceTest = function()
       {
@@ -644,8 +646,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Slide the \"Quake Origin\" marker on the timeline",100,100);
-        dc.context.fillText("closer to the time of impact.",100,120);
+        ctx.fillText("Slide the \"Quake Origin\" marker on the timeline",100,100);
+        ctx.fillText("closer to the time of impact.",100,120);
       }
       l.advanceTest = function() { return (earth.quakes[0].wx >= 0.1 && !scrubber.scrub_bar.dragging_quake_start); }
       lt.LVL_SP_SINGLE_MOVE_CLOSE = levels.length;
@@ -733,8 +735,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Slide the \"Quake Origin\" marker on the timeline",100,100);
-        dc.context.fillText("until both the S Wave and P Wave match the times reported",100,120);
+        ctx.fillText("Slide the \"Quake Origin\" marker on the timeline",100,100);
+        ctx.fillText("until both the S Wave and P Wave match the times reported",100,120);
       }
       l.advanceTest = function(){ return (earth.quakes[0].c && !scrubber.scrub_bar.dragging_quake_start); }
       lt.LVL_SP_DOUBLE_INTRO = levels.length;
@@ -802,7 +804,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { dc.context.fillText("Click to guess the earthquake's epicenter",100,100); }
+      l.drawExtra = function() { ctx.fillText("Click to guess the earthquake's epicenter",100,100); }
       l.advanceTest = function()
       {
         return earth.quakes.length;
@@ -822,8 +824,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Wait for it... (click >> to speed up)",100,100);
-        else dc.context.fillText("Wait for it...",100,100);
+        if(speed_normal_button.on) ctx.fillText("Wait for it... (click >> to speed up)",100,100);
+        else ctx.fillText("Wait for it...",100,100);
       }
       l.advanceTest = function()
       {
@@ -863,7 +865,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { dc.context.fillText("Try to find a plausable quake location",100,100); }
+      l.drawExtra = function() { ctx.fillText("Try to find a plausable quake location",100,100); }
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -896,7 +898,7 @@ var GamePlayScene = function(game, stage)
         "There may be other locations we could try that <b>also</b> wouldn't conflict with our known information.",
         "Try to find some other <b>plausable epicenters</b>.",
       ];
-      l.drawExtra = function() { dc.context.fillText("Try to find another plausable epicenter",100,100); }
+      l.drawExtra = function() { ctx.fillText("Try to find another plausable epicenter",100,100); }
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -933,7 +935,7 @@ var GamePlayScene = function(game, stage)
         var n = 0;
         for(var i = 0; i < earth.quakes.length; i++)
           if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
-        dc.context.fillText("Keep finding plausible epicenters (found "+n+"/5)",100,100);
+        ctx.fillText("Keep finding plausible epicenters (found "+n+"/5)",100,100);
       }
       l.advanceTest = function()
       {
@@ -986,7 +988,7 @@ var GamePlayScene = function(game, stage)
         "So you think you see the pattern?",
         "Click and drag out from Square City to highlight the area that <b>cannot be ruled out</b> as a possible epicenter of the earthquake",
       ];
-      l.drawExtra = function() { dc.context.fillText("Click and Drag out a pattern from Square City",100,100); }
+      l.drawExtra = function() { ctx.fillText("Click and Drag out a pattern from Square City",100,100); }
       l.advanceTest = function()
       {
         return (!earth.locations[0].dragging && Math.abs(Math.round(earth.locations[0].rad/quake_s_rate)-earth.ghost_quake.location_s_ts[0]) < 30);
@@ -1051,8 +1053,8 @@ var GamePlayScene = function(game, stage)
         var n = 0;
         for(var i = 0; i < earth.quakes.length; i++)
           if(earth.quakes[i].c && earth.quakes[i].player_knows_c) n++;
-        dc.context.fillText("Find 3 plausible epicenters very precisely (found "+n+"/3)",100,100);
-        dc.context.fillText("(Drag out a ring from the location to help!)",100,120);
+        ctx.fillText("Find 3 plausible epicenters very precisely (found "+n+"/3)",100,100);
+        ctx.fillText("(Drag out a ring from the location to help!)",100,120);
       }
       l.advanceTest = function()
       {
@@ -1298,7 +1300,7 @@ var GamePlayScene = function(game, stage)
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { dc.context.fillText("Click the play button to watch the radio waves",100,100); }
+      l.drawExtra = function() { ctx.fillText("Click the play button to watch the radio waves",100,100); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_GPS_INTRO = levels.length;
       levels.push(l);
@@ -1315,8 +1317,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) dc.context.fillText("Watch the radio waves (click >> to speed up)",100,100);
-        else dc.context.fillText("Watch the radio waves",100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the radio waves (click >> to speed up)",100,100);
+        else ctx.fillText("Watch the radio waves",100,100);
       }
       l.advanceTest = function()
       {
@@ -1382,9 +1384,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function(){ game.heard_game_prompt = true; };
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
-        dc.context.fillText("(No using the locations' radius tool!)",100,140);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        ctx.fillText("(No using the locations' radius tool!)",100,140);
       }
       l.advanceTest = function()
       {
@@ -1415,9 +1417,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
-        else dc.context.fillText("Watch the quake",100,120);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
+        else ctx.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1448,9 +1450,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
-        dc.context.fillText("You are allowed to use 1 location's radius tool.",100,140);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        ctx.fillText("You are allowed to use 1 location's radius tool.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1481,9 +1483,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
-        else dc.context.fillText("Watch the quake",100,120);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
+        else ctx.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1514,9 +1516,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
-        dc.context.fillText("You are allowed to use 2 locations' radius tools.",100,140);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        ctx.fillText("You are allowed to use 2 locations' radius tools.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1547,9 +1549,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
-        else dc.context.fillText("Watch the quake",100,120);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
+        else ctx.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1580,9 +1582,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
-        dc.context.fillText("You are allowed to use all locations' radius tools.",100,140);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        ctx.fillText("You are allowed to use all locations' radius tools.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1613,9 +1615,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
-        else dc.context.fillText("Watch the quake",100,120);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
+        else ctx.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1646,9 +1648,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        dc.context.fillText("Click to guess the location of the quake's epicenter!",100,120);
-        dc.context.fillText("You are allowed to use all locations' radius tools.",100,140);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
+        ctx.fillText("You are allowed to use all locations' radius tools.",100,140);
       }
       l.advanceTest = function()
       {
@@ -1679,9 +1681,9 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        if(speed_normal_button.on) dc.context.fillText("Watch the quake (click >> to speed up)",100,120);
-        else dc.context.fillText("Watch the quake",100,120);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
+        else ctx.fillText("Watch the quake",100,120);
       }
       l.advanceTest = function()
       {
@@ -1715,8 +1717,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        dc.context.fillText("Number of guesses:"+game_guesses,100,100);
-        dc.context.fillText("You've guessed correctly in "+game_guesses+" turns!",100,120);
+        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("You've guessed correctly in "+game_guesses+" turns!",100,120);
       }
       l.advanceTest = function()
       {
@@ -1809,12 +1811,11 @@ var GamePlayScene = function(game, stage)
     hoverer.register(earth);
     dragger.register(earth);
 
-    dom = new Dom();
     canvdom = new CanvDom();
-    bmwrangler = new BottomMessageWrangler();
-    //setTimeout(function(){ input_state = IGNORE_INPUT; dom.popDismissableMessageOnEl('hi',100,100,100,100,document.getElementById('stage_container'),dismissed); },100);
     //setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
-    //setTimeout(function(){ input_state = IGNORE_INPUT; bmwrangler.popMessage(['hi','there','what','you'],dismissed); },100);
+    blurb_w = dc.width-40;
+    blurb_x = 20;
+    blurb_y = dc.height-100;
 
     canvdom_clicker.register(canvdom);
 
@@ -1842,7 +1843,7 @@ var GamePlayScene = function(game, stage)
     if(levels[cur_level].lines.length)
     {
       input_state = IGNORE_INPUT;
-      bmwrangler.popMessage(levels[cur_level].lines,dismissed);
+      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, levels[cur_level].lines[0]),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
     }
     else
       levels[cur_level].postPromptEvt();
@@ -1945,16 +1946,14 @@ var GamePlayScene = function(game, stage)
       if(earth.t > earth.recordable_t) earth.t = earth.recordable_t;
     }
 
-    bmwrangler.tick();
-
     if(levels[cur_level].advanceTest())
       self.nextLevel();
   };
 
   self.draw = function()
   {
-    dc.context.fillStyle = "#FFFFFF";
-    dc.context.fillRect(0,0,dc.width,dc.height);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0,0,dc.width,dc.height);
 
     earth.draw();
 
@@ -1962,22 +1961,22 @@ var GamePlayScene = function(game, stage)
     if(levels[cur_level].allow_skip_prompt)
     {
       next_button.draw(dc);
-      dc.context.fillStyle = "#000000";
-      dc.context.textAlign = "left";
-      dc.context.fillText(levels[cur_level].allow_skip_prompt,next_button.x+5,next_button.y+15);
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "left";
+      ctx.fillText(levels[cur_level].allow_skip_prompt,next_button.x+5,next_button.y+15);
     }
     scrubber.draw();
 
-    dc.context.fillStyle = "#000000";
-    dc.context.strokeStyle = "#000000";
-    dc.context.textAlign = "center";
+    ctx.fillStyle = "#000000";
+    ctx.strokeStyle = "#000000";
+    ctx.textAlign = "center";
     //speed_buttons
     var b;
 
     b = speed_normal_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText(">",b.x+b.w/2,b.y+b.h-2);
+    b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText(">",b.x+b.w/2,b.y+b.h-2);
     b = speed_fast_button;
-    b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText(">>",b.x+b.w/2,b.y+b.h-2);
+    b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText(">>",b.x+b.w/2,b.y+b.h-2);
 
     if(earth.quakes.length && levels[cur_level].imask.select)
     {
@@ -1987,24 +1986,24 @@ var GamePlayScene = function(game, stage)
       if(sel)
       {
         b = desel_quakes_button;
-        b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("deselect all",b.x+b.w/2,b.y+b.h-2);
+        b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("deselect all",b.x+b.w/2,b.y+b.h-2);
         b = del_sel_quakes_button;
-        b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("delete selected",b.x+b.w/2,b.y+b.h-2);
+        b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("delete selected",b.x+b.w/2,b.y+b.h-2);
       }
       b = del_all_quakes_button;
-      b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("delete all",b.x+b.w/2,b.y+b.h-2);
+      b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("delete all",b.x+b.w/2,b.y+b.h-2);
     }
     if(levels[cur_level].imask.new)
     {
       b = new_button;
-      b.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("new",b.x+b.w/2,b.y+b.h-2);
+      b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("new",b.x+b.w/2,b.y+b.h-2);
     }
 
     if(input_state != IGNORE_INPUT) fake_mouse.draw();
-    dc.context.fillStyle = "#000000";
-    dc.context.textAlign = "left";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "left";
     levels[cur_level].drawExtra();
-    canvdom.draw(dc);
+    canvdom.draw(12,dc);
   };
 
   self.cleanup = function()
@@ -2395,11 +2394,11 @@ var GamePlayScene = function(game, stage)
       {
         if(!levels[cur_level].GPS || earth.t > q.c_aware_t)
         {
-          dc.context.lineWidth = 2;
-          dc.context.strokeStyle = "#888888";
-          dc.context.beginPath();
-          dc.context.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
-          dc.context.stroke();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "#888888";
+          ctx.beginPath();
+          ctx.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
+          ctx.stroke();
         }
 
         if(levels[cur_level].GPS)
@@ -2412,19 +2411,19 @@ var GamePlayScene = function(game, stage)
             ellipse.ww = self.t*quake_s_rate; //doesn't need to be "quake_s"- just a constant rate
             ellipse.wh = self.t*quake_s_rate;
             screenSpace(cam,dc,ellipse);
-            dc.context.strokeStyle = s_color;
-            dc.context.beginPath();
-            dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
-            dc.context.stroke();
+            ctx.strokeStyle = s_color;
+            ctx.beginPath();
+            ctx.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+            ctx.stroke();
             if(earth.t >= q.location_s_ts[i])
             {
               ellipse.ww = q.location_s_ts[i]*quake_s_rate; //doesn't need to be "quake_s"- just a constant rate
               ellipse.wh = q.location_s_ts[i]*quake_s_rate;
               screenSpace(cam,dc,ellipse);
-              dc.context.strokeStyle = "#FF8888";
-              dc.context.beginPath();
-              dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
-              dc.context.stroke();
+              ctx.strokeStyle = "#FF8888";
+              ctx.beginPath();
+              ctx.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+              ctx.stroke();
             }
           }
         }
@@ -2435,34 +2434,34 @@ var GamePlayScene = function(game, stage)
           ellipse.ww = (self.t-q.t)*quake_s_rate;
           ellipse.wh = (self.t-q.t)*quake_s_rate;
           screenSpace(cam,dc,ellipse);
-          dc.context.strokeStyle = s_color;
-          dc.context.beginPath();
-          dc.context.ellipse(q.cx, q.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
-          dc.context.stroke();
+          ctx.strokeStyle = s_color;
+          ctx.beginPath();
+          ctx.ellipse(q.cx, q.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+          ctx.stroke();
 
           if(levels[cur_level].p_waves)
           {
-            dc.context.strokeStyle = p_color;
+            ctx.strokeStyle = p_color;
             ellipse.wx = q.wx;
             ellipse.wy = q.wy;
             ellipse.ww = (self.t-q.t)*quake_p_rate;
             ellipse.wh = (self.t-q.t)*quake_p_rate;
             screenSpace(cam,dc,ellipse);
-            dc.context.beginPath();
-            dc.context.ellipse(q.cx, q.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
-            dc.context.stroke();
+            ctx.beginPath();
+            ctx.ellipse(q.cx, q.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+            ctx.stroke();
           }
         }
       }
 
       if(q.c_aware_t < self.t)
       {
-        if(q.c) dc.context.drawImage(cmark,q.cx-cmark.width/2,q.cy-cmark.height/2);
-        else    dc.context.drawImage(xmark,q.cx-xmark.width/2,q.cy-xmark.height/2);
+        if(q.c) ctx.drawImage(cmark,q.cx-cmark.width/2,q.cy-cmark.height/2);
+        else    ctx.drawImage(xmark,q.cx-xmark.width/2,q.cy-xmark.height/2);
         q.player_knows_c = true;
       }
       else if(!levels[cur_level].GPS)
-        dc.context.drawImage(qmark,q.cx-qmark.width/2,q.cy-qmark.height/2);
+        ctx.drawImage(qmark,q.cx-qmark.width/2,q.cy-qmark.height/2);
     }
     self.drawLoc = function(l,shake_amt)
     {
@@ -2471,15 +2470,15 @@ var GamePlayScene = function(game, stage)
       var wd = 0.01;
       qx += randR(-1,1)*shake_amt*wd*dc.width;
       qy += randR(-1,1)*shake_amt*wd*dc.width;
-      dc.context.lineWidth = 2;
-      dc.context.beginPath();
-      dc.context.ellipse(l.cx+qx,l.cy+qy,l.w/2,l.h/2,0,0,2*Math.PI);
-      dc.context.stroke();
-      dc.context.drawImage(l.shape,l.cx+qx-l.shape.width/2,l.cy+qy-l.shape.height/2,l.shape.width,l.shape.height);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(l.cx+qx,l.cy+qy,l.w/2,l.h/2,0,0,2*Math.PI);
+      ctx.stroke();
+      ctx.drawImage(l.shape,l.cx+qx-l.shape.width/2,l.cy+qy-l.shape.height/2,l.shape.width,l.shape.height);
       if(l == hov_loc)
       {
-        dc.context.fillStyle = "#000000";
-        //dc.context.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
+        ctx.fillStyle = "#000000";
+        //ctx.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
       }
     }
     self.quakeShakes = function(q,i)
@@ -2502,13 +2501,13 @@ var GamePlayScene = function(game, stage)
     }
     self.draw = function()
     {
-      dc.context.textAlign = "center";
+      ctx.textAlign = "center";
 
       //draw distance viz
       var l;
-      dc.context.strokeStyle = "#000000";
-      dc.context.fillStyle = "#000000";
-      dc.context.globalAlpha=0.1;
+      ctx.strokeStyle = "#000000";
+      ctx.fillStyle = "#000000";
+      ctx.globalAlpha=0.1;
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
@@ -2519,49 +2518,49 @@ var GamePlayScene = function(game, stage)
           var y = l.wy-l.rad_obj.wy;
           var d = Math.sqrt(x*x+y*y);
 
-          dc.context.lineWidth = dc.height*(quake_p_rate*levels[cur_level].location_success_range); //BAD- ONLY WORKS WHEN cam.wh == 1;
+          ctx.lineWidth = dc.height*(quake_p_rate*levels[cur_level].location_success_range); //BAD- ONLY WORKS WHEN cam.wh == 1;
           ellipse.wx = l.wx;
           ellipse.wy = l.wy;
           ellipse.ww = l.rad;
           ellipse.wh = l.rad;
           screenSpace(cam,dc,ellipse);
-          dc.context.beginPath();
-          dc.context.ellipse(l.cx,l.cy,ellipse.w,ellipse.h,0,0,2*Math.PI); //circles around locs
-          dc.context.stroke();
+          ctx.beginPath();
+          ctx.ellipse(l.cx,l.cy,ellipse.w,ellipse.h,0,0,2*Math.PI); //circles around locs
+          ctx.stroke();
 
-          dc.context.lineWidth = 2;
-          dc.context.beginPath();
-          dc.context.ellipse(l.cx,l.cy,ellipse.w,ellipse.h,0,0,2*Math.PI); //circles around locs
-          dc.context.stroke();
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.ellipse(l.cx,l.cy,ellipse.w,ellipse.h,0,0,2*Math.PI); //circles around locs
+          ctx.stroke();
           if(l.dragging || l.hovering)
           {
             //not technically an ellipse...
-            dc.context.beginPath();
-            dc.context.moveTo(l.cx,l.cy); dc.context.lineTo(l.rad_obj.x,l.rad_obj.y); //line
-            dc.context.stroke();
+            ctx.beginPath();
+            ctx.moveTo(l.cx,l.cy); ctx.lineTo(l.rad_obj.x,l.rad_obj.y); //line
+            ctx.stroke();
 
             if(l.rad != 0)
             {
-              var tmp_alpha = dc.context.globalAlpha;
-              dc.context.globalAlpha=1;
+              var tmp_alpha = ctx.globalAlpha;
+              ctx.globalAlpha=1;
               ellipse.wx = l.rad_obj.wx+x/2;
               ellipse.wy = l.rad_obj.wy+y/2;
               ellipse.ww = 0;
               ellipse.wh = 0;
               screenSpace(cam,dc,ellipse);
-              dc.context.fillStyle = s_color;
-              dc.context.fillText("("+timeForT(Math.round(l.rad/quake_s_rate))+")",ellipse.x,ellipse.y-10);
+              ctx.fillStyle = s_color;
+              ctx.fillText("("+timeForT(Math.round(l.rad/quake_s_rate))+")",ellipse.x,ellipse.y-10);
               if(levels[cur_level].p_waves)
               {
-                dc.context.fillStyle = p_color;
-                dc.context.fillText("("+timeForT(Math.round(l.rad/quake_p_rate))+")",ellipse.x,ellipse.y-20);
+                ctx.fillStyle = p_color;
+                ctx.fillText("("+timeForT(Math.round(l.rad/quake_p_rate))+")",ellipse.x,ellipse.y-20);
               }
-              dc.context.globalAlpha=tmp_alpha;
+              ctx.globalAlpha=tmp_alpha;
             }
           }
         }
       }
-      dc.context.globalAlpha=1;
+      ctx.globalAlpha=1;
 
       //draw selection box
       var dragSel;
@@ -2575,15 +2574,15 @@ var GamePlayScene = function(game, stage)
         var w = Math.abs(self.drag_origin_obj.x-self.drag_obj.x);
         var h = Math.abs(self.drag_origin_obj.y-self.drag_obj.y);
 
-        dc.context.fillStyle = "#000000";
-        dc.context.globalAlpha=0.1;
-        dc.context.fillRect(min_x,min_y,w,h);
-        dc.context.globalAlpha=1;
+        ctx.fillStyle = "#000000";
+        ctx.globalAlpha=0.1;
+        ctx.fillRect(min_x,min_y,w,h);
+        ctx.globalAlpha=1;
       }
 
       //draw locations
       var l;
-      dc.context.strokeStyle = "#000000";
+      ctx.strokeStyle = "#000000";
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
@@ -2613,7 +2612,7 @@ var GamePlayScene = function(game, stage)
       {
         var l;
         var g = self.ghost_quake;
-        dc.context.strokeStyle = "#000000";
+        ctx.strokeStyle = "#000000";
         for(var i = 0; i < self.locations.length; i++)
         {
           l = self.locations[i];
@@ -2625,10 +2624,10 @@ var GamePlayScene = function(game, stage)
             ellipse.ww = t_til*quake_s_rate;
             ellipse.wh = t_til*quake_s_rate;
             screenSpace(cam,dc,ellipse);
-            dc.context.globalAlpha=1-(t_til/200);
-            dc.context.beginPath();
-            dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
-            dc.context.stroke();
+            ctx.globalAlpha=1-(t_til/200);
+            ctx.beginPath();
+            ctx.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+            ctx.stroke();
           }
 
           if(levels[cur_level].p_waves)
@@ -2641,13 +2640,13 @@ var GamePlayScene = function(game, stage)
               ellipse.ww = t_til*quake_p_rate;
               ellipse.wh = t_til*quake_p_rate;
               screenSpace(cam,dc,ellipse);
-              dc.context.globalAlpha=1-(t_til/100);
-              dc.context.beginPath();
-              dc.context.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
-              dc.context.stroke();
+              ctx.globalAlpha=1-(t_til/100);
+              ctx.beginPath();
+              ctx.ellipse(l.cx, l.cy, ellipse.w, ellipse.h, 0, 0, 2 * Math.PI);
+              ctx.stroke();
             }
           }
-          dc.context.globalAlpha=1;
+          ctx.globalAlpha=1;
         }
       }
     }
@@ -2971,32 +2970,32 @@ var GamePlayScene = function(game, stage)
 
       if(split)
       {
-        dc.context.fillRect(x-w/2,self.y+self.h/2,           w,self.h*0.1);
-        dc.context.fillRect(x-w/2,self.y+self.h/2+self.h*0.4,w,self.h*0.1);
+        ctx.fillRect(x-w/2,self.y+self.h/2,           w,self.h*0.1);
+        ctx.fillRect(x-w/2,self.y+self.h/2+self.h*0.4,w,self.h*0.1);
       }
-      else dc.context.fillRect(x-w/2,self.y+self.h/2,w,self.h/2);
+      else ctx.fillRect(x-w/2,self.y+self.h/2,w,self.h/2);
 
-      if(icon) dc.context.drawImage(icon,x-icon.width/2,self.y+self.h/2+self.h/4-icon.height/2);
+      if(icon) ctx.drawImage(icon,x-icon.width/2,self.y+self.h/2+self.h/4-icon.height/2);
     }
     self.labelBlip = function(t,hrt)
     {
       var x = self.scrub_bar.xForT(t);
-      dc.context.fillText(hrt,x,self.y+self.h/2-1);
+      ctx.fillText(hrt,x,self.y+self.h/2-1);
     }
     self.shapeBlip = function(t,shape)
     {
       var x = self.scrub_bar.xForT(t);
-      dc.context.drawImage(shape,x-shape.width/2,self.y+self.h/2-5-shape.height);
+      ctx.drawImage(shape,x-shape.width/2,self.y+self.h/2-5-shape.height);
     }
     self.drawAssumedStartBlip = function()
     {
-      dc.context.textAlign = "left";
+      ctx.textAlign = "left";
       var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
-      dc.context.fillStyle = "#2277FF";
-      dc.context.fillRect(x-0.5,self.y,1,self.h);
-      dc.context.fillRect(x-0.5,self.y,67,self.h/4);
-      dc.context.fillStyle = "#FFFFFF";
-      dc.context.fillText("Quake Origin",x+2,self.y+self.h/4-2);
+      ctx.fillStyle = "#2277FF";
+      ctx.fillRect(x-0.5,self.y,1,self.h);
+      ctx.fillRect(x-0.5,self.y,67,self.h/4);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillText("Quake Origin",x+2,self.y+self.h/4-2);
     }
     self.drawQuakeBlips = function(q,ghost)
     {
@@ -3004,10 +3003,10 @@ var GamePlayScene = function(game, stage)
       {
         var draw_s =                               (ghost || self.earth.t > q.location_s_ts[i]);
         var draw_p = (levels[cur_level].p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
-        dc.context.globalAlpha = 1;
+        ctx.globalAlpha = 1;
         if(i == hov_loc_i) //hovering over location
         {
-          dc.context.fillStyle = "#000000";
+          ctx.fillStyle = "#000000";
           if(draw_s) self.labelBlip(q.location_s_ts[i],q.location_s_hrts[i]);
           if(draw_p) self.labelBlip(q.location_p_ts[i],q.location_p_hrts[i]);
         }
@@ -3023,7 +3022,7 @@ var GamePlayScene = function(game, stage)
         {
           if(ghost)
           {
-            if(self.earth.locations.length > 1) dc.context.globalAlpha = 0.2;
+            if(self.earth.locations.length > 1) ctx.globalAlpha = 0.2;
             if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
             if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
           }
@@ -3033,97 +3032,97 @@ var GamePlayScene = function(game, stage)
         var split = ghost;
         if(draw_s)
         {
-          dc.context.fillStyle = s_color;
+          ctx.fillStyle = s_color;
           var icon = q.location_s_cs[i] ? cmark : xmark;
           self.drawBlip(q.location_s_ts[i],range,split,ghost ? 0 : icon);
         }
         if(draw_p)
         {
-          dc.context.fillStyle = p_color;
+          ctx.fillStyle = p_color;
           var icon = q.location_p_cs[i] ? cmark : xmark;
           self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
         }
       }
-      dc.context.globalAlpha = 1;
+      ctx.globalAlpha = 1;
     }
     self.draw = function()
     {
-      dc.context.textAlign = "center";
+      ctx.textAlign = "center";
 
       //draw self
-      dc.context.fillStyle = "#CCCCCC";
-      dc.context.fillRect(self.x,self.y,self.w,self.h);
-      dc.context.fillStyle = "#AAAAAA";
-      dc.context.fillRect(self.x,self.y+self.h/2,self.w,self.h/2);
-      dc.context.strokeStyle = "#000000";
-      dc.context.lineWidth = 1;
-      dc.context.beginPath();
-      dc.context.moveTo(self.x,self.y+self.h/2);
-      dc.context.lineTo(self.x+self.w,self.y+self.h/2);
-      dc.context.stroke();
+      ctx.fillStyle = "#CCCCCC";
+      ctx.fillRect(self.x,self.y,self.w,self.h);
+      ctx.fillStyle = "#AAAAAA";
+      ctx.fillRect(self.x,self.y+self.h/2,self.w,self.h/2);
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(self.x,self.y+self.h/2);
+      ctx.lineTo(self.x+self.w,self.y+self.h/2);
+      ctx.stroke();
       if(levels[cur_level].display_quake_start_range)
       {
-        dc.context.fillStyle = "#88AAAA";
+        ctx.fillStyle = "#88AAAA";
         var s = self.scrub_bar.w*(levels[cur_level].quake_start_range_s/self.earth.recordable_t);
         var e = self.scrub_bar.w*(levels[cur_level].quake_start_range_e/self.earth.recordable_t);
-        dc.context.fillRect(self.scrub_bar.x+s,self.y+self.h/2,e-s,self.h/2);
+        ctx.fillRect(self.scrub_bar.x+s,self.y+self.h/2,e-s,self.h/2);
       }
-      dc.context.fillStyle = "#FFFFFF";
+      ctx.fillStyle = "#FFFFFF";
 
-      dc.context.textAlign = "center";
+      ctx.textAlign = "center";
 
       self.drawBlip(self.earth.t,0,0,0);
-      dc.context.fillStyle = "#000000";
+      ctx.fillStyle = "#000000";
       self.labelBlip(self.earth.t,clockForT(Math.round(self.earth.t)));
 
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
-        dc.context.fillStyle = "#888888";
+        ctx.fillStyle = "#888888";
         self.drawBlip(self.scrub_bar.hovering_t,0,0,0);
-        dc.context.fillStyle = "#000000";
+        ctx.fillStyle = "#000000";
         self.labelBlip(self.scrub_bar.hovering_t,clockForT(Math.round(self.scrub_bar.hovering_t)));
       }
 
       if(hov_loc && hov_loc.rad)
       {
-        dc.context.globalAlpha=1;
+        ctx.globalAlpha=1;
         var range = levels[cur_level].location_success_range;
-        dc.context.fillStyle = "#222222";
+        ctx.fillStyle = "#222222";
         self.drawBlip(hov_loc.rad/quake_s_rate,range,true,0);
-        dc.context.globalAlpha=1;
+        ctx.globalAlpha=1;
       }
 
       self.drawQuakeBlips(self.earth.ghost_quake,true);
       for(var i = 0; i < self.earth.quakes.length; i++)
         if(self.earth.quakes[i].selected || self.earth.quakes[i] == hov_quak) self.drawQuakeBlips(self.earth.quakes[i],false)
-      dc.context.globalAlpha=1;
+      ctx.globalAlpha=1;
 
       if(levels[cur_level].display_quake_start_range)
         self.drawAssumedStartBlip();
 
       //ui
-      dc.context.fillStyle = "#000000";
+      ctx.fillStyle = "#000000";
       var padding = 5;
       //play_button
-      dc.context.beginPath();
-      dc.context.moveTo(self.play_button.x+padding,self.play_button.y+padding);
-      dc.context.lineTo(self.play_button.x+self.play_button.w-padding,self.play_button.y+self.play_button.h/2);
-      dc.context.lineTo(self.play_button.x+padding,self.play_button.y+self.play_button.h-padding);
-      dc.context.fill();
+      ctx.beginPath();
+      ctx.moveTo(self.play_button.x+padding,self.play_button.y+padding);
+      ctx.lineTo(self.play_button.x+self.play_button.w-padding,self.play_button.y+self.play_button.h/2);
+      ctx.lineTo(self.play_button.x+padding,self.play_button.y+self.play_button.h-padding);
+      ctx.fill();
       //pause_button
-      dc.context.fillRect(
+      ctx.fillRect(
         self.pause_button.x+padding,
         self.pause_button.y+padding,
         (self.pause_button.w-2*padding)/2-(self.pause_button.w/20),
         self.pause_button.h-2*padding
       );
-      dc.context.fillRect(
+      ctx.fillRect(
         self.pause_button.x+self.pause_button.w/2+(self.pause_button.w/20),
         self.pause_button.y+padding,
         (self.pause_button.w-2*padding)/2-(self.pause_button.w/20),
         self.pause_button.h-2*padding
       );
-      //dc.context.fillRect(self.pause_button.x+self.pause_button.w/2+self.pause_button/5,self.pause_button.y+padding,self.pause_button.w/2-padding-self.pause_button/10,self.pause_button.h-2*padding);
+      //ctx.fillRect(self.pause_button.x+self.pause_button.w/2+self.pause_button/5,self.pause_button.y+padding,self.pause_button.w/2-padding-self.pause_button/10,self.pause_button.h-2*padding);
     }
   }
 

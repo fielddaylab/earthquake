@@ -69,7 +69,7 @@ var Clicker = function(init)
 
 var clicked = function(clickable, evt)
 {
-  return ptWithinObj(evt.doX, evt.doY, clickable);
+  return ptWithinObj(clickable, evt.doX, evt.doY);
 }
 
 //example clickable- just needs x,y,w,h and click callback

@@ -63,7 +63,7 @@ var Dragger = function(init)
   {
     for(var i = 0; i < draggables.length; i++)
     {
-      if(ptWithinObj(evt.doX, evt.doY, draggables[i]))
+      if(ptWithinObj(draggables[i], evt.doX, evt.doY))
       {
         var already_dragging = false;
         for(var j = 0; j < dragging.length; j++)
