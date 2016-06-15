@@ -43,6 +43,7 @@ var GamePlayScene = function(game, stage)
 
   var levels;
   var cur_level;
+  var cur_prompt_line;
   var start_level = 0;
   var game_guesses;
   var game_known_locs;
@@ -1773,6 +1774,7 @@ var GamePlayScene = function(game, stage)
         case 5: cur_level = lt.LVL_FREE-1;              break;
       }
     }
+    cur_prompt_line = 0;
 
     game_guesses = 0;
     game_known_locs = 0;
@@ -1826,8 +1828,14 @@ var GamePlayScene = function(game, stage)
 
   var dismissed = function()
   {
-    input_state = RESUME_INPUT;
-    levels[cur_level].postPromptEvt();
+    cur_prompt_line++;
+    if(cur_prompt_line < levels[cur_level].lines.length)
+      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, levels[cur_level].lines[cur_prompt_line]),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
+    else
+    {
+      input_state = RESUME_INPUT;
+      levels[cur_level].postPromptEvt();
+    }
   }
 
   self.nextLevel = function(skip_scene_check)
@@ -1843,7 +1851,8 @@ var GamePlayScene = function(game, stage)
     if(levels[cur_level].lines.length)
     {
       input_state = IGNORE_INPUT;
-      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, levels[cur_level].lines[0]),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
+      cur_prompt_line = 0;
+      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, levels[cur_level].lines[cur_prompt_line]),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
     }
     else
       levels[cur_level].postPromptEvt();
