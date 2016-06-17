@@ -1961,6 +1961,7 @@ var GamePlayScene = function(game, stage)
 
   self.draw = function()
   {
+    dc.context.font = "12px Open Sans";
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0,0,dc.width,dc.height);
 

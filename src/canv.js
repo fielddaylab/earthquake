@@ -99,6 +99,38 @@ Canv.prototype.drawGrid = function(center_x, center_y, unit_x, unit_y)
     t = invlerp(0,self.height,y);
   }
 }
+Canv.prototype.strokeRoundRect = function(x,y,w,h,r)
+{
+  var self = this;
+  self.context.beginPath();
+  self.context.moveTo(x+r,y);
+  self.context.lineTo(x+w-r,y);
+  self.context.quadraticCurveTo(x+w,y,x+w,y+r);
+  self.context.lineTo(x+w,y+h-r);
+  self.context.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  self.context.lineTo(x+r,y+h);
+  self.context.quadraticCurveTo(x,y+h,x,y+h-r);
+  self.context.lineTo(x,y+r);
+  self.context.quadraticCurveTo(x,y,x+r,y);
+  self.context.closePath();
+  self.context.stroke();
+}
+Canv.prototype.fillRoundRect = function(x,y,w,h,r)
+{
+  var self = this;
+  self.context.beginPath();
+  self.context.moveTo(x+r,y);
+  self.context.lineTo(x+w-r,y);
+  self.context.quadraticCurveTo(x+w,y,x+w,y+r);
+  self.context.lineTo(x+w,y+h-r);
+  self.context.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  self.context.lineTo(x+r,y+h);
+  self.context.quadraticCurveTo(x,y+h,x,y+h-r);
+  self.context.lineTo(x,y+r);
+  self.context.quadraticCurveTo(x,y,x+r,y);
+  self.context.closePath();
+  self.context.fill();
+}
 Canv.prototype.outlineText = function(text,x,y,color_in,color_out,max_w)
 {
   var self = this;
