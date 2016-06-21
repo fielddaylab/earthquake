@@ -3016,14 +3016,26 @@ var GamePlayScene = function(game, stage)
       var w = self.scrub_bar.w*((2*range)/self.earth.recordable_t);
       if(range == 0) w = 1;
 
+/*
       if(split)
       {
         ctx.fillRect(x-w/2,self.y+self.h/2,           w,self.h*0.1);
         ctx.fillRect(x-w/2,self.y+self.h/2+self.h*0.4,w,self.h*0.1);
       }
       else ctx.fillRect(x-w/2,self.y+self.h/2,w,self.h/2);
+*/
 
-      if(icon) ctx.drawImage(icon,x-icon.width/2,self.y+self.h/2+self.h/4-icon.height/2);
+      if(icon)
+      {
+        var s = 15;
+        y = self.y+self.h-self.h/3+3;
+        ctx.strokeStyle = black;
+        ctx.beginPath();
+        ctx.moveTo(x,self.y+self.h/3);
+        ctx.lineTo(x,y);
+        ctx.stroke();
+        ctx.drawImage(icon,x-s/2,y-s/2,s,s);
+      }
     }
     self.labelBlip = function(t,hrt)
     {
@@ -3080,7 +3092,6 @@ var GamePlayScene = function(game, stage)
           }
         }
 
-/*
         var range = ghost ? levels[cur_level].location_success_range : 0;
         var split = ghost;
         if(draw_s)
@@ -3095,7 +3106,6 @@ var GamePlayScene = function(game, stage)
           var icon = q.location_p_cs[i] ? guess_success_img : guess_fail_img;
           self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
         }
-*/
       }
       ctx.globalAlpha = 1;
     }
