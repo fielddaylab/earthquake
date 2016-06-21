@@ -75,6 +75,7 @@ var GamePlayScene = function(game, stage)
   var blurb_w;
   var blurb_x;
   var blurb_y;
+  var blurb_t;
   var canvdomhit;
 
   var lt; //level title object. just to correctly namespace them.
@@ -1817,9 +1818,10 @@ var GamePlayScene = function(game, stage)
 
     canvdom = new CanvDom();
     //setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
-    blurb_w = dc.width-40;
-    blurb_x = 20;
+    blurb_x = 100;
+    blurb_w = dc.width-blurb_x-20;
     blurb_y = dc.height-100;
+    blurb_t = 0;
     canvdomhit = {x:0,y:0,w:dc.width,h:dc.height,click:function(evt){canvdom.click(evt);}};
 
     canvdom_clicker.register(canvdomhit);
@@ -1962,6 +1964,8 @@ var GamePlayScene = function(game, stage)
       self.nextLevel();
 
     input_state = next_input_state;
+    if(input_state == IGNORE_INPUT) blurb_t = lerp(blurb_t,1,0.2);
+    else                            blurb_t = lerp(blurb_t,-0.2,0.2);
   };
 
   self.draw = function()
@@ -2025,8 +2029,10 @@ var GamePlayScene = function(game, stage)
       ctx.fillStyle = "#FFFFFF";
       ctx.fillRect(0,0,dc.width,dc.height);
       ctx.globalAlpha = 1;
-      canvdom.draw(12,dc);
     }
+    ctx.fillStyle = "#FF0000";
+    ctx.fillRect(10,dc.height-blurb_t*200,80,200);
+    canvdom.draw(12,dc);
   };
 
   self.cleanup = function()
