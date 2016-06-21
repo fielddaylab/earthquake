@@ -3,4 +3,7 @@
 - s/p colored blips
 - circle should be a circle, not a half circle
 - "quake origin" ptr lower to timeline? when hovering above it looks like it's pointing to the map
+- which quakes are selected for:
+- - what blips shows on timeline
+- - what circles shows on map
 

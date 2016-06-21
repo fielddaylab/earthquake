@@ -2189,24 +2189,32 @@ var GamePlayScene = function(game, stage)
           if(levels[cur_level].loc_1_x !== undefined) l = new Location(levels[cur_level].loc_1_x,levels[cur_level].loc_1_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = icon_square_img;
+          l.city = city_square_img;
+          l.destroy = city_square_destroy_img;
         }
         else if(i == 1)
         {
           if(levels[cur_level].loc_2_x !== undefined) l = new Location(levels[cur_level].loc_2_x,levels[cur_level].loc_2_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = icon_circ_img;
+          l.city = city_circ_img;
+          l.destroy = city_circ_destroy_img;
         }
         else if(i == 2)
         {
           if(levels[cur_level].loc_3_x !== undefined) l = new Location(levels[cur_level].loc_3_x,levels[cur_level].loc_3_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = icon_tri_img;
+          l.city = city_tri_img;
+          l.destroy = city_tri_destroy_img;
         }
         else if(i == 3)
         {
           if(levels[cur_level].loc_4_x !== undefined) l = new Location(levels[cur_level].loc_4_x,levels[cur_level].loc_4_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
           l.shape = icon_tri_img;
+          l.city = city_tri_img;
+          l.destroy = city_tri_destroy_img;
         }
         hoverer.register(l);
         dragger.register(l);
@@ -2336,13 +2344,14 @@ var GamePlayScene = function(game, stage)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       if(!levels[cur_level].imask.earth) return;
+      self.dragging = true;
       self.drag(evt);
     }
     self.drag = function(evt)
     {
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       if(!levels[cur_level].imask.earth) return;
-      self.dragging = true;
+      if(!self.dragging) return;
       self.drag_obj.x = evt.doX;
       self.drag_obj.y = evt.doY;
       worldSpace(cam,dc,self.drag_obj);
@@ -2354,7 +2363,9 @@ var GamePlayScene = function(game, stage)
         self.drag_origin_obj.wy = self.drag_obj.wy;
       }
       if(!levels[cur_level].imask.earthdrag)
+      {
         self.dragFinish();
+      }
     }
     self.dragFinish = function()
     {
@@ -2405,8 +2416,10 @@ var GamePlayScene = function(game, stage)
       var h = Math.abs(self.drag_obj.wy-self.drag_origin_obj.wy);
       for(var i = 0; i < self.quakes.length; i++)
       {
-        if(ptWithin(self.quakes[i].wx, self.quakes[i].wy, min_x, min_y, w, h))
+        if(ptWithin(min_x, min_y, w, h, self.quakes[i].wx, self.quakes[i].wy))
+        {
           self.quakes[i].selected = true;
+        }
       }
 
       self.drag_obj.x = -1;
@@ -2424,6 +2437,7 @@ var GamePlayScene = function(game, stage)
 
       if(q.selected)
       {
+      /*
         if(!levels[cur_level].GPS || earth.t > q.c_aware_t)
         {
           ctx.lineWidth = 2;
@@ -2432,6 +2446,7 @@ var GamePlayScene = function(game, stage)
           ctx.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
           ctx.stroke();
         }
+      */
 
         if(levels[cur_level].GPS)
         {
@@ -2486,14 +2501,16 @@ var GamePlayScene = function(game, stage)
         }
       }
 
+      var s = 20;
       if(q.c_aware_t < self.t)
       {
-        if(q.c) ctx.drawImage(cmark,q.cx-cmark.width/2,q.cy-cmark.height/2);
-        else    ctx.drawImage(xmark,q.cx-xmark.width/2,q.cy-xmark.height/2);
+        if(q.c) ctx.drawImage(guess_success_img,q.cx-s/2,q.cy-s/2,s,s);
+        else    ctx.drawImage(guess_fail_img,q.cx-s/2,q.cy-s/2,s,s);
         q.player_knows_c = true;
       }
       else if(!levels[cur_level].GPS)
-        ctx.drawImage(qmark,q.cx-qmark.width/2,q.cy-qmark.height/2);
+        ctx.drawImage(guess_unknown_img,q.cx-s/2,q.cy-s/2,s,s);
+
     }
     self.drawLoc = function(l,shake_amt)
     {
@@ -2502,16 +2519,10 @@ var GamePlayScene = function(game, stage)
       var wd = 0.01;
       qx += randR(-1,1)*shake_amt*wd*dc.width;
       qy += randR(-1,1)*shake_amt*wd*dc.width;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.ellipse(l.cx+qx,l.cy+qy,l.w/2,l.h/2,0,0,2*Math.PI);
-      ctx.stroke();
-      ctx.drawImage(l.shape,l.cx+qx-l.shape.width/2,l.cy+qy-l.shape.height/2,l.shape.width,l.shape.height);
-      if(l == hov_loc)
-      {
-        ctx.fillStyle = "#000000";
-        //ctx.fillText("("+fviz(l.wx)+","+fviz(l.wy)+")",l.x,l.y-1);
-      }
+      var s = 100;
+      ctx.drawImage(l.city,l.cx+qx-s/2,l.cy+qy-s/2,s,s);
+      s = 20;
+      ctx.drawImage(l.shape,l.cx+qx-s/2,l.cy+qy-s/2,s,s);
     }
     self.quakeShakes = function(q,i)
     {
@@ -2631,6 +2642,9 @@ var GamePlayScene = function(game, stage)
       }
 
       //draw quakes
+      var n_selected = 0;
+      for(var i = 0; i < self.quakes.length; i++)
+        if(self.quakes[i].selected) n_selected++;
       for(var i = 0; i < self.quakes.length; i++)
         self.drawQuake(self.quakes[i]);
       if(levels[cur_level].display_ghost_quake)
@@ -3060,7 +3074,7 @@ var GamePlayScene = function(game, stage)
         {
           if(ghost)
           {
-            if(self.earth.locations.length > 1) ctx.globalAlpha = 0.2;
+            //if(self.earth.locations.length > 1) ctx.globalAlpha = 0.2;
             if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
             if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
           }
@@ -3072,13 +3086,13 @@ var GamePlayScene = function(game, stage)
         if(draw_s)
         {
           ctx.fillStyle = s_color;
-          var icon = q.location_s_cs[i] ? cmark : xmark;
+          var icon = q.location_s_cs[i] ? guess_success_img : guess_fail_img;
           self.drawBlip(q.location_s_ts[i],range,split,ghost ? 0 : icon);
         }
         if(draw_p)
         {
           ctx.fillStyle = p_color;
-          var icon = q.location_p_cs[i] ? cmark : xmark;
+          var icon = q.location_p_cs[i] ? guess_success_img : guess_fail_img;
           self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
         }
 */
