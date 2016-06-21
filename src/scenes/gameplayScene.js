@@ -1922,7 +1922,6 @@ var GamePlayScene = function(game, stage)
         return;
       }
     }
-
   }
   self.tick = function()
   {
@@ -2019,7 +2018,15 @@ var GamePlayScene = function(game, stage)
     ctx.fillStyle = "#000000";
     ctx.textAlign = "left";
     levels[cur_level].drawExtra();
-    canvdom.draw(12,dc);
+
+    if(input_state == IGNORE_INPUT)
+    {
+      ctx.globalAlpha = .5;
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0,0,dc.width,dc.height);
+      ctx.globalAlpha = 1;
+      canvdom.draw(12,dc);
+    }
   };
 
   self.cleanup = function()
