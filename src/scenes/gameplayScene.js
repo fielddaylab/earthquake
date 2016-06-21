@@ -12,6 +12,7 @@ var GamePlayScene = function(game, stage)
   var IGNORE_INPUT = ENUM; ENUM++;
   var RESUME_INPUT = ENUM; ENUM++;
   var input_state;
+  var next_input_state;
 
   var self = this;
   var dc = stage.drawCanv;
@@ -1823,6 +1824,7 @@ var GamePlayScene = function(game, stage)
 
     canvdom_clicker.register(canvdomhit);
 
+    next_input_state = RESUME_INPUT;
     input_state = RESUME_INPUT;
 
     self.nextLevel(true);
@@ -1832,10 +1834,10 @@ var GamePlayScene = function(game, stage)
   {
     cur_prompt_line++;
     if(cur_prompt_line < levels[cur_level].lines.length)
-      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, levels[cur_level].lines[cur_prompt_line]),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
+      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, naiveStripHTML(levels[cur_level].lines[cur_prompt_line])),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
     else
     {
-      input_state = RESUME_INPUT;
+      next_input_state = RESUME_INPUT;
       levels[cur_level].postPromptEvt();
     }
   }
@@ -1852,9 +1854,9 @@ var GamePlayScene = function(game, stage)
     levels[cur_level].prePromptEvt();
     if(levels[cur_level].lines.length)
     {
-      input_state = IGNORE_INPUT;
+      next_input_state = IGNORE_INPUT;
       cur_prompt_line = 0;
-      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, levels[cur_level].lines[cur_prompt_line]),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
+      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, naiveStripHTML(levels[cur_level].lines[cur_prompt_line])),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
     }
     else
       levels[cur_level].postPromptEvt();
@@ -1959,6 +1961,8 @@ var GamePlayScene = function(game, stage)
 
     if(levels[cur_level].advanceTest())
       self.nextLevel();
+
+    input_state = next_input_state;
   };
 
   self.draw = function()

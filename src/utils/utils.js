@@ -331,6 +331,11 @@ var space = function(minv,maxv,obv,nobs,obi)
   return minv+pad+(obv+pad)*obi;
 }
 
+var naiveStripHTML = function(text)
+{
+  return text.replace(/<[^>]*>/g,'');
+}
+
 var textToLines = function(canv, font, width, text)
 {
   var lines = [];
