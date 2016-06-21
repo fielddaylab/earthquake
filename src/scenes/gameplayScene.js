@@ -1963,7 +1963,7 @@ var GamePlayScene = function(game, stage)
   {
     dc.context.font = "12px Open Sans";
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0,0,dc.width,dc.height);
+    ctx.drawImage(bg_img,0,0,dc.width,dc.height);
 
     earth.draw();
 
