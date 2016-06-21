@@ -3018,23 +3018,21 @@ var GamePlayScene = function(game, stage)
     self.shapeBlip = function(t,shape)
     {
       var x = self.scrub_bar.xForT(t);
+      var y = self.y+self.h-self.h/3+3;
       var s = 20;
       ctx.strokeStyle = black;
       ctx.beginPath();
       ctx.moveTo(x,self.y+self.h/3);
-      ctx.lineTo(x,self.y+self.h-self.h/3);
+      ctx.lineTo(x,y);
       ctx.stroke();
-      ctx.drawImage(shape,x-s/2,self.y+self.h-self.h/3-s/2,s,s);
+      ctx.drawImage(shape,x-s/2,y-s/2,s,s);
     }
     self.drawAssumedStartBlip = function()
     {
-      ctx.textAlign = "left";
+      var w = 304 / 2;
+      var h = 58  / 2;
       var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
-      ctx.fillStyle = "#2277FF";
-      ctx.fillRect(x-0.5,self.y,1,self.h);
-      ctx.fillRect(x-0.5,self.y,67,self.h/4);
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillText("Quake Origin",x+2,self.y+self.h/4-2);
+      ctx.drawImage(origin_tt_img,x-w/2,self.y-h,w,h);
     }
     self.drawQuakeBlips = function(q,ghost)
     {
