@@ -1798,7 +1798,7 @@ var GamePlayScene = function(game, stage)
       record_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; if(listener.playing) listener.stop(); else if(listener.recording) listener.play(); else listener.record(); });
       clicker.register(record_button);
     }
-    next_button = new ButtonBox(10,10,60,30,function(){ if(!levels[cur_level].imask.skip || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
+    next_button = new ButtonBox(dc.width-100,dc.height-100,80,20,function(){ if(!levels[cur_level].imask.skip || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
     scrubber = new Scrubber(earth);
     hoverer.register(scrubber);
@@ -1983,8 +1983,9 @@ var GamePlayScene = function(game, stage)
     if(record) record_button.draw(dc);
     if(levels[cur_level].allow_skip_prompt)
     {
-      next_button.draw(dc);
-      ctx.fillStyle = "#000000";
+      ctx.fillStyle = yellow;
+      ctx.fillRect(next_button.x,next_button.y,next_button.w,next_button.h);
+      ctx.fillStyle = black;
       ctx.textAlign = "left";
       ctx.fillText(levels[cur_level].allow_skip_prompt,next_button.x+5,next_button.y+15);
     }
