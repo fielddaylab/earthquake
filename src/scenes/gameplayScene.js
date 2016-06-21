@@ -1803,8 +1803,8 @@ var GamePlayScene = function(game, stage)
     scrubber = new Scrubber(earth);
     hoverer.register(scrubber);
 
-    speed_normal_button = new ToggleBox(dc.width-2*scrubber.btn_s, dc.height-scrubber.btn_s, 20,20,true, function(on) { ui_lock = self; if(on) { play_speed = 1.5;   speed_fast_button.on = false; } });
-    speed_fast_button   = new ToggleBox(dc.width-1*scrubber.btn_s, dc.height-scrubber.btn_s, 20,20,false,function(on) { ui_lock = self; if(on) { play_speed =   6; speed_normal_button.on = false; } });
+    speed_normal_button = new ToggleBox(dc.width-2*scrubber.btn_s, dc.height-scrubber.btn_s, scrubber.btn_s,scrubber.btn_s,true, function(on) { ui_lock = self; if(on) { play_speed = 1.5;   speed_fast_button.on = false; } });
+    speed_fast_button   = new ToggleBox(dc.width-1*scrubber.btn_s, dc.height-scrubber.btn_s, scrubber.btn_s,scrubber.btn_s,false,function(on) { ui_lock = self; if(on) { play_speed =   6; speed_normal_button.on = false; } });
 
     desel_quakes_button   = new ButtonBox(dc.width-120, 10,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deselectQuakes();});
     del_sel_quakes_button = new ButtonBox(dc.width-120, 40,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
@@ -2020,7 +2020,7 @@ var GamePlayScene = function(game, stage)
       b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("new",b.x+b.w/2,b.y+b.h-2);
     }
 
-    if(input_state != IGNORE_INPUT) fake_mouse.draw();
+    //if(input_state != IGNORE_INPUT) fake_mouse.draw();
     ctx.fillStyle = "#000000";
     ctx.textAlign = "left";
     levels[cur_level].drawExtra();
@@ -2187,25 +2187,25 @@ var GamePlayScene = function(game, stage)
         {
           if(levels[cur_level].loc_1_x !== undefined) l = new Location(levels[cur_level].loc_1_x,levels[cur_level].loc_1_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
-          l.shape = square;
+          l.shape = icon_square_img;
         }
         else if(i == 1)
         {
           if(levels[cur_level].loc_2_x !== undefined) l = new Location(levels[cur_level].loc_2_x,levels[cur_level].loc_2_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
-          l.shape = circle;
+          l.shape = icon_circ_img;
         }
         else if(i == 2)
         {
           if(levels[cur_level].loc_3_x !== undefined) l = new Location(levels[cur_level].loc_3_x,levels[cur_level].loc_3_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
-          l.shape = triangle;
+          l.shape = icon_tri_img;
         }
         else if(i == 3)
         {
           if(levels[cur_level].loc_4_x !== undefined) l = new Location(levels[cur_level].loc_4_x,levels[cur_level].loc_4_y,i);
           else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
-          l.shape = triangle;
+          l.shape = icon_tri_img;
         }
         hoverer.register(l);
         dragger.register(l);
@@ -2900,8 +2900,8 @@ var GamePlayScene = function(game, stage)
 
     self.earth = earth;
 
-    self.play_button  = new ButtonBox((self.h/2)*0,self.y+self.h/2,self.h/2,self.h/2,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY; });
-    self.pause_button = new ButtonBox((self.h/2)*1,self.y+self.h/2,self.h/2,self.h/2,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; play_state = STATE_PAUSE;});
+    self.play_button  = new ButtonBox(0,         dc.height-self.btn_s, self.btn_s,self.btn_s,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY; });
+    self.pause_button = new ButtonBox(self.btn_s,dc.height-self.btn_s, self.btn_s,self.btn_s,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; play_state = STATE_PAUSE;});
     self.bogus_button = new ButtonBox(0,self.y,(self.h/2)*2,self.h/2,function() { ui_lock = self; return; });
     clicker.register(self.play_button);
     clicker.register(self.pause_button);
@@ -3018,7 +3018,13 @@ var GamePlayScene = function(game, stage)
     self.shapeBlip = function(t,shape)
     {
       var x = self.scrub_bar.xForT(t);
-      ctx.drawImage(shape,x-shape.width/2,self.y+self.h/2-5-shape.height);
+      var s = 20;
+      ctx.strokeStyle = black;
+      ctx.beginPath();
+      ctx.moveTo(x,self.y+self.h/3);
+      ctx.lineTo(x,self.y+self.h-self.h/3);
+      ctx.stroke();
+      ctx.drawImage(shape,x-s/2,self.y+self.h-self.h/3-s/2,s,s);
     }
     self.drawAssumedStartBlip = function()
     {
@@ -3037,13 +3043,13 @@ var GamePlayScene = function(game, stage)
         var draw_s =                               (ghost || self.earth.t > q.location_s_ts[i]);
         var draw_p = (levels[cur_level].p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
         ctx.globalAlpha = 1;
-        if(i == hov_loc_i) //hovering over location
+        if(false && i == hov_loc_i) //hovering over location
         {
           ctx.fillStyle = "#000000";
           if(draw_s) self.labelBlip(q.location_s_ts[i],q.location_s_hrts[i]);
           if(draw_p) self.labelBlip(q.location_p_ts[i],q.location_p_hrts[i]);
         }
-        else if(q == hov_quak) //hovering over quake
+        else if(false && q == hov_quak) //hovering over quake
         {
           if(ghost || self.earth.locations.length > 1)
           {
@@ -3061,6 +3067,7 @@ var GamePlayScene = function(game, stage)
           }
         }
 
+/*
         var range = ghost ? levels[cur_level].location_success_range : 0;
         var split = ghost;
         if(draw_s)
@@ -3075,6 +3082,7 @@ var GamePlayScene = function(game, stage)
           var icon = q.location_p_cs[i] ? cmark : xmark;
           self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
         }
+*/
       }
       ctx.globalAlpha = 1;
     }
@@ -3111,17 +3119,6 @@ var GamePlayScene = function(game, stage)
         var e = self.scrub_bar.w*(levels[cur_level].quake_start_range_e/self.earth.recordable_t);
         ctx.fillRect(self.scrub_bar.x+s,self.y+self.h/2,e-s,self.h/2);
       }
-      ctx.fillStyle = "#FFFFFF";
-
-      ctx.textAlign = "center";
-
-      var x = self.scrub_bar.xForT(self.earth.t);
-      var w = 126 * 2/5;
-      var h = 74  * 2/5;
-      var y = self.y+self.h-(2*self.h/3)-h+8;
-      ctx.drawImage(play_head_img,x-w/2,y,w,h);
-      ctx.fillStyle = black;
-      ctx.fillText(clockForT(Math.round(self.earth.t)),x,y+12);
 
 /*
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
@@ -3150,8 +3147,17 @@ var GamePlayScene = function(game, stage)
       if(levels[cur_level].display_quake_start_range)
         self.drawAssumedStartBlip();
 
-      ctx.drawImage(btn_play_img,            self.btn_pad,dc.height-self.btn_s+self.btn_pad,self.btn_s-2*self.btn_pad,self.btn_s-2*self.btn_pad);
-      ctx.drawImage(btn_pause_img,self.btn_s+self.btn_pad,dc.height-self.btn_s+self.btn_pad,self.btn_s-2*self.btn_pad,self.btn_s-2*self.btn_pad);
+      ctx.drawImage(btn_play_img,self.play_button.x+self.btn_pad,self.play_button.y+self.btn_pad,self.play_button.w-2*self.btn_pad,self.play_button.h-2*self.btn_pad);
+      ctx.drawImage(btn_pause_img,self.pause_button.x+self.btn_pad,self.pause_button.y+self.btn_pad,self.pause_button.w-2*self.btn_pad,self.pause_button.h-2*self.btn_pad);
+
+      var x = self.scrub_bar.xForT(self.earth.t);
+      var w = 126 * 2/5;
+      var h = 74  * 2/5;
+      var y = self.y+self.h-(2*self.h/3)-h+8;
+      ctx.drawImage(play_head_img,x-w/2,y,w,h);
+      ctx.textAlign = "center";
+      ctx.fillStyle = black;
+      ctx.fillText(clockForT(Math.round(self.earth.t)),x,y+12);
     }
   }
 

@@ -1,41 +1,4 @@
-Knowledge -> Derivations
-
-- "A was hit at 12:00"
-- - quake occurred
-- - distance proportional to time
-- - "quake occurred"
-- - - SAT gradient (everywhere)
-
-- "A was hit at 12:00 AND at 1:00"
-- - quake occurred
-- - distance proportional to time
-- - given S&P, d&t can be derived
-- - "quake occurred n meters away from A"
-- - - SAT ring
-
-- "A was hit at 12:00, B was hit at 1:00"
-- - quake occurred
-- - diff in distance proportional to diff in time
-- - "quake occurred n meters further from B than A"
-- - - SAT line
-
-- "A was hit at 12:00, B was hit at 1:00, and Quake started at 11:00"
-- - quake occurred
-- - distance proportional to time
-- - "quake occurred n meters away from A, and m meters away from B"
-- - - SAT 2 pts
-
-- "A was hit at 12:00, B was hit at 1:00, C was hit at 2:00"
-- - quake occurred
-- - diffs in distance proportional to diffs in time
-- - "quake occurred n meters further from B than A, and m meters further from C than B"
-- - - SAT 1 pt
-
-Levels
-
-- 1 Location. E @ T = 0; Try to find as many SAT locs. Direct towards spattering attempts. Hopefully reveal circle.
-- 1 Location. E @ T = ?; Try to find as many SAT time/locs. Hopefully reveal "expanding circle"
-- 1 Location. E @ T = 0; S&P. Try to find as many SAT locs. Notice circle, and that SAT'ing S also SAT's P.
-- 1 Location. E @ T = ?; S&P. Try to find as many SAT time/locs. Notice circle, but also notice that can only satisfy both from certain T!
-- 2 Locations. E @ T = 0; Try to find as many SAT locs, for each location individually. Notice two circles. What SAT's both circles?
+- which speed currently selected?
+- acceptible range for quake on timeline
+-
 
