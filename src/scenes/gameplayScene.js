@@ -1,5 +1,9 @@
 var GamePlayScene = function(game, stage)
 {
+  var yellow = "#EFC62F"
+  var gray = "#BCBCBC"
+  var black = "#000000"
+
   var ENUM;
 
   ENUM = 0;
@@ -1799,8 +1803,8 @@ var GamePlayScene = function(game, stage)
     scrubber = new Scrubber(earth);
     hoverer.register(scrubber);
 
-    speed_normal_button = new ToggleBox(dc.width-60, dc.height-70,20,20,true, function(on) { ui_lock = self; if(on) { play_speed = 1.5;   speed_fast_button.on = false; } });
-    speed_fast_button   = new ToggleBox(dc.width-30, dc.height-70,20,20,false,function(on) { ui_lock = self; if(on) { play_speed =   6; speed_normal_button.on = false; } });
+    speed_normal_button = new ToggleBox(dc.width-2*scrubber.btn_s, dc.height-scrubber.btn_s, 20,20,true, function(on) { ui_lock = self; if(on) { play_speed = 1.5;   speed_fast_button.on = false; } });
+    speed_fast_button   = new ToggleBox(dc.width-1*scrubber.btn_s, dc.height-scrubber.btn_s, 20,20,false,function(on) { ui_lock = self; if(on) { play_speed =   6; speed_normal_button.on = false; } });
 
     desel_quakes_button   = new ButtonBox(dc.width-120, 10,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deselectQuakes();});
     del_sel_quakes_button = new ButtonBox(dc.width-120, 40,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
@@ -1992,10 +1996,8 @@ var GamePlayScene = function(game, stage)
     //speed_buttons
     var b;
 
-    b = speed_normal_button;
-    b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText(">",b.x+b.w/2,b.y+b.h-2);
-    b = speed_fast_button;
-    b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText(">>",b.x+b.w/2,b.y+b.h-2);
+    ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
+    ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
 
     if(earth.quakes.length && levels[cur_level].imask.select)
     {
@@ -2893,6 +2895,8 @@ var GamePlayScene = function(game, stage)
     self.h = 40;
     self.x = 0;
     self.y = dc.height-self.h;
+    self.btn_s = 2*self.h/3;
+    self.btn_pad = 5;
 
     self.earth = earth;
 
@@ -2902,7 +2906,7 @@ var GamePlayScene = function(game, stage)
     clicker.register(self.play_button);
     clicker.register(self.pause_button);
     clicker.register(self.bogus_button);
-    self.scrub_bar = new Box((self.h/2)*2+5,self.y,self.w-((self.h/2)*2+5),self.h);
+    self.scrub_bar = new Box(self.btn_s*2+5,self.y,self.w-self.btn_s*4-10,self.h);
     hoverer.register(self.scrub_bar);
     dragger.register(self.scrub_bar);
 
@@ -3079,16 +3083,27 @@ var GamePlayScene = function(game, stage)
       ctx.textAlign = "center";
 
       //draw self
-      ctx.fillStyle = "#CCCCCC";
-      ctx.fillRect(self.x,self.y,self.w,self.h);
-      ctx.fillStyle = "#AAAAAA";
-      ctx.fillRect(self.x,self.y+self.h/2,self.w,self.h/2);
-      ctx.strokeStyle = "#000000";
-      ctx.lineWidth = 1;
+      ctx.fillStyle = yellow;
+      ctx.fillRect(self.x,self.y+self.h-self.btn_s,self.w,self.h);
+      ctx.strokeStyle = gray;
+      ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.moveTo(self.x,self.y+self.h/2);
-      ctx.lineTo(self.x+self.w,self.y+self.h/2);
+      ctx.moveTo(self.x       ,self.y+self.h-self.btn_s);
+      ctx.lineTo(self.x+self.w,self.y+self.h-self.btn_s);
       ctx.stroke();
+      ctx.strokeStyle = black;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(self.scrub_bar.x                 ,self.y+self.h-self.btn_s);
+      ctx.lineTo(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s);
+      ctx.stroke();
+      ctx.fillStyle = black;
+      ctx.beginPath();
+      ctx.arc(self.scrub_bar.x,self.y+self.h-self.btn_s,3,0,2*Math.PI);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s,3,0,2*Math.PI);
+      ctx.fill();
       if(levels[cur_level].display_quake_start_range)
       {
         ctx.fillStyle = "#88AAAA";
@@ -3100,10 +3115,15 @@ var GamePlayScene = function(game, stage)
 
       ctx.textAlign = "center";
 
-      self.drawBlip(self.earth.t,0,0,0);
-      ctx.fillStyle = "#000000";
-      self.labelBlip(self.earth.t,clockForT(Math.round(self.earth.t)));
+      var x = self.scrub_bar.xForT(self.earth.t);
+      var w = 126 * 2/5;
+      var h = 74  * 2/5;
+      var y = self.y+self.h-(2*self.h/3)-h+8;
+      ctx.drawImage(play_head_img,x-w/2,y,w,h);
+      ctx.fillStyle = black;
+      ctx.fillText(clockForT(Math.round(self.earth.t)),x,y+12);
 
+/*
       if(self.scrub_bar.hovering && !self.scrub_bar.dragging)
       {
         ctx.fillStyle = "#888888";
@@ -3111,6 +3131,7 @@ var GamePlayScene = function(game, stage)
         ctx.fillStyle = "#000000";
         self.labelBlip(self.scrub_bar.hovering_t,clockForT(Math.round(self.scrub_bar.hovering_t)));
       }
+*/
 
       if(hov_loc && hov_loc.rad)
       {
@@ -3129,29 +3150,8 @@ var GamePlayScene = function(game, stage)
       if(levels[cur_level].display_quake_start_range)
         self.drawAssumedStartBlip();
 
-      //ui
-      ctx.fillStyle = "#000000";
-      var padding = 5;
-      //play_button
-      ctx.beginPath();
-      ctx.moveTo(self.play_button.x+padding,self.play_button.y+padding);
-      ctx.lineTo(self.play_button.x+self.play_button.w-padding,self.play_button.y+self.play_button.h/2);
-      ctx.lineTo(self.play_button.x+padding,self.play_button.y+self.play_button.h-padding);
-      ctx.fill();
-      //pause_button
-      ctx.fillRect(
-        self.pause_button.x+padding,
-        self.pause_button.y+padding,
-        (self.pause_button.w-2*padding)/2-(self.pause_button.w/20),
-        self.pause_button.h-2*padding
-      );
-      ctx.fillRect(
-        self.pause_button.x+self.pause_button.w/2+(self.pause_button.w/20),
-        self.pause_button.y+padding,
-        (self.pause_button.w-2*padding)/2-(self.pause_button.w/20),
-        self.pause_button.h-2*padding
-      );
-      //ctx.fillRect(self.pause_button.x+self.pause_button.w/2+self.pause_button/5,self.pause_button.y+padding,self.pause_button.w/2-padding-self.pause_button/10,self.pause_button.h-2*padding);
+      ctx.drawImage(btn_play_img,            self.btn_pad,dc.height-self.btn_s+self.btn_pad,self.btn_s-2*self.btn_pad,self.btn_s-2*self.btn_pad);
+      ctx.drawImage(btn_pause_img,self.btn_s+self.btn_pad,dc.height-self.btn_s+self.btn_pad,self.btn_s-2*self.btn_pad,self.btn_s-2*self.btn_pad);
     }
   }
 
@@ -3167,8 +3167,8 @@ var GamePlayScene = function(game, stage)
     var hrs = (Math.floor(t/60)%24);
     var mins = t%60;
     if(mins < 10) mins = "0"+mins;
-    var post = " AM";
-    if(hrs > 11) post = " PM"
+    var post = "AM";
+    if(hrs > 11) post = "PM"
     hrs = hrs%12;
     if(hrs == 0) hrs = 12;
     return hrs+":"+mins+post;

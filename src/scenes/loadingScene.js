@@ -53,6 +53,19 @@ var LoadingScene = function(game, stage)
     img_srcs.push("assets/city_square_destroy.png");
     img_srcs.push("assets/city_tri.png");
     img_srcs.push("assets/city_tri_destroy.png");
+    img_srcs.push("assets/btn_fast.png");
+    img_srcs.push("assets/btn_next.png");
+    img_srcs.push("assets/btn_pause.png");
+    img_srcs.push("assets/btn_play.png");
+    img_srcs.push("assets/btn_slow.png");
+    img_srcs.push("assets/guess_fail.png");
+    img_srcs.push("assets/guess_success.png");
+    img_srcs.push("assets/guess_unknown.png");
+    img_srcs.push("assets/icon_circ.png");
+    img_srcs.push("assets/icon_square.png");
+    img_srcs.push("assets/icon_tri.png");
+    img_srcs.push("assets/origin_tt.png");
+    img_srcs.push("assets/play_head.png");
     for(var i = 0; i < img_srcs.length; i++)
     {
       imgs[i] = new Image();
