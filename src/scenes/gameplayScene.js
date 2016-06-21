@@ -74,6 +74,7 @@ var GamePlayScene = function(game, stage)
   var blurb_w;
   var blurb_x;
   var blurb_y;
+  var canvdomhit;
 
   var lt; //level title object. just to correctly namespace them.
 
@@ -1818,8 +1819,9 @@ var GamePlayScene = function(game, stage)
     blurb_w = dc.width-40;
     blurb_x = 20;
     blurb_y = dc.height-100;
+    canvdomhit = {x:0,y:0,w:dc.width,h:dc.height,click:function(evt){canvdom.click(evt);}};
 
-    canvdom_clicker.register(canvdom);
+    canvdom_clicker.register(canvdomhit);
 
     input_state = RESUME_INPUT;
 
