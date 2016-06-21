@@ -2961,7 +2961,7 @@ var GamePlayScene = function(game, stage)
       if(levels[cur_level].imask.scrubber || levels[cur_level].imask.origin_flag)
       {
         var t = Math.round(((evt.doX-self.scrub_bar.x)/self.scrub_bar.w)*self.earth.recordable_t);
-        if(levels[cur_level].imask.origin_flag && levels[cur_level].variable_quake_t && evt.doY < self.scrub_bar.y+20 && t-self.earth.assumed_start_t < 100 && t-self.earth.assumed_start_t > 0)
+        if(levels[cur_level].imask.origin_flag && levels[cur_level].variable_quake_t && evt.doY < self.scrub_bar.y+100 && t-self.earth.assumed_start_t < 50 && t-self.earth.assumed_start_t > -50)
           self.scrub_bar.dragging_quake_start = true;
         self.scrub_bar.dragging = true;
         saved_state = play_state;
