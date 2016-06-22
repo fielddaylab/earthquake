@@ -3028,15 +3028,6 @@ var GamePlayScene = function(game, stage)
       var w = self.scrub_bar.w*((2*range)/self.earth.recordable_t);
       if(range == 0) w = 1;
 
-/*
-      if(split)
-      {
-        ctx.fillRect(x-w/2,self.y+self.h/2,           w,self.h*0.1);
-        ctx.fillRect(x-w/2,self.y+self.h/2+self.h*0.4,w,self.h*0.1);
-      }
-      else ctx.fillRect(x-w/2,self.y+self.h/2,w,self.h/2);
-*/
-
       if(icon)
       {
         var s = 15;
@@ -3126,27 +3117,19 @@ var GamePlayScene = function(game, stage)
       ctx.textAlign = "center";
 
       //draw self
+      //  yellow
       ctx.fillStyle = yellow;
       ctx.fillRect(self.x,self.y+self.h-self.btn_s,self.w,self.h);
+      //  gray
       ctx.strokeStyle = gray;
       ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(self.x       ,self.y+self.h-self.btn_s);
-      ctx.lineTo(self.x+self.w,self.y+self.h-self.btn_s);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(self.x,self.y+self.h-self.btn_s); ctx.lineTo(self.x+self.w,self.y+self.h-self.btn_s); ctx.stroke();
+      //  black
       ctx.strokeStyle = black;
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(self.scrub_bar.x                 ,self.y+self.h-self.btn_s);
-      ctx.lineTo(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s);
-      ctx.stroke();
-      ctx.fillStyle = black;
-      ctx.beginPath();
-      ctx.arc(self.scrub_bar.x,self.y+self.h-self.btn_s,3,0,2*Math.PI);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s,3,0,2*Math.PI);
-      ctx.fill();
+      ctx.beginPath(); ctx.moveTo(self.scrub_bar.x,self.y+self.h-self.btn_s); ctx.lineTo(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s); ctx.stroke();
+      ctx.beginPath(); ctx.arc(self.scrub_bar.x,self.y+self.h-self.btn_s,3,0,2*Math.PI); ctx.fill();
+      ctx.beginPath(); ctx.arc(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s,3,0,2*Math.PI); ctx.fill();
+
       if(levels[cur_level].display_quake_start_range)
       {
         ctx.fillStyle = "#88AAAA";
