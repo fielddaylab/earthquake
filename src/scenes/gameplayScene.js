@@ -2034,17 +2034,17 @@ var GamePlayScene = function(game, stage)
     canvdom.draw(12,dc);
 
     scrubber.draw();
-    if(speed_normal_button.on)
+    if(speed_fast_button.on)
     {
-      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
-      ctx.globalAlpha = 0.5;
       ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
     }
-    else if(speed_fast_button.on)
+    else //assume normal selected
     {
-      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
-      ctx.globalAlpha = 0.5;
       ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
     }
     ctx.globalAlpha = 1;
 
@@ -2924,12 +2924,14 @@ var GamePlayScene = function(game, stage)
     self.y = dc.height-self.h;
     self.btn_s = 2*self.h/3;
     self.btn_pad = 5;
+    self.y_draw = dc.height-self.btn_s;
+    self.y_mid_draw = self.y_draw+self.btn_s/2;
 
     self.earth = earth;
 
-    self.play_button  = new ButtonBox(0,         dc.height-self.btn_s, self.btn_s,self.btn_s,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY; });
-    self.pause_button = new ButtonBox(self.btn_s,dc.height-self.btn_s, self.btn_s,self.btn_s,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; play_state = STATE_PAUSE;});
-    self.bogus_button = new ButtonBox(0,self.y,(self.h/2)*2,self.h/2,function() { ui_lock = self; return; });
+    self.play_button  = new ButtonBox(0,         self.y_draw,self.btn_s,self.btn_s,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; if(self.earth.t == self.earth.recordable_t) self.earth.t = 0; play_state = STATE_PLAY; });
+    self.pause_button = new ButtonBox(self.btn_s,self.y_draw,self.btn_s,self.btn_s,function(){ ui_lock = self; if(!levels[cur_level].imask.play_pause) return; play_state = STATE_PAUSE;});
+    self.bogus_button = new ButtonBox(0,self.y,self.h,self.h/2,function() { ui_lock = self; return; }); //shoot... why do I need this?
     clicker.register(self.play_button);
     clicker.register(self.pause_button);
     clicker.register(self.bogus_button);
@@ -3026,15 +3028,21 @@ var GamePlayScene = function(game, stage)
     {
       var x = self.scrub_bar.xForT(t);
       var w = self.scrub_bar.w*((2*range)/self.earth.recordable_t);
-      if(range == 0) w = 1;
+      if(range)
+      {
+        ctx.globalAlpha = 0.1;
+        ctx.fillStyle = black;
+        ctx.fillRect(x-w/2,self.y_draw,w,self.btn_s);
+        ctx.globalAlpha = 1;
+      }
 
       if(icon)
       {
         var s = 15;
-        y = self.y+self.h-self.h/3+3;
+        y = self.y_mid_draw+3;
         ctx.strokeStyle = black;
         ctx.beginPath();
-        ctx.moveTo(x,self.y+self.h/3);
+        ctx.moveTo(x,self.y_draw);
         ctx.lineTo(x,y);
         ctx.stroke();
         ctx.drawImage(icon,x-s/2,y-s/2,s,s);
@@ -3048,11 +3056,11 @@ var GamePlayScene = function(game, stage)
     self.shapeBlip = function(t,shape)
     {
       var x = self.scrub_bar.xForT(t);
-      var y = self.y+self.h-self.h/3+3;
+      var y = self.y_mid_draw+3;
       var s = 20;
       ctx.strokeStyle = black;
       ctx.beginPath();
-      ctx.moveTo(x,self.y+self.h/3);
+      ctx.moveTo(x,self.y_draw);
       ctx.lineTo(x,y);
       ctx.stroke();
       ctx.drawImage(shape,x-s/2,y-s/2,s,s);
@@ -3070,7 +3078,22 @@ var GamePlayScene = function(game, stage)
       {
         var draw_s =                               (ghost || self.earth.t > q.location_s_ts[i]);
         var draw_p = (levels[cur_level].p_waves && (ghost || self.earth.t > q.location_p_ts[i]));
-        ctx.globalAlpha = 1;
+
+        var range = ghost ? levels[cur_level].location_success_range : 0;
+        var split = ghost;
+        if(draw_s)
+        {
+          ctx.fillStyle = s_color;
+          var icon = q.location_s_cs[i] ? guess_success_img : guess_fail_img;
+          self.drawBlip(q.location_s_ts[i],range,split,ghost ? 0 : icon);
+        }
+        if(draw_p)
+        {
+          ctx.fillStyle = p_color;
+          var icon = q.location_p_cs[i] ? guess_success_img : guess_fail_img;
+          self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
+        }
+
         if(false && i == hov_loc_i) //hovering over location
         {
           ctx.fillStyle = "#000000";
@@ -3089,28 +3112,11 @@ var GamePlayScene = function(game, stage)
         {
           if(ghost)
           {
-            //if(self.earth.locations.length > 1) ctx.globalAlpha = 0.2;
             if(draw_s) self.shapeBlip(q.location_s_ts[i],self.earth.locations[i].shape);
             if(draw_p) self.shapeBlip(q.location_p_ts[i],self.earth.locations[i].shape);
           }
         }
-
-        var range = ghost ? levels[cur_level].location_success_range : 0;
-        var split = ghost;
-        if(draw_s)
-        {
-          ctx.fillStyle = s_color;
-          var icon = q.location_s_cs[i] ? guess_success_img : guess_fail_img;
-          self.drawBlip(q.location_s_ts[i],range,split,ghost ? 0 : icon);
-        }
-        if(draw_p)
-        {
-          ctx.fillStyle = p_color;
-          var icon = q.location_p_cs[i] ? guess_success_img : guess_fail_img;
-          self.drawBlip(q.location_p_ts[i],range,split,ghost ? 0 : icon);
-        }
       }
-      ctx.globalAlpha = 1;
     }
     self.draw = function()
     {
@@ -3119,16 +3125,17 @@ var GamePlayScene = function(game, stage)
       //draw self
       //  yellow
       ctx.fillStyle = yellow;
-      ctx.fillRect(self.x,self.y+self.h-self.btn_s,self.w,self.h);
+      ctx.fillRect(self.x,self.y_draw,self.w,self.h);
       //  gray
       ctx.strokeStyle = gray;
       ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.moveTo(self.x,self.y+self.h-self.btn_s); ctx.lineTo(self.x+self.w,self.y+self.h-self.btn_s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(self.x,self.y_draw); ctx.lineTo(self.x+self.w,self.y_draw); ctx.stroke();
       //  black
       ctx.strokeStyle = black;
-      ctx.beginPath(); ctx.moveTo(self.scrub_bar.x,self.y+self.h-self.btn_s); ctx.lineTo(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s); ctx.stroke();
-      ctx.beginPath(); ctx.arc(self.scrub_bar.x,self.y+self.h-self.btn_s,3,0,2*Math.PI); ctx.fill();
-      ctx.beginPath(); ctx.arc(self.scrub_bar.x+self.scrub_bar.w,self.y+self.h-self.btn_s,3,0,2*Math.PI); ctx.fill();
+      ctx.fillStyle = black;
+      ctx.beginPath(); ctx.moveTo(self.scrub_bar.x,self.y_draw); ctx.lineTo(self.scrub_bar.x+self.scrub_bar.w,self.y_draw); ctx.stroke();
+      ctx.beginPath(); ctx.arc(self.scrub_bar.x,self.y_draw,3,0,2*Math.PI); ctx.fill();
+      ctx.beginPath(); ctx.arc(self.scrub_bar.x+self.scrub_bar.w,self.y_draw,3,0,2*Math.PI); ctx.fill();
 
       if(levels[cur_level].display_quake_start_range)
       {
@@ -3171,7 +3178,7 @@ var GamePlayScene = function(game, stage)
       var x = self.scrub_bar.xForT(self.earth.t);
       var w = 126 * 2/5;
       var h = 74  * 2/5;
-      var y = self.y+self.h-(2*self.h/3)-h+8;
+      var y = self.y_draw-h+8;
       ctx.drawImage(play_head_img,x-w/2,y,w,h);
       ctx.textAlign = "center";
       ctx.fillStyle = black;
