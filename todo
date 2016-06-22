@@ -1,8 +1,13 @@
-- which speed currently selected?
-- acceptible range for quake on timeline
-- s/p colored blips
-- circle should be a circle, not a half circle
-- "quake origin" ptr lower to timeline? when hovering above it looks like it's pointing to the map
+- selection outlines on quake locs
+- selection menu
+- speech bubble/next button for blurb
+- tooltips for what to do
+- specified ghost quake hit markers specific to S wave vs P wave
+- specified non-ghost-quake hit markers to loc
+- round city -> circle city
+- resized x and check on timeline
+- click on quake selects it (doesn't place another)
+- "quake origin" ptr lower triangle to timeline? when hovering above it looks like it's pointing to the map
 - which quakes are selected for:
 - - what blips shows on timeline
 - - what circles shows on map

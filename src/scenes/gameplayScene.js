@@ -1823,9 +1823,9 @@ var GamePlayScene = function(game, stage)
 
     canvdom = new CanvDom();
     //setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
-    blurb_x = 100;
-    blurb_w = dc.width-blurb_x-20;
-    blurb_y = dc.height-100;
+    blurb_x = 200;
+    blurb_w = dc.width-blurb_x-40;
+    blurb_y = dc.height-200;
     blurb_t = 0;
     canvdomhit = {x:0,y:0,w:dc.width,h:dc.height,click:function(evt){canvdom.click(evt);}};
 
@@ -1841,7 +1841,7 @@ var GamePlayScene = function(game, stage)
   {
     cur_prompt_line++;
     if(cur_prompt_line < levels[cur_level].lines.length)
-      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, naiveStripHTML(levels[cur_level].lines[cur_prompt_line])),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
+      canvdom.popDismissableMessage(textToLines(dc, "18px Open Sans", blurb_w-20, naiveStripHTML(levels[cur_level].lines[cur_prompt_line])),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
     else
     {
       next_input_state = RESUME_INPUT;
@@ -1863,7 +1863,7 @@ var GamePlayScene = function(game, stage)
     {
       next_input_state = IGNORE_INPUT;
       cur_prompt_line = 0;
-      canvdom.popDismissableMessage(textToLines(dc, "12px Open Sans", blurb_w-20, naiveStripHTML(levels[cur_level].lines[cur_prompt_line])),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
+      canvdom.popDismissableMessage(textToLines(dc, "18px Open Sans", blurb_w-20, naiveStripHTML(levels[cur_level].lines[cur_prompt_line])),blurb_x+5,blurb_y,blurb_w-10,200,dismissed);
     }
     else
       levels[cur_level].postPromptEvt();
@@ -1975,8 +1975,8 @@ var GamePlayScene = function(game, stage)
 
   self.draw = function()
   {
-    dc.context.font = "12px Open Sans";
-    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "18px Open Sans";
+    ctx.fillStyle = white;
     ctx.drawImage(bg_img,0,0,dc.width,dc.height);
 
     earth.draw();
@@ -1991,8 +1991,8 @@ var GamePlayScene = function(game, stage)
       ctx.fillText(levels[cur_level].allow_skip_prompt,next_button.x+5,next_button.y+15);
     }
 
-    ctx.fillStyle = "#000000";
-    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = black;
+    ctx.strokeStyle = black;
     ctx.textAlign = "center";
     //speed_buttons
     var b;
@@ -2004,35 +2004,45 @@ var GamePlayScene = function(game, stage)
       if(sel)
       {
         b = desel_quakes_button;
-        b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("deselect all",b.x+b.w/2,b.y+b.h-2);
+        b.draw(dc); ctx.fillStyle = black; ctx.fillText("deselect all",b.x+b.w/2,b.y+b.h-2);
         b = del_sel_quakes_button;
-        b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("delete selected",b.x+b.w/2,b.y+b.h-2);
+        b.draw(dc); ctx.fillStyle = black; ctx.fillText("delete selected",b.x+b.w/2,b.y+b.h-2);
       }
       b = del_all_quakes_button;
-      b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("delete all",b.x+b.w/2,b.y+b.h-2);
+      b.draw(dc); ctx.fillStyle = black; ctx.fillText("delete all",b.x+b.w/2,b.y+b.h-2);
     }
     if(levels[cur_level].imask.new)
     {
       b = new_button;
-      b.draw(dc); ctx.fillStyle = "#000000"; ctx.fillText("new",b.x+b.w/2,b.y+b.h-2);
+      b.draw(dc); ctx.fillStyle = black; ctx.fillText("new",b.x+b.w/2,b.y+b.h-2);
     }
 
     //if(input_state != IGNORE_INPUT) fake_mouse.draw();
-    ctx.fillStyle = "#000000";
+    ctx.fillStyle = black;
     ctx.textAlign = "left";
     levels[cur_level].drawExtra();
 
     if(input_state == IGNORE_INPUT)
     {
       ctx.globalAlpha = .5;
-      ctx.fillStyle = "#FFFFFF";
+      ctx.fillStyle = white;
       ctx.fillRect(0,0,dc.width,dc.height);
       ctx.globalAlpha = 1;
     }
     ctx.drawImage(grad,0,dc.height-blurb_t*300,dc.width,300);
     ctx.fillStyle = "#FF0000";
-    ctx.fillRect(10,dc.height-blurb_t*200,80,200);
-    canvdom.draw(12,dc);
+    ctx.fillRect(100,dc.height-blurb_t*200,80,200);
+    if(input_state == IGNORE_INPUT)
+    {
+      ctx.fillStyle = white;
+      dc.fillRoundRect(blurb_x-5,blurb_y-5,blurb_w+10,100+10,10);
+      ctx.beginPath();
+      ctx.moveTo(blurb_x+1 ,blurb_y+70);
+      ctx.lineTo(blurb_x-15,blurb_y+90);
+      ctx.lineTo(blurb_x+1 ,blurb_y+90);
+      ctx.fill();
+      canvdom.draw(18,dc);
+    }
 
     scrubber.draw();
     if(speed_fast_button.on)
@@ -2561,8 +2571,8 @@ var GamePlayScene = function(game, stage)
 
       //draw distance viz
       var l;
-      ctx.strokeStyle = "#000000";
-      ctx.fillStyle = "#000000";
+      ctx.strokeStyle = black;
+      ctx.fillStyle = black;
       ctx.globalAlpha=0.1;
       for(var i = 0; i < self.locations.length; i++)
       {
@@ -2642,7 +2652,7 @@ var GamePlayScene = function(game, stage)
         var w = Math.abs(self.drag_origin_obj.x-self.drag_obj.x);
         var h = Math.abs(self.drag_origin_obj.y-self.drag_obj.y);
 
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = black;
         ctx.globalAlpha=0.1;
         ctx.fillRect(min_x,min_y,w,h);
         ctx.globalAlpha=1;
@@ -2650,7 +2660,7 @@ var GamePlayScene = function(game, stage)
 
       //draw locations
       var l;
-      ctx.strokeStyle = "#000000";
+      ctx.strokeStyle = black;
       for(var i = 0; i < self.locations.length; i++)
       {
         l = self.locations[i];
@@ -2683,7 +2693,7 @@ var GamePlayScene = function(game, stage)
       {
         var l;
         var g = self.ghost_quake;
-        ctx.strokeStyle = "#000000";
+        ctx.strokeStyle = black;
         for(var i = 0; i < self.locations.length; i++)
         {
           l = self.locations[i];
@@ -3109,7 +3119,7 @@ var GamePlayScene = function(game, stage)
 
         if(false && i == hov_loc_i) //hovering over location
         {
-          ctx.fillStyle = "#000000";
+          ctx.fillStyle = black;
           if(draw_s) self.labelBlip(q.location_s_ts[i],q.location_s_hrts[i]);
           if(draw_p) self.labelBlip(q.location_p_ts[i],q.location_p_hrts[i]);
         }
@@ -3163,7 +3173,7 @@ var GamePlayScene = function(game, stage)
       {
         ctx.fillStyle = "#888888";
         self.drawBlip(self.scrub_bar.hovering_t,0,0,0);
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = black;
         self.labelBlip(self.scrub_bar.hovering_t,clockForT(Math.round(self.scrub_bar.hovering_t)));
       }
 */
@@ -3194,6 +3204,7 @@ var GamePlayScene = function(game, stage)
       var y = self.y_draw-h+8;
       ctx.drawImage(play_head_img,x-w/2,y,w,h);
       ctx.textAlign = "center";
+      ctx.font = "12px Open Sans";
       ctx.fillStyle = black;
       ctx.fillText(clockForT(Math.round(self.earth.t)),x,y+12);
     }
