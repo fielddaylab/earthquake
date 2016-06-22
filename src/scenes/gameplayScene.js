@@ -3,6 +3,7 @@ var GamePlayScene = function(game, stage)
   var yellow = "#EFC62F"
   var gray = "#BCBCBC"
   var black = "#000000"
+  var white = "#FFFFFF"
 
   var ENUM;
 
@@ -2603,12 +2604,24 @@ var GamePlayScene = function(game, stage)
               ellipse.ww = 0;
               ellipse.wh = 0;
               screenSpace(cam,dc,ellipse);
-              ctx.fillStyle = s_color;
-              ctx.fillText("("+timeForT(Math.round(l.rad/quake_s_rate))+")",ellipse.x,ellipse.y-10);
-              if(levels[cur_level].p_waves)
+              if(!levels[cur_level].p_waves)
               {
+                ctx.fillStyle = white;
+                dc.fillRoundRect(ellipse.x-50,ellipse.y-40,100,40,5);
+                ctx.fillStyle = s_color;
+                ctx.fillText("Time to arrive:",ellipse.x,ellipse.y-22);
+                ctx.fillText(timeForT(Math.round(l.rad/quake_s_rate)),ellipse.x,ellipse.y-10);
+              }
+              else
+              {
+                ctx.fillStyle = white;
+                dc.fillRoundRect(ellipse.x-40,ellipse.y-30,60,80,5);
+                ctx.fillStyle = black;
+                ctx.fillText("Time to arrive:",ellipse.x,ellipse.y-32);
                 ctx.fillStyle = p_color;
-                ctx.fillText("("+timeForT(Math.round(l.rad/quake_p_rate))+")",ellipse.x,ellipse.y-20);
+                ctx.fillText(timeForT(Math.round(l.rad/quake_p_rate)),ellipse.x,ellipse.y-20);
+                ctx.fillStyle = s_color;
+                ctx.fillText(timeForT(Math.round(l.rad/quake_s_rate)),ellipse.x,ellipse.y-10);
               }
               ctx.globalAlpha=tmp_alpha;
             }
@@ -3191,7 +3204,8 @@ var GamePlayScene = function(game, stage)
     var hrs = (Math.floor(t/60)%24);
     var mins = t%60;
     if(mins < 10) mins = "0"+mins;
-    return hrs+":"+mins;
+    if(!hrs) return mins+" minutes";
+    return hrs+"h "+mins+"m";
   }
   var clockForT = function(t)
   {
