@@ -1808,10 +1808,12 @@ var GamePlayScene = function(game, stage)
     speed_normal_button = new ToggleBox(dc.width-2*scrubber.btn_s, dc.height-scrubber.btn_s, scrubber.btn_s,scrubber.btn_s,true, function(on) { ui_lock = self; if(on) { play_speed = 1.5;   speed_fast_button.on = false; } });
     speed_fast_button   = new ToggleBox(dc.width-1*scrubber.btn_s, dc.height-scrubber.btn_s, scrubber.btn_s,scrubber.btn_s,false,function(on) { ui_lock = self; if(on) { play_speed =   6; speed_normal_button.on = false; } });
 
-    desel_quakes_button   = new ButtonBox(dc.width-120, 10,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deselectQuakes();});
-    del_sel_quakes_button = new ButtonBox(dc.width-120, 40,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
-    del_all_quakes_button = new ButtonBox(dc.width-120, 70,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteQuakes(); play_state = STATE_PAUSE;});
-    new_button            = new ButtonBox(dc.width-120,100,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.new)    return; earth.reset(); play_state = STATE_PAUSE;});
+    var btn_w = 120;
+    desel_quakes_button   = new ButtonBox(btn_w*0, 0, btn_w, 20, function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deselectQuakes();});
+    del_sel_quakes_button = new ButtonBox(btn_w*1, 0, btn_w, 20, function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteSelectedQuakes(); play_state = STATE_PAUSE;});
+    del_all_quakes_button = new ButtonBox(btn_w*2, 0, btn_w, 20, function(){ ui_lock = self; if(!levels[cur_level].imask.select) return; earth.deleteQuakes(); play_state = STATE_PAUSE;});
+
+    new_button            = new ButtonBox(0,100,110,20,function(){ ui_lock = self; if(!levels[cur_level].imask.new)    return; earth.reset(); play_state = STATE_PAUSE;});
 
     clicker.register(speed_normal_button);
     clicker.register(speed_fast_button);
@@ -1825,7 +1827,7 @@ var GamePlayScene = function(game, stage)
     canvdom = new CanvDom();
     //setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
     blurb_x = 200;
-    blurb_w = dc.width-blurb_x-40;
+    blurb_w = dc.width-blurb_x-150;
     blurb_y = dc.height-200;
     blurb_t = 0;
     canvdomhit = {x:0,y:0,w:dc.width,h:dc.height,click:function(evt){canvdom.click(evt);}};
@@ -1996,7 +1998,6 @@ var GamePlayScene = function(game, stage)
     ctx.strokeStyle = black;
     ctx.textAlign = "center";
     //speed_buttons
-    var b;
     if(earth.quakes.length && levels[cur_level].imask.select)
     {
       var sel = false;
@@ -2004,18 +2005,14 @@ var GamePlayScene = function(game, stage)
         if(earth.quakes[i].selected) sel = true;
       if(sel)
       {
-        b = desel_quakes_button;
-        b.draw(dc); ctx.fillStyle = black; ctx.fillText("deselect all",b.x+b.w/2,b.y+b.h-2);
-        b = del_sel_quakes_button;
-        b.draw(dc); ctx.fillStyle = black; ctx.fillText("delete selected",b.x+b.w/2,b.y+b.h-2);
+        ctx.fillStyle = black; ctx.fillText("deselect all",desel_quakes_button.x+desel_quakes_button.w/2,desel_quakes_button.y+desel_quakes_button.h-2);
+        ctx.fillStyle = black; ctx.fillText("delete selected",del_sel_quakes_button.x+del_sel_quakes_button.w/2,del_sel_quakes_button.y+del_sel_quakes_button.h-2);
       }
-      b = del_all_quakes_button;
-      b.draw(dc); ctx.fillStyle = black; ctx.fillText("delete all",b.x+b.w/2,b.y+b.h-2);
+      ctx.fillStyle = black; ctx.fillText("delete all",del_all_quakes_button.x+del_all_quakes_button.w/2,del_all_quakes_button.y+del_all_quakes_button.h-2);
     }
     if(levels[cur_level].imask.new)
     {
-      b = new_button;
-      b.draw(dc); ctx.fillStyle = black; ctx.fillText("new",b.x+b.w/2,b.y+b.h-2);
+      ctx.fillStyle = black; ctx.fillText("new",new_button.x+new_button.w/2,new_button.y+new_button.h-2);
     }
 
     //if(input_state != IGNORE_INPUT) fake_mouse.draw();
@@ -2043,6 +2040,17 @@ var GamePlayScene = function(game, stage)
       ctx.lineTo(blurb_x+1 ,blurb_y+90);
       ctx.fill();
       canvdom.draw(18,dc);
+
+      var x = blurb_x+blurb_w+15;
+      var y = blurb_y+100;
+      var w = dc.width-(blurb_x+blurb_w)-25;
+      var h = 30;
+      ctx.fillStyle = gray;
+      ctx.fillRect(x,y+5,w,h);
+      ctx.fillStyle = white;
+      ctx.fillRect(x,y,w,h);
+      ctx.fillStyle = black;
+      ctx.fillText("Next",x+5,y+h-5);
     }
 
     scrubber.draw();
