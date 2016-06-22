@@ -4,8 +4,6 @@
 - specified non-ghost-quake hit markers to loc
 - round city -> circle city
 - resized x and check on timeline
-- click on quake selects it (doesn't place another)
-- "quake origin" ptr lower triangle to timeline? when hovering above it looks like it's pointing to the map
 - which quakes are selected for:
 - - what blips shows on timeline
 - - what circles shows on map

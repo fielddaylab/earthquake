@@ -2951,13 +2951,13 @@ var GamePlayScene = function(game, stage)
   {
     var self = this;
     self.w = dc.width;
-    self.h = 40;
+    self.h = 60;
     self.x = 0;
     self.y = dc.height-self.h;
-    self.btn_s = 2*self.h/3;
+    self.btn_s = self.h/2;
     self.btn_pad = 5;
     self.y_draw = dc.height-self.btn_s;
-    self.y_mid_draw = self.y_draw+self.btn_s/2;
+    self.y_mid_draw = self.y_draw+(dc.height-self.y_draw)/2;
 
     self.earth = earth;
 
@@ -3102,7 +3102,7 @@ var GamePlayScene = function(game, stage)
       var w = 304 / 2;
       var h = 58  / 2;
       var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
-      ctx.drawImage(origin_tt_img,x-w/2,self.y-h,w,h);
+      ctx.drawImage(origin_tt_img,x-w/2,self.y,w,h);
     }
     self.drawQuakeBlips = function(q,ghost)
     {
