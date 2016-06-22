@@ -61,23 +61,13 @@ var ChooseScene = function(game, stage)
   var space = String.fromCharCode(8202)+String.fromCharCode(8202);
   self.draw = function()
   {
-    /*
-    btn_intro.draw(dc);       dc.context.fillStyle = "#000000"; dc.context.fillText("Intro",btn_intro.x+8,btn_intro.y+btn_intro.h-4);
-    btn_sp.draw(dc);          dc.context.fillStyle = "#000000"; dc.context.fillText("S&P Waves",btn_sp.x+8,btn_sp.y+btn_sp.h-4);
-    btn_triangulate.draw(dc); dc.context.fillStyle = "#000000"; dc.context.fillText("Triangulate",btn_triangulate.x+8,btn_triangulate.y+btn_triangulate.h-4);
-    btn_GPS.draw(dc);         dc.context.fillStyle = "#000000"; dc.context.fillText("GPS",btn_GPS.x+8,btn_GPS.y+btn_GPS.h-4);
-    btn_game.draw(dc);        dc.context.fillStyle = "#000000"; dc.context.fillText("Game",btn_game.x+8,btn_game.y+btn_game.h-4);
-    btn_free.draw(dc);        dc.context.fillStyle = "#000000"; dc.context.fillText("Free Play",btn_free.x+8,btn_free.y+btn_free.h-4);
-    */
+    dc.context.textAlign = "center";
 
     dc.context.fillStyle = "#FFFFFF";
     dc.fillRoundRect(0,0,dc.width,dc.height,5);
     dc.context.fillStyle = "#000000";
 
     dc.context.fillStyle = "#00FF00";//blue;
-    //dc.roundRectOptions(btn_tutorial.x,btn_tutorial.y,btn_tutorial.w,btn_tutorial.h,5,1,1,0,0,0,1)
-    //dc.context.drawImage(crystal_img,dc.width-section_line_0_y,0,section_line_0_y,section_line_0_y);
-    //dc.context.drawImage(tutorial_img,50,50,220,section_line_0_y-50);
 
     dc.context.fillStyle = "#333333";
     dc.context.font = "25px Open Sans";
@@ -87,7 +77,6 @@ var ChooseScene = function(game, stage)
     dc.fillRoundRect(dc.width/2-110,120,175,30,20);
     dc.context.fillStyle = "#333333";
     dc.context.fillText("There's a lot of unnecessary text on this screen",dc.width/2-100,140);
-    //dc.context.drawImage(arrow_img,dc.width/2+25,127,30,15);
     dc.context.font = "12px Open Sans";
 
     dc.context.lineWidth = 0.5;
