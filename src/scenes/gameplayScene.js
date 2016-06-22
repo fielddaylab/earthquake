@@ -1,6 +1,7 @@
 var GamePlayScene = function(game, stage)
 {
   var yellow = "#EFC62F"
+  var red = "#F05945";
   var gray = "#BCBCBC"
   var black = "#000000"
   var white = "#FFFFFF"
@@ -2030,7 +2031,7 @@ var GamePlayScene = function(game, stage)
       ctx.globalAlpha = 1;
     }
     ctx.drawImage(grad,0,dc.height-blurb_t*300,dc.width,300);
-    ctx.fillStyle = "#FF0000";
+    ctx.fillStyle = red;
     ctx.fillRect(100,dc.height-blurb_t*200,80,200);
     if(input_state == IGNORE_INPUT)
     {
@@ -2406,7 +2407,7 @@ var GamePlayScene = function(game, stage)
         {
           var obj = self.quakes[i];
           var r = levels[cur_level].quake_selection_r;
-          var within = ptWithin(self.drag_obj.x, self.drag_obj.y, obj.x-r/2, obj.y-r/2, obj.w+r, obj.h+r); //expanded
+          var within = ptWithin(obj.x-r/2, obj.y-r/2, obj.w+r, obj.h+r, self.drag_obj.x, self.drag_obj.y); //expanded
           if(within)
           {
             self.quakes[i].selected = !self.quakes[i].selected;
@@ -2460,16 +2461,14 @@ var GamePlayScene = function(game, stage)
 
       if(q.selected)
       {
-      /*
         if(!levels[cur_level].GPS || earth.t > q.c_aware_t)
         {
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = "#888888";
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = red;
           ctx.beginPath();
           ctx.arc(q.cx, q.cy, q.w/2, 0, 2 * Math.PI);
           ctx.stroke();
         }
-      */
 
         if(levels[cur_level].GPS)
         {
@@ -2614,6 +2613,8 @@ var GamePlayScene = function(game, stage)
               ellipse.ww = 0;
               ellipse.wh = 0;
               screenSpace(cam,dc,ellipse);
+
+              ctx.font = "12px Open Sans";
               if(!levels[cur_level].p_waves)
               {
                 ctx.fillStyle = white;
