@@ -1989,17 +1989,12 @@ var GamePlayScene = function(game, stage)
       ctx.textAlign = "left";
       ctx.fillText(levels[cur_level].allow_skip_prompt,next_button.x+5,next_button.y+15);
     }
-    scrubber.draw();
 
     ctx.fillStyle = "#000000";
     ctx.strokeStyle = "#000000";
     ctx.textAlign = "center";
     //speed_buttons
     var b;
-
-    ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
-    ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
-
     if(earth.quakes.length && levels[cur_level].imask.select)
     {
       var sel = false;
@@ -2033,9 +2028,15 @@ var GamePlayScene = function(game, stage)
       ctx.fillRect(0,0,dc.width,dc.height);
       ctx.globalAlpha = 1;
     }
+    ctx.drawImage(grad,0,dc.height-blurb_t*300,dc.width,300);
     ctx.fillStyle = "#FF0000";
     ctx.fillRect(10,dc.height-blurb_t*200,80,200);
     canvdom.draw(12,dc);
+
+    scrubber.draw();
+    ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
+    ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
+
   };
 
   self.cleanup = function()
@@ -3243,4 +3244,11 @@ xmark.context.fillText("✖",xmark.width/2,xmark.height-2);
 var cmark = GenIcon();
 cmark.context.fillStyle = "#22CC22";
 cmark.context.fillText("✔",cmark.width/2,cmark.height-2);
+
+var grad = GenIcon(100,100);
+var grd=grad.context.createLinearGradient(0,0,0,grad.height);
+grd.addColorStop(0,"rgba(99,228,248,0)");
+grd.addColorStop(0.5,"rgba(99,228,248,1)");
+grad.context.fillStyle = grd;
+grad.context.fillRect(0,0,grad.width,grad.height);
 
