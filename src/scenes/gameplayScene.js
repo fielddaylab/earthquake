@@ -2034,8 +2034,19 @@ var GamePlayScene = function(game, stage)
     canvdom.draw(12,dc);
 
     scrubber.draw();
-    ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
-    ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
+    if(speed_normal_button.on)
+    {
+      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
+    }
+    else if(speed_fast_button.on)
+    {
+      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
+    }
+    ctx.globalAlpha = 1;
 
   };
 
