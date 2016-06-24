@@ -18,6 +18,7 @@ var icon_square_img = new Image();
 var icon_tri_img = new Image();
 var origin_tt_img = new Image();
 var play_head_img = new Image();
+var char_imgs;
 
 var bake = function()
 {
@@ -41,5 +42,12 @@ var bake = function()
   icon_tri_img.src = "assets/icon_tri.png";
   origin_tt_img.src = "assets/origin_tt.png";
   play_head_img.src = "assets/play_head.png";
+
+  char_imgs = [];
+  for(var i = 0; i < 7; i++)
+  {
+    char_imgs[i] = new Image();
+    char_imgs[i].src = "assets/chars/face/char_"+i+".png";
+  }
 }
 

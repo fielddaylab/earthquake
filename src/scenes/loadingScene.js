@@ -73,6 +73,8 @@ var LoadingScene = function(game, stage)
     img_srcs.push("assets/icon_tri.png");
     img_srcs.push("assets/origin_tt.png");
     img_srcs.push("assets/play_head.png");
+    for(var i = 0; i < 7; i++)
+      img_srcs.push("assets/chars/face/char_"+i+".png");
     for(var i = 0; i < img_srcs.length; i++)
     {
       imgs[i] = new Image();

@@ -20,6 +20,15 @@ var GamePlayScene = function(game, stage)
   var input_state;
   var next_input_state;
 
+  ENUM = 0;
+  var CHAR_BABY  = ENUM; ENUM++;
+  var CHAR_ANNOY = ENUM; ENUM++;
+  var CHAR_AXE   = ENUM; ENUM++;
+  var CHAR_GIRL  = ENUM; ENUM++;
+  var CHAR_TALL  = ENUM; ENUM++;
+  var CHAR_BOY   = ENUM; ENUM++;
+  var CHAR_DAD   = ENUM; ENUM++;
+
   var self = this;
   var dc = stage.drawCanv;
   var ctx = stage.drawCanv.context;
@@ -169,6 +178,7 @@ var GamePlayScene = function(game, stage)
     l.imask.new = false;
     l.imask.skip = false;
     l.lines = [];
+    l.chars = [];
     l.advanceTest = function(){return true;}
     lt.LVL_NULL = levels.length;
     levels.push(l);
@@ -194,6 +204,7 @@ var GamePlayScene = function(game, stage)
       l.allow_radii = true;
       l.ghost_countdown = true;
       l.lines = [];
+      l.chars = [];
       lt.LVL_DEBUG = levels.length;
       levels.push(l);
     }
@@ -231,8 +242,22 @@ var GamePlayScene = function(game, stage)
       l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
-        "What can we know about earthquakes? And how can we know it?",
-        "Imagine that the little black square is <b>Square City</b>, and an earthquake is about to make it rumble!",
+        //"What can we know about earthquakes? And how can we know it?",
+        //"Imagine that the little black square is <b>Square City</b>, and an earthquake is about to make it rumble!",
+        "With the right information, we can figure out when an earthquake started...",
+        "And where it came from!",
+        "We'll start with one city on the map. I'm not super good at drawing...",
+        "It's great! A cute little square city.",
+        "Let's call it... um... Square City!",
+        "Ok, here we go... an earthquake is about to hit Square City!",
+      ];
+      l.chars = [
+        CHAR_GIRL,
+        CHAR_GIRL,
+        CHAR_GIRL,
+        CHAR_ANNOY,
+        CHAR_GIRL,
+        CHAR_GIRL,
       ];
       l.prePromptEvt = function()
       {
@@ -252,6 +277,8 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -283,12 +310,32 @@ var GamePlayScene = function(game, stage)
       l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
-        "Did you see how a wave moved out from the earthquake's <b>epicenter</b> and expanded until it hit the city?",
-        "We can see <b>where</b> the earthquake started,",
-        "we can see <b>when</b> it started,",
-        "and we can see <b>when</b> it was <b>experienced</b> by Square City.",
-        "But with real earthquakes, we have to <b>construct</b> all of that information from a <b>limited amount of data</b>.",
-        "Often, all we have is the <b>reports</b> that cities <b>felt</b> the earthquake at a certain <b>time</b>.",
+        //"Did you see how a wave moved out from the earthquake's <b>epicenter</b> and expanded until it hit the city?",
+        //"We can see <b>where</b> the earthquake started,",
+        //"we can see <b>when</b> it started,",
+        //"and we can see <b>when</b> it was <b>experienced</b> by Square City.",
+        //"But with real earthquakes, we have to <b>construct</b> all of that information from a <b>limited amount of data</b>.",
+        //"Often, all we have is the <b>reports</b> that cities <b>felt</b> the earthquake at a certain <b>time</b>.",
+        "KA-BOOM!",
+        "Yipes... what was that?",
+        "A shockwave!",
+        "The wave started at the earthquake's epicenter and expanded until it hit the city.",
+        "We saw where the earthquake started, when it started, and when it was felt by Square Town-",
+        "- Square City...",
+        "Oops... yeah, Square City.",
+        "Well, that seemed pretty simple!",
+        "Yep. But in real life, scientists don't have a map that shows them when and where an earthquake started.",
+      ];
+      l.chars = [
+        CHAR_AXE,
+        CHAR_ANNOY,
+        CHAR_GIRL,
+        CHAR_GIRL,
+        CHAR_GIRL,
+        CHAR_ANNOY,
+        CHAR_GIRL,
+        CHAR_ANNOY,
+        CHAR_GIRL,
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -310,7 +357,11 @@ var GamePlayScene = function(game, stage)
       l.imask.origin_flag = false;
       l.imask.skip = false;
       l.lines = [
-        "The real information we have looks something more like this.",
+        //"The real information we have looks something more like this.",
+        "Real earthquakes go more like this:",
+      ];
+      l.chars = [
+        CHAR_GIRL,
       ];
       l.prePromptEvt = function() { earth.t = 0; play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
@@ -326,6 +377,8 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -357,9 +410,25 @@ var GamePlayScene = function(game, stage)
       l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
-        "All we see is <b>when</b> <b>Square City</b> feels the shake!",
-        "<b>When</b> and <b>where</b> did the earthquake come from?",
-        "How can we fill out all the missing <b>information</b>, from only <b>when a location felt a tremor</b>?",
+        //"All we see is <b>when</b> <b>Square City</b> feels the shake!",
+        //"<b>When</b> and <b>where</b> did the earthquake come from?",
+        //"How can we fill out all the missing <b>information</b>, from only <b>when a location felt a tremor</b>?",
+        "Ahhh! Take cover, Square City!",
+        "But... where did the quake come from? When did it start?",
+        "Scientists can fill in that info by working backward from the data they do have.",
+        "For example, we can figure out when the earthquake started by looking at reports of when Square City felt the tremors.",
+        "Woah... that's amazing!",
+        "It's actually not too hard. I'll show you how it works!",
+        "But first, you need to know a little more about earthquakes.",
+      ];
+      l.chars = [
+        CHAR_ANNOY,
+        CHAR_GIRL,
+        CHAR_GIRL,
+        CHAR_GIRL,
+        CHAR_ANNOY,
+        CHAR_GIRL,
+        CHAR_GIRL,
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -399,11 +468,19 @@ var GamePlayScene = function(game, stage)
       l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
-        "How can we figure out <b>when</b> an earthquake </b>originated</b> from only <b>when</b> it was <b>felt</b>?",
-        "Before we can answer, we have to quickly learn <b>just a bit more</b> about earthquakes.",
-        "Earthquakes send <b>multiple</b> shockwaves <b>from their epicenter</b>.",
-        "Each travels at a <b>different speed</b>- The <b>P-wave</b> (or Primary Wave) is much faster than the <b>S-Wave</b> (or Secondary Wave)",
-        "Let's see what that might look like.",
+        //"How can we figure out <b>when</b> an earthquake </b>originated</b> from only <b>when</b> it was <b>felt</b>?",
+        //"Before we can answer, we have to quickly learn <b>just a bit more</b> about earthquakes.",
+        //"Earthquakes send <b>multiple</b> shockwaves <b>from their epicenter</b>.",
+        //"Each travels at a <b>different speed</b>- The <b>P-wave</b> (or Primary Wave) is much faster than the <b>S-Wave</b> (or Secondary Wave)",
+        //"Let's see what that might look like.",
+        "Earthquakes send multiple shockwaves from the location where they originated- their epicenter.",
+        "The P Wave, or Primary Wave, moves a lot faster than the S Wave, or Secondary Wave.",
+        "Let's check out what that looks like.",
+      ];
+      l.chars = [
+        CHAR_GIRL,
+        CHAR_GIRL,
+        CHAR_GIRL,
       ];
       l.prePromptEvt = function()
       {
@@ -426,6 +503,8 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -453,9 +532,14 @@ var GamePlayScene = function(game, stage)
       l.imask.origin_flag = false;
       l.imask.skip = true;
       l.lines = [
-        "See how the <b>P-Wave</b> (purple) travels at <b>twice the speed</b> of the <b>S-Wave</b> (blue)?",
-        "Look at <b>when</b> each wave was <b>reported</b> (shown on the timeline).",
-        "How can we use this to help determine <b>when</b> the earthquake <b>originated</b>?",
+        //"See how the <b>P-Wave</b> (purple) travels at <b>twice the speed</b> of the <b>S-Wave</b> (blue)?",
+        //"Look at <b>when</b> each wave was <b>reported</b> (shown on the timeline).",
+        //"How can we use this to help determine <b>when</b> the earthquake <b>originated</b>?",
+        "Ooh... the S Wave moved a lot slower!",
+        "Yep. The P Wave was twice as fast as the S Wave.",
+      ];
+      l.chars = [
+        
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -497,10 +581,120 @@ var GamePlayScene = function(game, stage)
       l.imask.new = false;
       l.imask.skip = false;
       l.lines = [
-        "Let's show that same earthquake, but this time, with <b>two locations</b>.",
-        "One will feel the tremors <b>shortly after</b> the quake originates,",
-        "And one will feel the tremors <b>long after</b> the quake has originated.",
-        "See how each experiences the shockwaves <b>differently</b> (watch the timeline!).",
+        //"Let's show that same earthquake, but this time, with <b>two locations</b>.",
+        //"One will feel the tremors <b>shortly after</b> the quake originates,",
+        //"And one will feel the tremors <b>long after</b> the quake has originated.",
+        //"See how each experiences the shockwaves <b>differently</b> (watch the timeline!).",
+        "Let's watch the same earthquake, but this time with two cities on the map.",
+        "Ugh... drawing again...",
+        "Ok, let's call this one... Circle City?",
+        "Ooh, I like it!",
+        "So, Circle City will feel the tremors soon after the quake starts...",
+        "And Square City will feel the tremors quite a while later.",
+        "See how each city experienced the earthquake differently?",
+        "Circle City was closer to the epicenter...",
+        "So the tremors hit closer together.",
+        "Oh, I get it! Square City was farther from the epicenter...",
+        "So the tremors were farther apart!",
+        "Exactly. The time between waves tells us if the quake was close and recent, or if it was far away and long ago.",
+        "So what if we only had one wave? Could we still figure it out?",
+        "Good question. Here's an example of a quake that started far away and long ago, hitting Square City.",
+        "Poor Squares...",
+
+        "What if the quake started at a different time?",
+        "Slide the Quake Origin on the timeline, so that the quake starts closer to when Square City felt the tremors.",
+        "Hmmm. The quake was really close and really recent, but it still hit Square City at the same time as before!",
+        "Yep. That's why one wave isn't enough.",
+        "Let's try again, this time with both waves! Move the origin time until both the S Wave and the P Wave hit Square City at the reported times.",
+        "See? If we know when the P Wave and the S Wave hit a certain location, we can figure out the origin time!",
+        "Ok, so we can figure out when a earthquake happened.",
+        "But we still don't know where the earthquake came from!",
+        "That's true... we'll need more information to figure that out.",
+        "Luckily, another earthquake just hit Square City!",
+        "Again? Sheesh, this place is earthquake central!",
+        "This time, we'll figure out where the earthquake started - its epicenter.",
+        "We already know when the quake started, so we don't need to worry about both P and S Waves.",
+        "Check out the timeline. You can see when the earthquake started, and when it hit Square City.",
+        "Click on the map to guess where you think the earthquake started!",
+        "Hmm... looks like the earthquake couldn't have started at that location.",
+        "If it had, Square City would've felt tremors at a different time.",
+        "Oh, darn...",
+        "It's ok, keep guessing! Click different spots on the map until you find a location where the earthquake would have started.",
+        "Wow! Good guess!",
+        "YES! I found the earthquake!!!",
+        "Well, you found one possible epicenter. The earthquake could have started at that location.",
+        "So it could'v started somewhere else??",
+        "Yep, but you're getting closer. Since we know when the earthquake hit Square City, we're ruling out a lot of locations where the earthquake couldn't have started.",
+        "Try to find some other plausible epicenters!",
+        "Nice!! You found some other locations where the earthquake could have started!",
+        "We can't know for sure yet, but we can't rule them out.",
+        "Can I guess some more??",
+        "Sure! Go ahead and click all over the map. Try to find a pattern!",
+        "Looks like a pattern is starting to emerge!",
+        "Almost done... keep guessing until the pattern becomes obvious!",
+        "I think I know",
+        "Great!",
+        "You found the pattern!",
+        "Now click and drag out from Square City to highlight the area where the earthquake could have started.",
+        "Ooh... I see it! It's.. It's...",
+        "A donut!!!",
+        "Actually, I was going to say a ring-",
+        "An earthquake donut!",
+        "An earth-nut? A dough-quake?",
+        "Er... either way, you're right!",
+        "By looking at when a quake started, when it was felt at Square City, and how fast it was moving, we can narrow down possible epicenters to a ring around Square City.",
+        "The radius of the ring is proportional to the time difference between when the quake started, and when it was felt.",
+        "........whaaaa?",
+        "Basically, the longer the quake takes to travel, the larger the ring.",
+        "From now on, you can click and drag a ring from each city.",
+        "Now that we can pinpoint our dough-quake... I mean, um, our RING...",
+        "...We can reduce our error range.",
+        "In other words, we can make really good guesses of where the earthquake started!",
+        "Using the ring to help you, try to find three plausible epicenters.",
+        "Nice work!!",
+        "Ok, so we can find a donut of possible epicenters. But where did the quake actually start??",
+        "With the information we have so far, the donut is the best we can do.",
+        "So... we need more information?",
+        "Exactly!!",
+        "Luckily, Circle City just called to report when they felt the earthquake's tremors.",
+        "YESSSS!",
+        "Oops... sorry Circles...",
+        "Using this new information, see if you can find two plausible epicenters.",
+        "Great!",
+        "With one location, we can only narrow down the possible epicenter to one ring.",
+        "With two locations, we get two rings.",
+        "Since the epicenter has to fall on BOTH rings, that juse leaves two small areas where the quake could've started.",
+        "Ooh. So which one is it??",
+        "We can answer that question by adding one more location!",
+        "Max, your turn... what do you want to call this one??",
+        "BOOMTOWN!",
+        "I can't draw a BOOM. How about Triangle City?",
+        "BOOM!",
+        "YES! We found it!!!",
+        "Whew. I'm craving donuts, for some reason.",
+        "Now you know how to triangulate a location!",
+        "Triangulation isn't just used to find the epicenter of an earthquake...",
+        "It's also used by Global Positioning Systems, or GPS.",
+        "Oh!! Liek my mom uses to get us un-lost!",
+        "Yep. GPS devices can find where you are and help you navigate!",
+        "So does triangula-whatsit work the same way for earthquakes and GPS?",
+        "Well, almost.",
+        "But instead of a wave moving from an unknown location- the epicenter- to a known location...",
+        "...GPS  devices use waves that move from known locations toward an unknown location.",
+        "Click Play to see how triangulation can pinpoint where you are!",
+        "See how each satellite emits a wave toward the GPS device?",
+        "When the GPS gets a signal from any of the known locations, it marks down how far away the signal came from.",
+        "Three distances from three locations creates three rings...",
+        "Which is enough to find your exact location!",
+        "Want to try it?",
+        "Yeah!!",
+        "Ok, we know when each city reported tremors. See if you can guess where the earthquake originated.",
+        "You won't be able to drag out rings from each city until after you guess!",
+        "This is the playground!",
+        "Go ahead and play around with different cities and quakes. See if you can figure anything out about what positioning of locations works best, and what doesn't.",
+        "You can play as many scenarios as you want!",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function()
       {
@@ -523,6 +717,8 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -553,6 +749,8 @@ var GamePlayScene = function(game, stage)
         "Do you see the <b>difference</b>?",
         "Circle City feels the tremors <b>one soon after the other</b>, and Square City feels them <b>longer apart</b>.",
         "We can use <b>how far apart</b> the <b>S-Wave</b> and the <b>P-Wave</b> were experienced to determine <b>how long ago</b> the quake <b>originated</b>.",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -598,6 +796,8 @@ var GamePlayScene = function(game, stage)
         "Was it <b>very close</b> and <b>very recent</b>? Or was it <b>very far away</b> and <b>very long ago</b>?",
         "Here's an example of a <b>far away</b> quake that started <b>long ago</b>, hitting Square City-",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function()
       {
         earth.t = 0;
@@ -619,6 +819,8 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.imask.play_pause = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() { speed_fast_button.set(true); }
       l.postPromptEvt = function() {}
@@ -652,6 +854,8 @@ var GamePlayScene = function(game, stage)
         "Let's see if there could have been another scenario that <b>doesn't conflict with what we know</b> (exactly <b>when</b> Square City was hit).",
         "Slide the <b>Quake Origin</b> on the timeline to start the quake <b>closer to when</b> Square City felt its tremors.",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function()
@@ -678,6 +882,8 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "The quake could have been <b>very close</b> and <b>very recent</b>, and it <b>still</b> would have hit Square City <b>at the reported time</b>!",
         "That means <b>we can't know</b> which scenario was true <b>with only this information</b>.",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() { earth.t = 0; play_state = STATE_PLAY; }
@@ -721,6 +927,8 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "Let's see that <b>same scenario</b>, but this time, with <b>both S and P waves</b>.",
         "Move the <b>origin time</b> until <b>both</b> the S wave <b>and</b> the P wave <b>hit Square City at the reported times</b>.",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function()
       {
@@ -767,6 +975,8 @@ var GamePlayScene = function(game, stage)
         "See how with reports of <b>both</b> the time of experiencing the <b>P Wave</b>, <b>and</b> the time of experiencing the <b>S Wave</b>, we can <b>narrow down</b> the <b>origin time</b> to a single possibility!",
         "Once we've achieved that, we're <b>one step closer</b> to discovering <b>where</b> the earthquake originated.",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; }
       l.drawExtra = function() {}
@@ -812,6 +1022,8 @@ var GamePlayScene = function(game, stage)
         "Only knowing <b>when</b> the earthquake started, and <b>when</b> it hit Square City,",
         "place a guess <b>where</b> you think the earthquake might have occurred!",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() { ctx.fillText("Click to guess the earthquake's epicenter",100,100); }
@@ -829,6 +1041,8 @@ var GamePlayScene = function(game, stage)
       l.GPS = false;
       l.imask.earth = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -873,6 +1087,8 @@ var GamePlayScene = function(game, stage)
         "If it had, Square City would have reported <b>experiencing its tremors</b> at a <b>different time</b>.",
         "Keep guessing until we find a location that <b>doesn't conflict</b> with any of the information we know.",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() { ctx.fillText("Try to find a plausable quake location",100,100); }
@@ -908,6 +1124,8 @@ var GamePlayScene = function(game, stage)
         "There may be other locations we could try that <b>also</b> wouldn't conflict with our known information.",
         "Try to find some other <b>plausable epicenters</b>.",
       ];
+      l.chars = [
+      ];
       l.drawExtra = function() { ctx.fillText("Try to find another plausable epicenter",100,100); }
       l.advanceTest = function()
       {
@@ -939,6 +1157,8 @@ var GamePlayScene = function(game, stage)
         "that is, we've made some guesses that <b>don't conflict with what we know</b>.",
         "Make a few more guesses, and try to look for a pattern. <b>What does the space look like</b> where the quake might have originated?",
         "(Don't be afraid to make guesses all over the map!)",
+      ];
+      l.chars = [
       ];
       l.drawExtra = function()
       {
@@ -981,6 +1201,8 @@ var GamePlayScene = function(game, stage)
         "we can <b>rule out some locations as possible epicenters</b>, and <b>cannot rule out</b> others.",
         "Keep guessing until the pattern is obvious.",
       ];
+      l.chars = [
+      ];
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_BLIND_GUESS_COMPLETE = levels.length;
@@ -997,6 +1219,8 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         "So you think you see the pattern?",
         "Click and drag out from Square City to highlight the area that <b>cannot be ruled out</b> as a possible epicenter of the earthquake",
+      ];
+      l.chars = [
       ];
       l.drawExtra = function() { ctx.fillText("Click and Drag out a pattern from Square City",100,100); }
       l.advanceTest = function()
@@ -1020,6 +1244,8 @@ var GamePlayScene = function(game, stage)
         "The <b>radius</b> of the ring is <b>proportional</b> to the <b>difference in time between when it originated, and when it was felt</b>.",
         "In other words, <b>the longer it takes to travel, the larger the circle.</b>",
         "From now on, you'll be able to <b>drag out these rings</b> from locations.",
+      ];
+      l.chars = [
       ];
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
@@ -1055,6 +1281,8 @@ var GamePlayScene = function(game, stage)
         "we'll now reduce the <b>error range</b>.",
         "That is, for us to consider a location <b>plausibly correct</b>, it will have to be <b>very precise</b>.",
         "With this new tool, and new restriction, try to find 3 <b>plausible epicenters</b> that <b>don't conflict with our known information.",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1099,6 +1327,8 @@ var GamePlayScene = function(game, stage)
         "But what if we had more information?",
         "What if there was <b>another location</b>, and we knew <b>when it felt the tremor</b> as well?",
       ];
+      l.chars = [
+      ];
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_TIGHT_GUESS_COMPLETE = levels.length;
@@ -1136,6 +1366,8 @@ var GamePlayScene = function(game, stage)
         "Circle city just called in when <b>they felt the earthquake's tremors</b>.",
         "Using that information, see if you can narrow the possible locations that <b>don't conflict with any known information</b> down further!",
         "Find 2 plausible <b>epicenters</b>.",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1181,6 +1413,8 @@ var GamePlayScene = function(game, stage)
         "Which of the <b>two possible areas</b> is it?",
         "We can answer this question by adding <b>one more location</b>...",
       ];
+      l.chars = [
+      ];
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_2LOC_GUESS_COMPLETE = levels.length;
@@ -1220,6 +1454,8 @@ var GamePlayScene = function(game, stage)
         "So now we've got 3 locations.",
         "See if you can find the <b>exact</b> epicenter!",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
@@ -1256,6 +1492,8 @@ var GamePlayScene = function(game, stage)
       l.imask.skip = true;
       l.lines = [
         "Ok! Now you know how to <b>triangulate</b> the epictner of an earthquake!",
+      ];
+      l.chars = [
       ];
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
@@ -1304,6 +1542,8 @@ var GamePlayScene = function(game, stage)
         "waves instead <b>are emitted from known locations</b>, toward an <b>unknown location</b>.",
         "Click Play to see what this might look like",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function()
       {
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
@@ -1322,6 +1562,8 @@ var GamePlayScene = function(game, stage)
       l.GPS = true;
       l.imask.play_pause = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1358,6 +1600,8 @@ var GamePlayScene = function(game, stage)
         "Just like with earthquakes- when you have a <b>known distance</b> to a <b>known location</b>, you have reduced your <b>possible position</b> to <b>a ring</b>.",
         "<b>3 distances</b> from <b>3 locations</b> means <b>3 rings</b>, which is enough to find <b>exactly where you are</b>!",
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
@@ -1389,6 +1633,8 @@ var GamePlayScene = function(game, stage)
         "Time to <b>test your intuition</b>!",
         "Only showing <b>when each location was hit</b>, <b>guess</b> where you think the earthquake <b>originated</b>.",
         "You <b>won't be able</b> to <b>drag out circles</b> from the locations until you guess!",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function(){ game_guesses = 0; game_known_locs = 0; game_drag_a = 0; game_drag_b = 0; game_drag_c = 0; if(game.heard_game_prompt) levels[lt.LVL_GAME_GUESS_1].lines = []; };
       l.postPromptEvt = function(){ game.heard_game_prompt = true; };
@@ -1423,6 +1669,8 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.lines = [
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() { game_guesses++; }
       l.postPromptEvt = function() {}
       l.drawExtra = function()
@@ -1455,6 +1703,8 @@ var GamePlayScene = function(game, stage)
       l.imask.earthdrag = true;
       l.imask.select = true;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1489,6 +1739,8 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.lines = [
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() { game_guesses++; }
       l.postPromptEvt = function() {}
       l.drawExtra = function()
@@ -1521,6 +1773,8 @@ var GamePlayScene = function(game, stage)
       l.imask.earthdrag = true;
       l.imask.select = true;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1555,6 +1809,8 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.lines = [
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() { game_guesses++; }
       l.postPromptEvt = function() {}
       l.drawExtra = function()
@@ -1587,6 +1843,8 @@ var GamePlayScene = function(game, stage)
       l.imask.earthdrag = true;
       l.imask.select = true;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1621,6 +1879,8 @@ var GamePlayScene = function(game, stage)
       l.imask.select = false;
       l.lines = [
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() { game_guesses++; }
       l.postPromptEvt = function() {}
       l.drawExtra = function()
@@ -1654,6 +1914,8 @@ var GamePlayScene = function(game, stage)
       l.imask.select = true;
       l.lines = [
       ];
+      l.chars = [
+      ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
       l.drawExtra = function()
@@ -1686,6 +1948,8 @@ var GamePlayScene = function(game, stage)
       l.imask.earthdrag = false;
       l.imask.select = false;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() { game_guesses++; }
       l.postPromptEvt = function() {}
@@ -1722,6 +1986,8 @@ var GamePlayScene = function(game, stage)
       l.imask.select = true;
       l.imask.skip = true;
       l.lines = [
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -1761,6 +2027,8 @@ var GamePlayScene = function(game, stage)
         "See if you can figure anything out about <b>what positioning of locations</b> works best, and what doesn't.",
         "You'll be able to play as many different <b>random scenarios</b> as you'd like-",
         "Good luck!",
+      ];
+      l.chars = [
       ];
       l.prePromptEvt = function(){ if(game.heard_freeplay_prompt) levels[lt.LVL_FREE].lines = []; };
       l.postPromptEvt = function(){ game.heard_freeplay_prompt = true; };
@@ -2115,6 +2383,7 @@ var GamePlayScene = function(game, stage)
     self.ghost_countdown = false;
     self.imask = new InputMask();
     self.lines = ["what's up?"];
+    self.chars = [];
     self.prePromptEvt = function(){};
     self.postPromptEvt = function(){};
     self.drawExtra = function(){};
@@ -2175,6 +2444,7 @@ var GamePlayScene = function(game, stage)
     toLvl.imask.new = fromLvl.imask.new;
     toLvl.imask.skip = fromLvl.imask.skip;
     toLvl.lines = fromLvl.lines;
+    toLvl.chars = fromLvl.chars;
     toLvl.prePromptEvt = fromLvl.prePromptEvt;
     toLvl.postPromptEvt = fromLvl.postPromptEvt;
     toLvl.drawExtra = fromLvl.drawExtra;
