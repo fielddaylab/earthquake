@@ -146,8 +146,8 @@ var LoadingScene = function(game, stage)
       var h;
       w = 1540*3/4;
       h = 564*3/4;
-      ctx.drawImage(loading_imgs[1],-w+ticks_since_loading_ready,0,w,h); //clouds
-      ctx.drawImage(loading_imgs[1],ticks_since_loading_ready,0,w,h); //clouds
+      ctx.drawImage(loading_imgs[1],-w+(ticks_since_loading_ready%w),0,w,h); //clouds
+      ctx.drawImage(loading_imgs[1],(ticks_since_loading_ready%w),0,w,h); //clouds
       w = pole_w;
       h = pole_h;
       ctx.drawImage(loading_imgs[4],pole_x,dc.height-h,w,h); //pole
