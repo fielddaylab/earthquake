@@ -744,7 +744,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        drawGeneralTip("Wait for it...",150);
+        drawGeneralTip("Wait for it...",130);
         if(speed_normal_button.on) drawSpeedTip("Click to speed up!",160);
       }
       l.advanceTest = function()
@@ -996,8 +996,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) ctx.fillText("Wait for it... (click >> to speed up)",100,100);
-        else ctx.fillText("Wait for it...",100,100);
+        drawGeneralTip("Wait for it...",130);
+        if(speed_normal_button.on) drawSpeedTip("Click to speed up!",160);
       }
       l.advanceTest = function()
       {
@@ -2431,15 +2431,17 @@ var GamePlayScene = function(game, stage)
     scrubber.draw();
     if(speed_fast_button.on)
     {
-      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
+      var p = 3;
+      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad+p,speed_fast_button.y  +scrubber.btn_pad+p,speed_fast_button.w  -2*scrubber.btn_pad-2*p,speed_fast_button.h  -2*scrubber.btn_pad-2*p);
       ctx.globalAlpha = 0.5;
-      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
+      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad+p,speed_normal_button.y+scrubber.btn_pad+p,speed_normal_button.w-2*scrubber.btn_pad-2*p,speed_normal_button.h-2*scrubber.btn_pad-2*p);
     }
     else //assume normal selected
     {
-      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad,speed_normal_button.y+scrubber.btn_pad,speed_normal_button.w-2*scrubber.btn_pad,speed_normal_button.h-2*scrubber.btn_pad);
+      var p = 3;
+      ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad+p,speed_normal_button.y+scrubber.btn_pad+p,speed_normal_button.w-2*scrubber.btn_pad-2*p,speed_normal_button.h-2*scrubber.btn_pad-2*p);
       ctx.globalAlpha = 0.5;
-      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad,speed_fast_button.y  +scrubber.btn_pad,speed_fast_button.w  -2*scrubber.btn_pad,speed_fast_button.h  -2*scrubber.btn_pad);
+      ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad+p,speed_fast_button.y  +scrubber.btn_pad+p,speed_fast_button.w  -2*scrubber.btn_pad-2*p,speed_fast_button.h  -2*scrubber.btn_pad-2*p);
     }
     ctx.globalAlpha = 1;
 
