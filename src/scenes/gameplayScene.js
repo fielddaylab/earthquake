@@ -2227,7 +2227,7 @@ var GamePlayScene = function(game, stage)
   {
     if(!skip_scene_check) //lazy hack
     {
-      if(levels[cur_level].return_on_complete) { game.setScene(2); return; }
+      if(levels[cur_level].return_on_complete) { game.setScene(3); return; }
     }
     cur_level = (cur_level+1)%levels.length;
     if(levels[cur_level].reset)
