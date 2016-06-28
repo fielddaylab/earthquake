@@ -15,9 +15,12 @@ var ComicScene = function(game, stage)
   {
     clicker = new Clicker({source:stage.dispCanv.canvas});
 
-    imgs = []; var i = 0;
-    imgs[i] = new Image(); imgs[i].src = "assets/city_circ.png"; i++;
-    imgs[i] = new Image(); imgs[i].src = "assets/city_tri.png"; i++;
+    imgs = [];
+    for(var i = 0; i < 12; i++)
+    {
+      imgs[i] = new Image();
+      imgs[i].src = "assets/comic/comic_"+i+".png";
+    }
 
     next_btn = new ButtonBox(0,0,dc.width,dc.height,function(evt){cur_img++;});
     clicker.register(next_btn);

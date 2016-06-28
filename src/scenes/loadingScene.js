@@ -96,6 +96,8 @@ var LoadingScene = function(game, stage)
     img_srcs.push("assets/play_head.png");
     for(var i = 0; i < 7; i++)
       img_srcs.push("assets/chars/face/char_"+i+".png");
+    for(var i = 0; i < 12; i++)
+      img_srcs.push("assets/comic/comic_"+i+".png");
     for(var i = 0; i < img_srcs.length; i++)
     {
       imgs[i] = new Image();

@@ -266,7 +266,7 @@ var GamePlayScene = function(game, stage)
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { ctx.fillText("Click the play button to watch quake",100,100); }
+      l.drawExtra = function() { drawPlayTip("Click the play button to watch quake",320); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_INTRO_INTRO = levels.length;
       levels.push(l);
@@ -285,8 +285,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,100);
-        else ctx.fillText("Watch the quake",100,100);
+        drawGeneralTip("Watch the quake!",160);
+        if(speed_normal_button.on) drawSpeedTip("Click to speed up!",160);
       }
       l.advanceTest = function()
       {
@@ -362,7 +362,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function() { earth.t = 0; play_state = STATE_PAUSE; }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { ctx.fillText("Click the play button",100,100); }
+      l.drawExtra = function() { drawPlayTip("Click the play button",180); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_EMPTY_INTRO = levels.length;
       levels.push(l);
@@ -381,8 +381,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,100);
-        else ctx.fillText("Watch the quake",100,100);
+        drawGeneralTip("Watch the quake!",160);
+        if(speed_normal_button.on) drawSpeedTip("Click to speed up!",160);
       }
       l.advanceTest = function()
       {
@@ -725,7 +725,7 @@ var GamePlayScene = function(game, stage)
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { ctx.fillText("Click Play",100,100); }
+      l.drawExtra = function() { drawPlayTip("Click Play",90); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_SP_SINGLE_INTRO = levels.length;
       levels.push(l);
@@ -744,8 +744,8 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        if(speed_normal_button.on) ctx.fillText("Wait for it... (click >> to speed up)",100,100);
-        else ctx.fillText("Wait for it...",100,100);
+        drawGeneralTip("Wait for it...",150);
+        if(speed_normal_button.on) drawSpeedTip("Click to speed up!",160);
       }
       l.advanceTest = function()
       {
@@ -1628,7 +1628,7 @@ var GamePlayScene = function(game, stage)
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { ctx.fillText("Click the play button to watch the radio waves",100,100); }
+      l.drawExtra = function() { drawPlayTip("Click the play button to watch the radio waves",250); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_GPS_INTRO = levels.length;
       levels.push(l);
@@ -2444,6 +2444,104 @@ var GamePlayScene = function(game, stage)
     ctx.globalAlpha = 1;
 
   };
+
+  var drawGeneralTip = function(prompt,w)
+  {
+    var h = 25;
+    var x = 30;
+    var y = 30;
+    y += Math.sin(n_ticks/10)*4;
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#000000";
+    dc.strokeRoundRect(x,y,w,h,5);
+
+    ctx.fillStyle = "#FFFFFF";
+    dc.fillRoundRect(x,y,w,h,5);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(prompt,x+5,y+h-5);
+  }
+  var drawPlayTip = function(prompt,w)
+  {
+    var h = 25;
+    var x = scrubber.play_button.x+10;
+    var y = scrubber.play_button.y-h-50;
+    y -= Math.sin(n_ticks/10)*4;
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#000000";
+    dc.strokeRoundRect(x,y,w,h,5);
+    ctx.beginPath();
+    ctx.moveTo(x+10,y+h-1);
+    ctx.lineTo(x+15,y+h+5);
+    ctx.lineTo(x+20,y+h-1);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.fillStyle = "#FFFFFF";
+    dc.fillRoundRect(x,y,w,h,5);
+    ctx.beginPath();
+    ctx.moveTo(x+10,y+h-1);
+    ctx.lineTo(x+15,y+h+5);
+    ctx.lineTo(x+20,y+h-1);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(prompt,x+5,y+h-5);
+  }
+  var drawSpeedTip = function(prompt,w)
+  {
+    var h = 25;
+    var x = speed_fast_button.x+speed_fast_button.w-10;
+    var y = speed_fast_button.y-h-50;
+    y -= Math.sin(n_ticks/10)*4;
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#000000";
+    dc.strokeRoundRect(x-w,y,w,h,5);
+    ctx.beginPath();
+    ctx.moveTo(x-10,y+h-1);
+    ctx.lineTo(x-15,y+h+5);
+    ctx.lineTo(x-20,y+h-1);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.fillStyle = "#FFFFFF";
+    dc.fillRoundRect(x-w,y,w,h,5);
+    ctx.beginPath();
+    ctx.moveTo(x-10,y+h-1);
+    ctx.lineTo(x-15,y+h+5);
+    ctx.lineTo(x-20,y+h-1);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(prompt,x-5,y+h-5);
+  }
+  var drawOriginTip = function(prompt,w)
+  {
+    var h = 20;
+    var x = burn_pad.x-w-80;
+    var y = burn_pad.y+burn_pad.h/2;
+    y += Math.sin(n_ticks/10)*4;
+    ctx.fillStyle = "#FFFFFF";
+    dc.fillRoundRect(x,y-h/2,w,h,5);
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x+w-1,y-h/2+5);
+    ctx.lineTo(x+w+5,y);
+    ctx.lineTo(x+w-1,y+h/2-5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(prompt,x+w-4,y+5);
+  }
 
   self.cleanup = function()
   {
