@@ -86,6 +86,7 @@ var GamePlayScene = function(game, stage)
   var del_all_quakes_button;
   var new_button;
 
+  var char_disp;
   var canvdom;
   var blurb_w;
   var blurb_x;
@@ -1081,7 +1082,7 @@ var GamePlayScene = function(game, stage)
         "Wow! Good guess!",
         "YES! I found the earthquake!!!",
         "Well, you found one possible epicenter. The earthquake could have started at that location.",
-        "So it could'v started somewhere else??",
+        "So it could've started somewhere else??",
         "Yep, but you're getting closer. Since we know when the earthquake hit Square City, we're ruling out a lot of locations where the earthquake couldn't have started.",
         "Try to find some other plausible epicenters!",
       ];
@@ -1124,7 +1125,7 @@ var GamePlayScene = function(game, stage)
         //"that is, we've made some guesses that <b>don't conflict with what we know</b>.",
         //"Make a few more guesses, and try to look for a pattern. <b>What does the space look like</b> where the quake might have originated?",
         //"(Don't be afraid to make guesses all over the map!)",
-        "Nice!! You found some other locations where the earthquake could have started!",
+        "Nice!! You found another location where the earthquake could have started!",
         "We can't know for sure yet, but we can't rule them out.",
         "Can I guess some more??",
         "Sure! Go ahead and click all over the map. Try to find a pattern!",
@@ -1239,7 +1240,7 @@ var GamePlayScene = function(game, stage)
         "The radius of the ring is proportional to the time difference between when the quake started, and when it was felt.",
         "........whaaaa?",
         "Basically, the longer the quake takes to travel, the larger the ring.",
-        "From now on, you can click and drag a ring from each city.",
+        "From now on, you can click and drag a ring from any city.",
       ];
       l.chars = [
         CHAR_ANNOY,
@@ -1457,7 +1458,6 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
         CHAR_GIRL,
-        CHAR_GIRL,
         CHAR_ANNOY,
         CHAR_GIRL,
         CHAR_ANNOY,
@@ -1503,8 +1503,10 @@ var GamePlayScene = function(game, stage)
       l.lines = [
         //"So now we've got 3 locations.",
         //"See if you can find the <b>exact</b> epicenter!",
+        "Now that we have three locations, try to find the exact epicenter!",
       ];
       l.chars = [
+        CHAR_GIRL,
       ];
       l.prePromptEvt = function() {}
       l.postPromptEvt = function() {}
@@ -2190,6 +2192,9 @@ var GamePlayScene = function(game, stage)
     hoverer.register(earth);
     dragger.register(earth);
 
+    char_disp = [];
+    for(var i = 0; i < char_imgs.length; i++)
+      char_disp[i] = 0;
     canvdom = new CanvDom();
     //setTimeout(function(){ input_state = IGNORE_INPUT; canvdom.popDismissableMessage('hi',100,100,100,100,dismissed); },100);
     blurb_x = 200;
@@ -2338,8 +2343,23 @@ var GamePlayScene = function(game, stage)
       self.nextLevel();
 
     input_state = next_input_state;
-    if(input_state == IGNORE_INPUT) blurb_t = lerp(blurb_t,1,0.2);
-    else                            blurb_t = lerp(blurb_t,-0.2,0.2);
+    if(input_state == IGNORE_INPUT)
+    {
+      blurb_t = lerp(blurb_t,1,0.2)
+      for(var i = 0; i < char_disp.length; i++)
+      {
+        if(i == levels[cur_level].chars[cur_prompt_line])
+          char_disp[i] = lerp(char_disp[i],1,0.1);
+        else
+          char_disp[i] = lerp(char_disp[i],0,0.1);
+      }
+    }
+    else
+    {
+      blurb_t = lerp(blurb_t,-0.2,0.2);
+      for(var i = 0; i < char_disp.length; i++)
+        char_disp[i] = lerp(char_disp[i],0,0.1);
+    }
   };
 
   self.draw = function()
@@ -2394,8 +2414,8 @@ var GamePlayScene = function(game, stage)
       ctx.globalAlpha = 1;
     }
     ctx.drawImage(grad,0,dc.height-blurb_t*300,dc.width,300);
-    ctx.fillStyle = red;
-    ctx.fillRect(100,dc.height-blurb_t*200,80,200);
+    for(var i = 0; i < char_imgs.length; i++)
+      ctx.drawImage(char_imgs[i], 20, dc.height+10-char_disp[i]*260, 200, 400);
     if(input_state == IGNORE_INPUT)
     {
       ctx.fillStyle = white;
