@@ -156,9 +156,9 @@ var LoadingScene = function(game, stage)
       ctx.drawImage(loading_imgs[2],pole_x+pole_w-20,dc.height-(pole_h-50)*lerp_percent_loaded,w,h); //flag
 
       var n = 170;
-      if(ticks_since_loading_ready > post_load_countdown-n)
+      if(ticks_since_ready > post_load_countdown-n)
       {
-        f = (ticks_since_loading_ready-(post_load_countdown-n))/50;
+        f = (ticks_since_ready-(post_load_countdown-n))/50;
         if(f < 0) f = 0;
         if(f > 1) f = 1;
         ctx.globalAlpha = f;
@@ -172,9 +172,9 @@ var LoadingScene = function(game, stage)
       ctx.globalAlpha = 1;
 
       var n = 20;
-      if(ticks_since_loading_ready > post_load_countdown-n)
+      if(ticks_since_ready > post_load_countdown-n)
       {
-        f = (ticks_since_loading_ready-(post_load_countdown-n))/n;
+        f = (ticks_since_ready-(post_load_countdown-n))/n;
         if(f > 1) f = 1;
         if(f < 0) f = 0;
         ctx.globalAlpha = f;
