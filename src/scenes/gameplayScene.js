@@ -2168,7 +2168,7 @@ var GamePlayScene = function(game, stage)
       record_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; if(listener.playing) listener.stop(); else if(listener.recording) listener.play(); else listener.record(); });
       clicker.register(record_button);
     }
-    next_button = new ButtonBox(dc.width-100,dc.height-100,80,20,function(){ if(!levels[cur_level].imask.skip || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
+    next_button = new ButtonBox(dc.width-100,dc.height-90,80,30,function(){ if(!levels[cur_level].imask.skip || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
     scrubber = new Scrubber(earth);
     hoverer.register(scrubber);
@@ -2372,13 +2372,7 @@ var GamePlayScene = function(game, stage)
 
     if(record) record_button.draw(dc);
     if(levels[cur_level].allow_skip_prompt)
-    {
-      ctx.fillStyle = yellow;
-      ctx.fillRect(next_button.x,next_button.y,next_button.w,next_button.h);
-      ctx.fillStyle = black;
-      ctx.textAlign = "left";
-      ctx.fillText(levels[cur_level].allow_skip_prompt,next_button.x+5,next_button.y+15);
-    }
+      ctx.drawImage(btn_next_img,next_button.x,next_button.y,next_button.w,next_button.h);
 
     ctx.fillStyle = black;
     ctx.strokeStyle = black;
@@ -2431,12 +2425,7 @@ var GamePlayScene = function(game, stage)
       var y = blurb_y+100;
       var w = dc.width-(blurb_x+blurb_w)-25;
       var h = 30;
-      ctx.fillStyle = gray;
-      ctx.fillRect(x,y+5,w,h);
-      ctx.fillStyle = white;
-      ctx.fillRect(x,y,w,h);
-      ctx.fillStyle = black;
-      ctx.fillText("Next",x+5,y+h-5);
+      ctx.drawImage(btn_next_img,next_button.x,next_button.y,next_button.w,next_button.h);
     }
 
     scrubber.draw();

@@ -186,7 +186,7 @@ var LoadingScene = function(game, stage)
     else
     {
       ctx.fillStyle = "#EFC72F"; //yellow
-      ctx.fillRect(pole_x+25,dc.height-pole_h*percent_loaded,pole_w-50,pole_h);
+      ctx.fillRect(pole_x+25,dc.height-pole_h*lerp_chase_percent_loaded,pole_w-50,pole_h);
     }
 
   };
