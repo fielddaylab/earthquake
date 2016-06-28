@@ -326,7 +326,7 @@ var GamePlayScene = function(game, stage)
         "Yep. But in real life, scientists don't have a map that shows them when and where an earthquake started.",
       ];
       l.chars = [
-        CHAR_AXE,
+        CHAR_BABY,
         CHAR_ANNOY,
         CHAR_GIRL,
         CHAR_GIRL,
@@ -1461,8 +1461,8 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
         CHAR_GIRL,
         CHAR_ANNOY,
-        CHAR_AXE,
-        CHAR_AXE,
+        CHAR_BABY,
+        CHAR_BABY,
         CHAR_GIRL,
       ];
       l.drawExtra = function() {}
@@ -1550,7 +1550,7 @@ var GamePlayScene = function(game, stage)
         "Now you know how to triangulate a location!",
       ];
       l.chars = [
-        CHAR_AXE,
+        CHAR_BABY,
         CHAR_ANNOY,
         CHAR_ANNOY,
         CHAR_GIRL,
