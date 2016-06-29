@@ -60,7 +60,7 @@ var LoadingScene = function(game, stage)
     ctx.fillText(".",0,0);// funky way to encourage any custom font to load
 
     //put asset paths in loading_img_srcs (for assets used on loading screen itself)
-    loading_img_srcs.push("assets/loading/by.png");
+    loading_img_srcs.push("assets/loading/experiment.png");
     loading_img_srcs.push("assets/loading/clouds.png");
     loading_img_srcs.push("assets/loading/flag.png");
     loading_img_srcs.push("assets/loading/logo.png");
@@ -164,12 +164,12 @@ var LoadingScene = function(game, stage)
         if(f < 0) f = 0;
         if(f > 1) f = 1;
         ctx.globalAlpha = f;
-        w = 122/2;
-        h = 68/2;
-        ctx.drawImage(loading_imgs[0],240,260,w,h);
         w = 640/2;
         h = 118/2;
-        ctx.drawImage(loading_imgs[3],240,260+40,w,h);
+        ctx.drawImage(loading_imgs[3],240,260+20,w,h);
+        w = 534/1.5;
+        h = 22/1.5;
+        ctx.drawImage(loading_imgs[0],240,260+100,w,h);
       }
       ctx.globalAlpha = 1;
 
