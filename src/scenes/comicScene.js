@@ -10,13 +10,19 @@ var ComicScene = function(game, stage)
   var imgs;
   var nodes;
   var cur_img;
+  var delta;
+  var delta_goal;
   var prev_btn;
   var next_btn;
   var hit_ui;
 
-  var node_y = dc.height-50;
-  var node_s = 10;
-  var btn_s = 40;
+  var slots;
+
+  var node_y;
+  var node_s;
+  var btn_s;
+
+  var blue;
 
   self.ready = function()
   {
@@ -29,17 +35,55 @@ var ComicScene = function(game, stage)
       imgs[i].src = "assets/comic/comic_"+i+".png";
     }
 
-    var xspace = function(n) { return n*(dc.width/(imgs.length+3)); }
+    node_y = dc.height-50;
+    node_s = 10;
+    btn_s = 40;
 
-    prev_btn = new ButtonBox(xspace(1)            -btn_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img--;hit_ui = true;});
-    next_btn = new ButtonBox(xspace(imgs.length+2)-btn_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img++;hit_ui = true;});
-    skip_btn = new ButtonBox(dc.width-btn_s,dc.height-btn_s,              btn_s,btn_s,function(evt){if(hit_ui) return;cur_img=imgs.length;hit_ui = true;});
-    full_btn = new ButtonBox(0,0,dc.width,dc.height,                                  function(evt){if(hit_ui) return;cur_img++;hit_ui = true;});
+    blue = "#15A9CB";
+
+    slots = [];
+    var x = dc.width/2;
+    var y = dc.height/2;
+    var w = dc.width;
+    var h = dc.height;
+    slots[0] = { x:-w/2,         y:y-h/4,     w:w/2,   h:h/2   }; //off
+    slots[1] = { x:-w/3 ,        y:y-h/3,     w:2*w/3, h:2*h/3 }; //visible
+    slots[2] = { x:x-(3*w/8),    y:y-(3*h/8), w:3*w/4, h:3*h/4 }; //center
+    slots[3] = { x:dc.width-w/3, y:y-h/3,     w:2*w/3, h:2*h/3 }; //visible
+    slots[4] = { x:dc.width,     y:y-h/4,     w:w/2,   h:h/2   }; //off
+
+    prev_btn = new ButtonBox(         10      ,dc.height/2-btn_s/2,btn_s,btn_s,
+      function(evt)
+      {
+        if(hit_ui)return;hit_ui = true;
+        if(cur_img == 0)return;
+        if(delta_goal)cur_img+=delta_goal;
+        delta = 0;
+        delta_goal = -1;
+      });
+    next_btn = new ButtonBox(dc.width-10-btn_s,dc.height/2-btn_s/2,btn_s,btn_s,
+      function(evt)
+      {
+        if(hit_ui)return;hit_ui = true;
+        if(cur_img == imgs.length-1 && delta_goal > 0)
+          cur_img=imgs.length;
+        else if(delta_goal) cur_img+=delta_goal;
+        delta = 0;
+        delta_goal = 1;
+      });
+    skip_btn = new ButtonBox(dc.width-btn_s,dc.height-btn_s,       btn_s,btn_s,
+      function(evt)
+      {
+        if(hit_ui)return;hit_ui = true;
+        cur_img=imgs.length;
+      });
+    full_btn = new ButtonBox(0,0,dc.width,dc.height,function(evt){next_btn.click(evt);});
     nodes = [];
     for(var i = 0; i < imgs.length; i++)
     {
       (function(i){
-        nodes[i] = new ButtonBox(xspace(i+2)-node_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img = i;hit_ui = true;});
+        var x = (i+5)*(dc.width/(imgs.length+9));
+        nodes[i] = new ButtonBox(x-node_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img = i;hit_ui = true;});
         clicker.register(nodes[i]);
       })(i);
     }
@@ -49,6 +93,8 @@ var ComicScene = function(game, stage)
     clicker.register(full_btn);
 
     cur_img = 0;
+    delta = 0;
+    delta_goal = 0;
   };
 
 
@@ -58,6 +104,14 @@ var ComicScene = function(game, stage)
     if(cur_img >= imgs.length) { game.nextScene(); }
     else clicker.flush();
     if(cur_img < 0) cur_img = 0;
+
+    delta = lerp(delta,delta_goal,0.2);
+    if(abs(delta-delta_goal) < 0.001)
+    {
+      cur_img += delta_goal;
+      delta = 0;
+      delta_goal = 0;
+    }
     hit_ui = false;
   };
 
@@ -67,26 +121,58 @@ var ComicScene = function(game, stage)
     ctx.fillRect(0,0,dc.width,dc.height);
     if(cur_img < imgs.length)
     {
-      ctx.drawImage(imgs[cur_img],20,20,dc.width-40,dc.height-40);
-      ctx.fillStyle = "#FF0000";
-      ctx.fillRect(prev_btn.x,prev_btn.y,prev_btn.w,prev_btn.h);
-      ctx.fillRect(next_btn.x,next_btn.y,next_btn.w,next_btn.h);
+      var slot;
+      var lerp_slot;
+      if(cur_img-2 >= 0)                        { slot = slots[0]; lerp_slot = slot; if(delta_goal < 0) lerp_slot = slots[1]; ctx.drawImage(imgs[cur_img-2],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+      if(cur_img+2 < imgs.length)               { slot = slots[4]; lerp_slot = slot; if(delta_goal > 0) lerp_slot = slots[3]; ctx.drawImage(imgs[cur_img+2],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+      if(delta_goal == 0)
+      {
+        if(cur_img-1 >= 0)                        { slot = slots[1]; lerp_slot = slot; ctx.drawImage(imgs[cur_img-1],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+        if(cur_img+1 < imgs.length)               { slot = slots[3]; lerp_slot = slot; ctx.drawImage(imgs[cur_img+1],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+        if(cur_img >= 0 && cur_img < imgs.length) { slot = slots[2]; lerp_slot = slot; ctx.drawImage(imgs[cur_img  ],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+      }
+      else if(delta_goal < 0)
+      {
+        if(cur_img+1 < imgs.length)               { slot = slots[3]; lerp_slot = slots[4]; ctx.drawImage(imgs[cur_img+1],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+        if(cur_img >= 0 && cur_img < imgs.length) { slot = slots[2]; lerp_slot = slots[3]; ctx.drawImage(imgs[cur_img  ],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+        if(cur_img-1 >= 0)                        { slot = slots[1]; lerp_slot = slots[2]; ctx.drawImage(imgs[cur_img-1],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+      }
+      else if(delta_goal > 0)
+      {
+        if(cur_img-1 >= 0)                        { slot = slots[1]; lerp_slot = slots[0]; ctx.drawImage(imgs[cur_img-1],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+        if(cur_img >= 0 && cur_img < imgs.length) { slot = slots[2]; lerp_slot = slots[1]; ctx.drawImage(imgs[cur_img  ],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+        if(cur_img+1 < imgs.length)               { slot = slots[3]; lerp_slot = slots[2]; ctx.drawImage(imgs[cur_img+1],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
+      }
+
+      ctx.fillStyle = blue;
+      ctx.beginPath();
+      ctx.arc(prev_btn.x+prev_btn.w/2,prev_btn.y+prev_btn.h/2,btn_s/2,0,2*Math.PI);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(next_btn.x+next_btn.w/2,next_btn.y+next_btn.h/2,btn_s/2,0,2*Math.PI);
+      ctx.fill();
       ctx.fillRect(skip_btn.x,skip_btn.y,skip_btn.w,skip_btn.h);
       var x;
       for(var i = 0; i < imgs.length; i++)
       {
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = blue;
         ctx.beginPath();
         ctx.arc(nodes[i].x+nodes[i].w/2,nodes[i].y+nodes[i].h/2,node_s/2,0,2*Math.PI);
         ctx.fill();
-        if(i == cur_img)
-        {
-          ctx.fillStyle = "#FFFFFF";
-          ctx.beginPath();
-          ctx.arc(nodes[i].x+nodes[i].w/2,nodes[i].y+nodes[i].h/2,node_s/3,0,2*Math.PI);
-          ctx.fill();
-        }
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(nodes[i].x+nodes[i].w/2,nodes[i].y+nodes[i].h/2,node_s/3,0,2*Math.PI);
+        ctx.fill();
       }
+      var i = cur_img;
+      var node = nodes[i];
+      var lerp_node = node;
+      if(delta_goal < 0) lerp_node = nodes[i-1];
+      if(delta_goal > 0) lerp_node = nodes[i+1];
+      ctx.fillStyle = blue;
+      ctx.beginPath();
+      ctx.arc(lerp(node.x,lerp_node.x,abs(delta))+node.w/2,node.y+node.h/2,node_s/3,0,2*Math.PI);
+      ctx.fill();
     }
   };
 
