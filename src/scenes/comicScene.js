@@ -33,6 +33,7 @@ var ComicScene = function(game, stage)
 
     prev_btn = new ButtonBox(xspace(1)            -btn_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img--;hit_ui = true;});
     next_btn = new ButtonBox(xspace(imgs.length+2)-btn_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img++;hit_ui = true;});
+    skip_btn = new ButtonBox(dc.width-btn_s,dc.height-btn_s,              btn_s,btn_s,function(evt){if(hit_ui) return;cur_img=imgs.length;hit_ui = true;});
     full_btn = new ButtonBox(0,0,dc.width,dc.height,                                  function(evt){if(hit_ui) return;cur_img++;hit_ui = true;});
     nodes = [];
     for(var i = 0; i < imgs.length; i++)
@@ -44,6 +45,7 @@ var ComicScene = function(game, stage)
     }
     clicker.register(prev_btn);
     clicker.register(next_btn);
+    clicker.register(skip_btn);
     clicker.register(full_btn);
 
     cur_img = 0;
@@ -69,6 +71,7 @@ var ComicScene = function(game, stage)
       ctx.fillStyle = "#FF0000";
       ctx.fillRect(prev_btn.x,prev_btn.y,prev_btn.w,prev_btn.h);
       ctx.fillRect(next_btn.x,next_btn.y,next_btn.w,next_btn.h);
+      ctx.fillRect(skip_btn.x,skip_btn.y,skip_btn.w,skip_btn.h);
       var x;
       for(var i = 0; i < imgs.length; i++)
       {
