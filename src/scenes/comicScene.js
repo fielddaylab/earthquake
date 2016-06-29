@@ -56,7 +56,7 @@ var ComicScene = function(game, stage)
       function(evt)
       {
         if(hit_ui)return;hit_ui = true;
-        if(cur_img == 0) return;
+        if(cur_img == 0 || cur_img == 1 && delta_goal < 0) return;
         if(delta_goal) cur_img+=delta_goal;
         delta = 0;
         delta_goal = -1;
@@ -165,7 +165,7 @@ var ComicScene = function(game, stage)
       }
       var node = nodes[cur_img];
       var lerp_node = node;
-      if(delta_goal < 0) lerp_node = nodes[cur_img-1];
+      if(delta_goal < 0 && cur_img-1 >= 0)          lerp_node = nodes[cur_img-1];
       if(delta_goal > 0 && cur_img+1 < imgs.length) lerp_node = nodes[cur_img+1];
       ctx.fillStyle = blue;
       ctx.beginPath();
