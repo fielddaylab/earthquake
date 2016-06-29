@@ -56,8 +56,8 @@ var ComicScene = function(game, stage)
       function(evt)
       {
         if(hit_ui)return;hit_ui = true;
-        if(cur_img == 0)return;
-        if(delta_goal)cur_img+=delta_goal;
+        if(cur_img == 0) return;
+        if(delta_goal) cur_img+=delta_goal;
         delta = 0;
         delta_goal = -1;
       });
@@ -65,9 +65,8 @@ var ComicScene = function(game, stage)
       function(evt)
       {
         if(hit_ui)return;hit_ui = true;
-        if(cur_img == imgs.length-1 && delta_goal > 0)
-          cur_img=imgs.length;
-        else if(delta_goal) cur_img+=delta_goal;
+        if(cur_img == imgs.length-1 && delta_goal > 0) { cur_img=imgs.length; return; }
+        if(delta_goal) cur_img+=delta_goal;
         delta = 0;
         delta_goal = 1;
       });
@@ -77,7 +76,7 @@ var ComicScene = function(game, stage)
         if(hit_ui)return;hit_ui = true;
         cur_img=imgs.length;
       });
-    full_btn = new ButtonBox(0,0,dc.width,dc.height,function(evt){next_btn.click(evt);});
+    full_btn = new ButtonBox(0,0,dc.width,dc.height,function(evt){if(!hit_ui)next_btn.click(evt);});
     nodes = [];
     for(var i = 0; i < imgs.length; i++)
     {
@@ -164,15 +163,22 @@ var ComicScene = function(game, stage)
         ctx.arc(nodes[i].x+nodes[i].w/2,nodes[i].y+nodes[i].h/2,node_s/3,0,2*Math.PI);
         ctx.fill();
       }
-      var i = cur_img;
-      var node = nodes[i];
+      var node = nodes[cur_img];
       var lerp_node = node;
-      if(delta_goal < 0) lerp_node = nodes[i-1];
-      if(delta_goal > 0) lerp_node = nodes[i+1];
+      if(delta_goal < 0) lerp_node = nodes[cur_img-1];
+      if(delta_goal > 0 && cur_img+1 < imgs.length) lerp_node = nodes[cur_img+1];
       ctx.fillStyle = blue;
       ctx.beginPath();
       ctx.arc(lerp(node.x,lerp_node.x,abs(delta))+node.w/2,node.y+node.h/2,node_s/3,0,2*Math.PI);
       ctx.fill();
+
+      if(delta_goal > 0 && cur_img+1 >= imgs.length)
+      {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.globalAlpha = delta;
+        ctx.fillRect(0,0,dc.width,dc.height);
+        ctx.globalAlpha = 1;
+      }
     }
   };
 
