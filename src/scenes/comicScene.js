@@ -37,8 +37,10 @@ var ComicScene = function(game, stage)
     nodes = [];
     for(var i = 0; i < imgs.length; i++)
     {
-      nodes[i] = new ButtonBox(xspace(i+2)-node_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img = i;hit_ui = true;});
-      clicker.register(nodes[i]);
+      (function(i){
+        nodes[i] = new ButtonBox(xspace(i+2)-node_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img = i;hit_ui = true;});
+        clicker.register(nodes[i]);
+      })(i);
     }
     clicker.register(prev_btn);
     clicker.register(next_btn);
