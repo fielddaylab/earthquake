@@ -81,7 +81,7 @@ var ComicScene = function(game, stage)
     for(var i = 0; i < imgs.length; i++)
     {
       (function(i){
-        var x = (i+5)*(dc.width/(imgs.length+9));
+        var x = (i+10)*(dc.width/(imgs.length+19));
         nodes[i] = new ButtonBox(x-node_s/2,node_y-btn_s/2,btn_s,btn_s,function(evt){if(hit_ui) return;cur_img = i;hit_ui = true;});
         clicker.register(nodes[i]);
       })(i);
@@ -143,13 +143,38 @@ var ComicScene = function(game, stage)
         if(cur_img+1 < imgs.length)               { slot = slots[3]; lerp_slot = slots[2]; ctx.drawImage(imgs[cur_img+1],lerp(slot.x,lerp_slot.x,abs(delta)),lerp(slot.y,lerp_slot.y,abs(delta)),lerp(slot.w,lerp_slot.w,abs(delta)),lerp(slot.h,lerp_slot.h,abs(delta))); }
       }
 
+      var x;
+      var y;
       ctx.fillStyle = blue;
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 4;
+
+      if(cur_img != 0)
+      {
+      x = prev_btn.x+prev_btn.w/2;
+      y = prev_btn.y+prev_btn.h/2;
       ctx.beginPath();
-      ctx.arc(prev_btn.x+prev_btn.w/2,prev_btn.y+prev_btn.h/2,btn_s/2,0,2*Math.PI);
+      ctx.arc(x,y,btn_s/2,0,2*Math.PI);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(next_btn.x+next_btn.w/2,next_btn.y+next_btn.h/2,btn_s/2,0,2*Math.PI);
+      ctx.moveTo(x+btn_s/6,y-btn_s/4);
+      ctx.lineTo(x-btn_s/6,y);
+      ctx.lineTo(x+btn_s/6,y+btn_s/4);
+      ctx.stroke();
+      }
+
+      x = next_btn.x+next_btn.w/2;
+      y = next_btn.y+next_btn.h/2;
+      ctx.beginPath();
+      ctx.arc(x,y,btn_s/2,0,2*Math.PI);
       ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x-btn_s/6,y-btn_s/4);
+      ctx.lineTo(x+btn_s/6,y);
+      ctx.lineTo(x-btn_s/6,y+btn_s/4);
+      ctx.stroke();
+
+
       ctx.fillRect(skip_btn.x,skip_btn.y,skip_btn.w,skip_btn.h);
       var x;
       for(var i = 0; i < imgs.length; i++)
