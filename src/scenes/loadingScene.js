@@ -94,6 +94,15 @@ var LoadingScene = function(game, stage)
     img_srcs.push("assets/icon_tri.png");
     img_srcs.push("assets/origin_tt.png");
     img_srcs.push("assets/play_head.png");
+    img_srcs.push("assets/btn_free.png");
+    img_srcs.push("assets/btn_intro.png");
+    img_srcs.push("assets/btn_game.png");
+    img_srcs.push("assets/btn_gps.png");
+    img_srcs.push("assets/btn_sp.png");
+    img_srcs.push("assets/btn_triangulate.png");
+    img_srcs.push("assets/comic.png");
+    img_srcs.push("assets/menu/menu_gradient.png");
+    img_srcs.push("assets/menu/menu_logo.png");
     for(var i = 0; i < 7; i++)
       img_srcs.push("assets/chars/face/char_"+i+".png");
     for(var i = 0; i < 12; i++)
