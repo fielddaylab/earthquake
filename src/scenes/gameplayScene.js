@@ -1556,7 +1556,7 @@ var GamePlayScene = function(game, stage)
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
       l.postPromptEvt = function() {}
-      l.drawExtra = function() { drawPlayTip("Click the play button to watch the radio waves",250); }
+      l.drawExtra = function() { drawPlayTip("Click the play button to watch the radio waves",400); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
       lt.LVL_GPS_INTRO = levels.length;
       levels.push(l);
