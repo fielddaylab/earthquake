@@ -70,7 +70,7 @@ var ComicScene = function(game, stage)
         delta = 0;
         delta_goal = 1;
       });
-    skip_btn = new ButtonBox(dc.width-btn_s,dc.height-btn_s,       btn_s,btn_s,
+    skip_btn = new ButtonBox(dc.width-btn_s*2,dc.height-btn_s, btn_s*2,btn_s,
       function(evt)
       {
         if(hit_ui)return;hit_ui = true;
@@ -175,7 +175,11 @@ var ComicScene = function(game, stage)
       ctx.stroke();
 
 
-      ctx.fillRect(skip_btn.x,skip_btn.y,skip_btn.w,skip_btn.h);
+      //ctx.fillRect(skip_btn.x,skip_btn.y,skip_btn.w,skip_btn.h);
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "right";
+      ctx.font = "18px Open Sans";
+      ctx.fillText("SKIP",skip_btn.x+skip_btn.w-2,skip_btn.y+skip_btn.h-2);
       var x;
       for(var i = 0; i < imgs.length; i++)
       {
