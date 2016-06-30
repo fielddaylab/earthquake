@@ -2317,6 +2317,7 @@ var GamePlayScene = function(game, stage)
     //if(input_state != IGNORE_INPUT) fake_mouse.draw();
     ctx.fillStyle = black;
     ctx.textAlign = "left";
+    ctx.font = "18px Open Sans";
     levels[cur_level].drawExtra();
 
     if(input_state == IGNORE_INPUT)
