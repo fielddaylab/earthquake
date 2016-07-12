@@ -2296,7 +2296,6 @@ var GamePlayScene = function(game, stage)
     ctx.fillStyle = black;
     ctx.strokeStyle = black;
     ctx.textAlign = "center";
-    //speed_buttons
     if(earth.quakes.length && levels[cur_level].imask.select)
     {
       var sel = false;
@@ -2351,16 +2350,18 @@ var GamePlayScene = function(game, stage)
     scrubber.draw();
     if(speed_fast_button.on)
     {
-      var p = 3;
+      var p = 4;
       ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad+p,speed_fast_button.y  +scrubber.btn_pad+p,speed_fast_button.w  -2*scrubber.btn_pad-2*p,speed_fast_button.h  -2*scrubber.btn_pad-2*p);
       ctx.globalAlpha = 0.5;
+      p = 5;
       ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad+p,speed_normal_button.y+scrubber.btn_pad+p,speed_normal_button.w-2*scrubber.btn_pad-2*p,speed_normal_button.h-2*scrubber.btn_pad-2*p);
     }
     else //assume normal selected
     {
-      var p = 3;
+      var p = 5;
       ctx.drawImage(btn_slow_img,speed_normal_button.x+scrubber.btn_pad+p,speed_normal_button.y+scrubber.btn_pad+p,speed_normal_button.w-2*scrubber.btn_pad-2*p,speed_normal_button.h-2*scrubber.btn_pad-2*p);
       ctx.globalAlpha = 0.5;
+      p = 4;
       ctx.drawImage(btn_fast_img,speed_fast_button.x  +scrubber.btn_pad+p,speed_fast_button.y  +scrubber.btn_pad+p,speed_fast_button.w  -2*scrubber.btn_pad-2*p,speed_fast_button.h  -2*scrubber.btn_pad-2*p);
     }
     ctx.globalAlpha = 1;
