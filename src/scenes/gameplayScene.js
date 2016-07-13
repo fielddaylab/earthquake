@@ -74,6 +74,7 @@ var GamePlayScene = function(game, stage)
   var hov_quak;
   var hov_quak_i;
 
+  var menu_button;
   var next_button;
   var record_button;
 
@@ -2087,6 +2088,8 @@ var GamePlayScene = function(game, stage)
       record_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; if(listener.playing) listener.stop(); else if(listener.recording) listener.play(); else listener.record(); });
       clicker.register(record_button);
     }
+    menu_button = new ButtonBox(dc.width-100,20,80,30,function(){ game.setScene(3); });
+    clicker.register(menu_button);
     next_button = new ButtonBox(dc.width-100,dc.height-90,80,30,function(){ if(!levels[cur_level].imask.skip || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
     scrubber = new Scrubber(earth);
@@ -2290,6 +2293,10 @@ var GamePlayScene = function(game, stage)
     earth.draw();
 
     if(record) record_button.draw(dc);
+    ctx.fillStyle = "#FFFFFF";
+    dc.fillRoundRect(menu_button.x,menu_button.y,menu_button.w,menu_button.h,10);
+    ctx.fillStyle = "#000000";
+    ctx.fillText("Menu",menu_button.x+menu_button.w/2,menu_button.y+menu_button.h-8);
     if(levels[cur_level].allow_skip_prompt)
       ctx.drawImage(btn_next_img,next_button.x,next_button.y,next_button.w,next_button.h);
 
