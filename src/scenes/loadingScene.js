@@ -89,6 +89,7 @@ var LoadingScene = function(game, stage)
     img_srcs.push("assets/btn_pause.png");
     img_srcs.push("assets/btn_play.png");
     img_srcs.push("assets/btn_slow.png");
+    img_srcs.push("assets/check.png");
     img_srcs.push("assets/guess_fail.png");
     img_srcs.push("assets/guess_success.png");
     img_srcs.push("assets/guess_unknown.png");

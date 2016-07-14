@@ -78,15 +78,15 @@ var ChooseScene = function(game, stage)
 
     ctx.textAlign = "center";
     ctx.font = "20px Open Sans";
-    rectBtn(btn_intro,"Intro");
-    rectBtn(btn_sp,"SP");
-    rectBtn(btn_triangulate,"Triangulate");
-    rectBtn(btn_GPS,"GPS");
-    rectBtn(btn_game,"Game");
-    rectBtn(btn_free,"Free");
+    rectBtn(btn_intro,"Intro",game.intro_complete);
+    rectBtn(btn_sp,"SP",game.sp_complete);
+    rectBtn(btn_triangulate,"Triangulate",game.triangulate_complete);
+    rectBtn(btn_GPS,"GPS",game.gps_complete);
+    rectBtn(btn_game,"Game",false);
+    rectBtn(btn_free,"Free",false);
 
   };
-  var rectBtn = function(btn,lbl)
+  var rectBtn = function(btn,lbl,chck)
   {
     ctx.fillStyle = "#FFFFFF";
   /*
@@ -97,6 +97,7 @@ var ChooseScene = function(game, stage)
   */
     ctx.drawImage(btn.img,btn.x,btn.y,btn.w,btn.h);
     ctx.fillText(lbl,btn.x+btn.w/2,btn.y+btn.h+20);
+    if(chck) ctx.drawImage(check_img,btn.x+btn.w-30,btn.y-10,40,40);
   }
 
   self.cleanup = function()

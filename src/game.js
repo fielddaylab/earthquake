@@ -10,6 +10,11 @@ var Game = function(init)
   var self = this;
   doMapInitDefaults(init,init,default_init);
 
+  self.intro_complete = false;
+  self.sp_complete = false;
+  self.triangulate_complete = false;
+  self.gps_complete = false;
+
   var stage = new Stage({width:init.width,height:init.height,container:init.container});
   var scenes = [
     new NullScene(self, stage),

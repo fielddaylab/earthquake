@@ -396,7 +396,6 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = true;
       l.reset = false;
       l.GPS = false;
       l.allow_skip_prompt = "Done";
@@ -419,7 +418,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
+      l.postPromptEvt = function() { game.intro_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function(){ return false; }
       lt.LVL_EMPTY_OUTRO = levels.length;
@@ -869,7 +868,6 @@ var GamePlayScene = function(game, stage)
 
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
-      l.return_on_complete = true;
       l.reset = false;
       l.GPS = false;
       l.allow_skip_prompt = "Done";
@@ -889,7 +887,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; }
+      l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; game.sp_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_SP_DOUBLE_OUTRO = levels.length;
@@ -1467,7 +1465,6 @@ var GamePlayScene = function(game, stage)
       l = new Level();
       cloneLevel(levels[levels.length-1],l);
       l.allow_skip_prompt = "Done";
-      l.return_on_complete = true;
       l.reset = false;
       l.GPS = false;
       l.imask.skip = true;
@@ -1491,7 +1488,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
         CHAR_GIRL,
       ];
-      l.postPromptEvt = function() {}
+      l.postPromptEvt = function() { game.triangulate_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_TRIANGULATION_CONCLUSION = levels.length;
@@ -1614,7 +1611,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
+      l.postPromptEvt = function() { game.gps_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_GPS_OUTRO = levels.length;
