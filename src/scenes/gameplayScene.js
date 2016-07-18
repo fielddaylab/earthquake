@@ -2951,7 +2951,7 @@ var GamePlayScene = function(game, stage)
       var wd = 0.01;
       qx += randR(-1,1)*shake_amt*wd*dc.width;
       qy += randR(-1,1)*shake_amt*wd*dc.width;
-      var s = 100;
+      var s = 125;
       ctx.drawImage(l.city,l.cx+qx-s/2,l.cy+qy-s/2,s,s);
       s = 20;
       ctx.drawImage(l.shape,l.cx+qx-s/2,l.cy+qy-s/2,s,s);
