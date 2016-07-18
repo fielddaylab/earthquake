@@ -3504,7 +3504,7 @@ var GamePlayScene = function(game, stage)
       var w = 304 / 2;
       var h = 58  / 2;
       var x = self.scrub_bar.xForT(self.earth.assumed_start_t);
-      ctx.drawImage(origin_tt_img,x-w/2,self.y,w,h);
+      ctx.drawImage(origin_tt_img,x-w/2,self.y-20,w,h);
     }
     self.drawQuakeBlips = function(q,ghost)
     {
