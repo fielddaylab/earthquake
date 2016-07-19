@@ -931,7 +931,7 @@ var GamePlayScene = function(game, stage)
         "This time, we'll figure out WHERE the earthquake started- it's epicenter.",
         "Oh yeah... the EPIC CENTER!",
         "Actually, it's... oh, never mind.",
-        "Because we already know WHEN it started, we'll only need one wave to figure out WHERE",
+        "Because we already know WHEN it started, we'll only need one wave to figure out WHERE.",
         "Check out the timeline. You can see the Quake Origin on the left...",
         "And the icon shows when the quake hit Square City.",
         "Click on the map to guess WHERE you think the earthquake started!",
