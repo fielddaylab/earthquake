@@ -3369,7 +3369,7 @@ var GamePlayScene = function(game, stage)
     clicker.register(self.play_button);
     clicker.register(self.pause_button);
     clicker.register(self.bogus_button);
-    self.scrub_bar = new Box(self.btn_s*2+5,self.y,self.w-self.btn_s*4-10,self.h);
+    self.scrub_bar = new Box(self.btn_s*2+5,self.y-20,self.w-self.btn_s*4-10,self.h+20);
     hoverer.register(self.scrub_bar);
     dragger.register(self.scrub_bar);
 
