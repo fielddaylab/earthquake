@@ -2629,7 +2629,19 @@ var GamePlayScene = function(game, stage)
         else if(i == 1)
         {
           if(levels[cur_level].loc_2_x !== undefined) l = new Location(levels[cur_level].loc_2_x,levels[cur_level].loc_2_y,i);
-          else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
+          else
+          {
+            var d = 0;
+            var dx;
+            var dy;
+            while(d < 0.1)
+            {
+              l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
+              dx = l.wx-self.locations[i-1].wx;
+              dy = l.wy-self.locations[i-1].wy;
+              d = sqrt(dx*dx+dy*dy);
+            }
+          }
           l.shape = icon_circ_img;
           l.city = city_circ_img;
           l.destroy = city_circ_destroy_img;
@@ -2637,7 +2649,23 @@ var GamePlayScene = function(game, stage)
         else if(i == 2)
         {
           if(levels[cur_level].loc_3_x !== undefined) l = new Location(levels[cur_level].loc_3_x,levels[cur_level].loc_3_y,i);
-          else                                        l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
+          else
+          {
+            var d0 = 0;
+            var d1 = 0;
+            var dx;
+            var dy;
+            while(d0 < 0.1 || d1 < 0.1)
+            {
+              l = new Location(randR(-0.3,0.3),randR(-0.3,0.3),i);
+              dx = l.wx-self.locations[i-1].wx;
+              dy = l.wy-self.locations[i-1].wy;
+              d0 = sqrt(dx*dx+dy*dy);
+              dx = l.wx-self.locations[i-2].wx;
+              dy = l.wy-self.locations[i-2].wy;
+              d1 = sqrt(dx*dx+dy*dy);
+            }
+          }
           l.shape = icon_tri_img;
           l.city = city_tri_img;
           l.destroy = city_tri_destroy_img;
