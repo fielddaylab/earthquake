@@ -2144,6 +2144,7 @@ var GamePlayScene = function(game, stage)
 
   self.nextLevel = function(skip_scene_check)
   {
+    ga('send', 'event', 'earthquake_level', 'complete', cur_level, 0);
     if(!skip_scene_check) //lazy hack
     {
       if(levels[cur_level].return_on_complete) { game.setScene(3); return; }
