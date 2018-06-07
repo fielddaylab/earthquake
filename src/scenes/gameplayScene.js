@@ -109,6 +109,8 @@ var GamePlayScene = function(game, stage)
   var dragRingStartTime;
   var cur_level_name;
 
+  var mySlog;
+
   //log functions
   var log_level_begin = function(selectedLevel, selectedLevelName, cities, corrEpicenter, timelineLocs)
   {
@@ -147,7 +149,7 @@ var GamePlayScene = function(game, stage)
     mySlog.log(log_data);
     //console.log(log_data);
   }
-  var log_drag_ring = function(ringNum, numGuesses, time)
+  var log_drag_ring = function(ringNum, numGuesses, time, distance)
   {
     var log_data =
     {
@@ -155,7 +157,8 @@ var GamePlayScene = function(game, stage)
       event_data_complex:{
         ringNumber:ringNum,
         numGuesses:numGuesses,
-        dragTime:time
+        dragTime:time,
+        distanceFromCorrectTime:distance
       }
     };
     
@@ -183,9 +186,26 @@ var GamePlayScene = function(game, stage)
     //console.log(log_data);
   }
 
+  var log_tutorial_exit = function(level, time, completed) {
+    var log_data =
+    {
+      level:cur_level,
+      levelName:level,
+      event:"TUTORIAL_EXIT",
+      event_data_complex:{
+        levelTime:time,
+        finishedLevel:completed
+      }
+    };
+    
+    log_data.event_data_complex = JSON.stringify(log_data.event_data_complex);
+    mySlog.log(log_data);
+    //console.log(log_data);
+  }
+
   self.ready = function()
   {
-    var mySlog = new slog('EARTHQUAKE',1);
+    mySlog = new slog('EARTHQUAKE',1);
     hoverer = new PersistentHoverer({source:stage.dispCanv.canvas});
     dragger = new Dragger({source:stage.dispCanv.canvas});
     clicker = new Clicker({source:stage.dispCanv.canvas});
@@ -346,6 +366,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        levelStartTime = new Date().getTime();
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
@@ -505,7 +526,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { game.intro_complete = true; }
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("INTRO", (levelEndTime - levelStartTime) / 1000, true); game.intro_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function(){ return false; }
       lt.LVL_EMPTY_OUTRO = levels.length;
@@ -555,6 +576,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        levelStartTime = new Date().getTime();
         earth.t = 0;
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         speed_normal_button.set(true);
@@ -974,7 +996,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; game.sp_complete = true; }
+      l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; levelEndTime = new Date().getTime(); log_tutorial_exit("SP", (levelEndTime - levelStartTime) / 1000, true); game.sp_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_SP_DOUBLE_OUTRO = levels.length;
@@ -1036,7 +1058,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() { levelStartTime = new Date().getTime(); }
       l.postPromptEvt = function() {}
       l.drawExtra = function() { ctx.fillText("Click to guess the earthquake's epicenter",100,100); }
       l.advanceTest = function()
@@ -1575,7 +1597,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
         CHAR_GIRL,
       ];
-      l.postPromptEvt = function() { game.triangulate_complete = true; }
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("TRIANGULATE", (levelEndTime - levelStartTime) / 1000, true); game.triangulate_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_TRIANGULATION_CONCLUSION = levels.length;
@@ -1637,6 +1659,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        levelStartTime = new Date().getTime();
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
@@ -1698,7 +1721,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { game.gps_complete = true; }
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("GPS", (levelEndTime - levelStartTime) / 1000, true); game.gps_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_GPS_OUTRO = levels.length;
@@ -2172,7 +2195,54 @@ var GamePlayScene = function(game, stage)
       record_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; if(listener.playing) listener.stop(); else if(listener.recording) listener.play(); else listener.record(); });
       clicker.register(record_button);
     }
-    menu_button = new ButtonBox(dc.width-100,20,80,30,function(){ game.setScene(3); });
+    menu_button = new ButtonBox(dc.width-100,20,80,30,function() { 
+      levelEndTime = new Date().getTime();
+      switch (cur_level) {
+        case lt.LVL_INTRO_INTRO:
+        case lt.LVL_INTRO_OUTRO:
+        case lt.LVL_INTRO_PLAYING:
+          log_tutorial_exit("INTRO", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        case lt.LVL_SP_DOUBLE_INTRO:
+        case lt.LVL_SP_DOUBLE_OUTRO:
+        case lt.LVL_SP_INTRO:
+        case lt.LVL_SP_OUTRO:
+        case lt.LVL_SP_PLAYING:
+        case lt.LVL_SP_RECAP_INTRO:
+        case lt.LVL_SP_RECAP_OUTRO:
+        case lt.LVL_SP_RECAP_PLAYING:
+        case lt.LVL_SP_SINGLE_INTRO:
+        case lt.LVL_SP_SINGLE_MOVE_CLOSE:
+        case lt.LVL_SP_SINGLE_MOVE_OUTRO:
+        case lt.LVL_SP_SINGLE_PLAYING:
+          log_tutorial_exit("SP", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        case lt.LVL_2LOC_GUESS_COMPLETE:
+        case lt.LVL_2LOC_GUESS_INTRO:
+        case lt.LVL_3LOC_INTRO:
+        case lt.LVL_TRIANGULATION_CONCLUSION:
+        case lt.LVL_BLIND_GUESS_COMPLETE:
+        case lt.LVL_BLIND_GUESS_ENCOURAGE:
+        case lt.LVL_BLIND_GUESS_ENCOURAGE_AGAIN:
+        case lt.LVL_BLIND_GUESS_INCORRECT:
+        case lt.LVL_BLIND_GUESS_INTRO:
+        case lt.LVL_BLIND_GUESS_PLAYING:
+        case lt.LVL_DRAG_PATTERN_INTRO:
+        case lt.LVL_DRAG_PATTERN_OUTRO:
+        case lt.LVL_TIGHT_GUESS_COMPLETE:
+        case lt.LVL_TIGHT_GUESS_INTRO:
+          log_tutorial_exit("TRIANGULATE", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        case lt.LVL_GPS_INTRO:
+        case lt.LVL_GPS_OUTRO:
+        case lt.LVL_GPS_PLAYING:
+          log_tutorial_exit("GPS", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        default: // Other levels are handled elsewhere
+          break;
+      }
+      game.setScene(3); 
+    });
     clicker.register(menu_button);
     next_button = new ButtonBox(dc.width-100,dc.height-90,80,30,function(){ if(!levels[cur_level].imask.skip || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
@@ -2232,11 +2302,10 @@ var GamePlayScene = function(game, stage)
   self.nextLevel = function(skip_scene_check)
   {
     ga('send', 'event', 'earthquake_level', 'complete', cur_level, 0);
-
     if(!skip_scene_check) //lazy hack
     {
       if(levels[cur_level].return_on_complete) {
-        if (cur_level < lt.LVL_FREE) {
+        if (cur_level < lt.LVL_FREE && !(cur_level == lt.LVL_GPS_INTRO || cur_level == lt.LVL_GPS_OUTRO || cur_level == lt.LVL_GPS_PLAYING)) {
           levelEndTime = new Date().getTime();
           log_level_complete((levelEndTime - levelStartTime) / 1000);
         }
@@ -3487,7 +3556,8 @@ var GamePlayScene = function(game, stage)
           nonDraggableLvls.indexOf(cur_level) == -1) {
         var dragRingEndTime = new Date().getTime();
         numRingChanges++;
-        log_drag_ring(game_drag_n, numGuesses, (dragRingEndTime - dragRingStartTime) / 1000);
+        var distanceToT = earth.ghost_quake.location_s_ts[self.i] - self.rad / quake_s_rate;
+        log_drag_ring(game_drag_n, numGuesses, (dragRingEndTime - dragRingStartTime) / 1000, distanceToT);
       }
 
       self.dragging = false;
