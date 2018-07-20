@@ -97,8 +97,115 @@ var GamePlayScene = function(game, stage)
 
   var lt; //level title object. just to correctly namespace them.
 
+  //log variables
+  var levelStartTime;
+  var levelEndTime;
+
+  var numGuesses = 0;
+  var cur_guess;
+  var numRings = 0;
+  var numRingChanges = 0;
+  var distFromTrueEpicenter;
+  var dragRingStartTime;
+  var cur_level_name;
+
+  var mySlog;
+
+  //log functions
+  var log_level_begin = function(selectedLevel, selectedLevelName, cities, corrEpicenter, timelineLocs)
+  {
+    var log_data =
+    {
+      levelIndex:selectedLevel,
+      levelName:selectedLevelName,
+      event:"BEGIN",
+      event_data_complex:{
+        cityLocations:{},
+        correctEpicenter:corrEpicenter,
+        timelineLocations:timelineLocs
+      }
+    };
+    for (var i = 0; i < cities.length; i++) {
+      log_data.event_data_complex.cityLocations['city_'+i] = {x:cities[i].x, y:cities[i].y};
+    }
+    
+    log_data.event_data_complex = JSON.stringify(log_data.event_data_complex);
+    mySlog.log(log_data);
+    //console.log(log_data);
+  }
+  var log_guess_click = function(guessNum, ringNum, distToEpi)
+  {
+    var log_data =
+    {
+      event:"GUESS_CLICK",
+      event_data_complex:{
+        guessNumber:guessNum,
+        numRings:ringNum,
+        distanceToEpicenter:distToEpi
+      }
+    };
+    
+    log_data.event_data_complex = JSON.stringify(log_data.event_data_complex);
+    mySlog.log(log_data);
+    //console.log(log_data);
+  }
+  var log_drag_ring = function(ringNum, numGuesses, time, distance)
+  {
+    var log_data =
+    {
+      event:"DRAG_RING",
+      event_data_complex:{
+        ringNumber:ringNum,
+        numGuesses:numGuesses,
+        dragTime:time,
+        distanceFromCorrectTime:distance
+      }
+    };
+    
+    log_data.event_data_complex = JSON.stringify(log_data.event_data_complex);
+    mySlog.log(log_data);
+    //console.log(log_data);
+  }
+  var log_level_complete = function(time)
+  {
+    var log_data =
+    {
+      level:cur_level,
+      levelName:cur_level_name,
+      event:"COMPLETE",
+      event_data_complex:{
+        numGuesses:numGuesses,
+        ringChanges:numRingChanges,
+        levelTime:time,
+        numRings:numRings
+      }
+    };
+    
+    log_data.event_data_complex = JSON.stringify(log_data.event_data_complex);
+    mySlog.log(log_data);
+    //console.log(log_data);
+  }
+
+  var log_tutorial_exit = function(level, time, completed) {
+    var log_data =
+    {
+      level:cur_level,
+      levelName:level,
+      event:"TUTORIAL_EXIT",
+      event_data_complex:{
+        levelTime:time,
+        finishedLevel:completed
+      }
+    };
+    
+    log_data.event_data_complex = JSON.stringify(log_data.event_data_complex);
+    mySlog.log(log_data);
+    //console.log(log_data);
+  }
+
   self.ready = function()
   {
+    mySlog = new slog('EARTHQUAKE',1);
     hoverer = new PersistentHoverer({source:stage.dispCanv.canvas});
     dragger = new Dragger({source:stage.dispCanv.canvas});
     clicker = new Clicker({source:stage.dispCanv.canvas});
@@ -259,6 +366,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        levelStartTime = new Date().getTime();
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
@@ -418,7 +526,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { game.intro_complete = true; }
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("INTRO", (levelEndTime - levelStartTime) / 1000, true); game.intro_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function(){ return false; }
       lt.LVL_EMPTY_OUTRO = levels.length;
@@ -468,6 +576,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        levelStartTime = new Date().getTime();
         earth.t = 0;
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         speed_normal_button.set(true);
@@ -887,7 +996,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; game.sp_complete = true; }
+      l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; levelEndTime = new Date().getTime(); log_tutorial_exit("SP", (levelEndTime - levelStartTime) / 1000, true); game.sp_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_SP_DOUBLE_OUTRO = levels.length;
@@ -928,7 +1037,7 @@ var GamePlayScene = function(game, stage)
         "That's true! We need more info to figure that out.",
         "Luckily, another earthquake is on its way!",
         "Again? Sheesh, this place is earthquake central!",
-        "This time, we'll figure out WHERE the earthquake started- it's epicenter.",
+        "This time, we'll figure out WHERE the earthquake started- its epicenter.",
         "Oh yeah... the EPIC CENTER!",
         "Actually, it's... oh, never mind.",
         "Because we already know WHEN it started, we'll only need one wave to figure out WHERE.",
@@ -949,7 +1058,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() { levelStartTime = new Date().getTime(); }
       l.postPromptEvt = function() {}
       l.drawExtra = function() { ctx.fillText("Click to guess the earthquake's epicenter",100,100); }
       l.advanceTest = function()
@@ -1065,7 +1174,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.drawExtra = function() { ctx.fillText("Try to find another plausable epicenter",100,100); }
+      l.drawExtra = function() { ctx.fillText("Try to find another plausible epicenter",100,100); }
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -1488,7 +1597,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
         CHAR_GIRL,
       ];
-      l.postPromptEvt = function() { game.triangulate_complete = true; }
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("TRIANGULATE", (levelEndTime - levelStartTime) / 1000, true); game.triangulate_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_TRIANGULATION_CONCLUSION = levels.length;
@@ -1550,6 +1659,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        levelStartTime = new Date().getTime();
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
       }
@@ -1611,7 +1721,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { game.gps_complete = true; }
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("GPS", (levelEndTime - levelStartTime) / 1000, true); game.gps_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_GPS_OUTRO = levels.length;
@@ -1653,7 +1763,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function(){ game.heard_game_prompt = true; };
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
         ctx.fillText("(No using the locations' radius tool!)",100,140);
       }
@@ -1688,7 +1798,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
         else ctx.fillText("Watch the quake",100,120);
       }
@@ -1723,7 +1833,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
         ctx.fillText("You are allowed to use 1 location's radius tool.",100,140);
       }
@@ -1758,7 +1868,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
         else ctx.fillText("Watch the quake",100,120);
       }
@@ -1793,7 +1903,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
         ctx.fillText("You are allowed to use 2 locations' radius tools.",100,140);
       }
@@ -1828,7 +1938,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
         else ctx.fillText("Watch the quake",100,120);
       }
@@ -1863,7 +1973,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
         ctx.fillText("You are allowed to use all locations' radius tools.",100,140);
       }
@@ -1898,7 +2008,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
         else ctx.fillText("Watch the quake",100,120);
       }
@@ -1933,7 +2043,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         ctx.fillText("Click to guess the location of the quake's epicenter!",100,120);
         ctx.fillText("You are allowed to use all locations' radius tools.",100,140);
       }
@@ -1968,7 +2078,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         if(speed_normal_button.on) ctx.fillText("Watch the quake (click >> to speed up)",100,120);
         else ctx.fillText("Watch the quake",100,120);
       }
@@ -2006,7 +2116,7 @@ var GamePlayScene = function(game, stage)
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
-        ctx.fillText("Number of guesses:"+game_guesses,100,100);
+        ctx.fillText("Number of guesses: "+game_guesses,100,100);
         ctx.fillText("You've guessed correctly in "+game_guesses+" turns!",100,120);
       }
       l.advanceTest = function()
@@ -2085,7 +2195,54 @@ var GamePlayScene = function(game, stage)
       record_button = new ButtonBox(40,10,20,20,function(){ ui_lock = self; if(listener.playing) listener.stop(); else if(listener.recording) listener.play(); else listener.record(); });
       clicker.register(record_button);
     }
-    menu_button = new ButtonBox(dc.width-100,20,80,30,function(){ game.setScene(3); });
+    menu_button = new ButtonBox(dc.width-100,20,80,30,function() { 
+      levelEndTime = new Date().getTime();
+      switch (cur_level) {
+        case lt.LVL_INTRO_INTRO:
+        case lt.LVL_INTRO_OUTRO:
+        case lt.LVL_INTRO_PLAYING:
+          log_tutorial_exit("INTRO", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        case lt.LVL_SP_DOUBLE_INTRO:
+        case lt.LVL_SP_DOUBLE_OUTRO:
+        case lt.LVL_SP_INTRO:
+        case lt.LVL_SP_OUTRO:
+        case lt.LVL_SP_PLAYING:
+        case lt.LVL_SP_RECAP_INTRO:
+        case lt.LVL_SP_RECAP_OUTRO:
+        case lt.LVL_SP_RECAP_PLAYING:
+        case lt.LVL_SP_SINGLE_INTRO:
+        case lt.LVL_SP_SINGLE_MOVE_CLOSE:
+        case lt.LVL_SP_SINGLE_MOVE_OUTRO:
+        case lt.LVL_SP_SINGLE_PLAYING:
+          log_tutorial_exit("SP", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        case lt.LVL_2LOC_GUESS_COMPLETE:
+        case lt.LVL_2LOC_GUESS_INTRO:
+        case lt.LVL_3LOC_INTRO:
+        case lt.LVL_TRIANGULATION_CONCLUSION:
+        case lt.LVL_BLIND_GUESS_COMPLETE:
+        case lt.LVL_BLIND_GUESS_ENCOURAGE:
+        case lt.LVL_BLIND_GUESS_ENCOURAGE_AGAIN:
+        case lt.LVL_BLIND_GUESS_INCORRECT:
+        case lt.LVL_BLIND_GUESS_INTRO:
+        case lt.LVL_BLIND_GUESS_PLAYING:
+        case lt.LVL_DRAG_PATTERN_INTRO:
+        case lt.LVL_DRAG_PATTERN_OUTRO:
+        case lt.LVL_TIGHT_GUESS_COMPLETE:
+        case lt.LVL_TIGHT_GUESS_INTRO:
+          log_tutorial_exit("TRIANGULATE", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        case lt.LVL_GPS_INTRO:
+        case lt.LVL_GPS_OUTRO:
+        case lt.LVL_GPS_PLAYING:
+          log_tutorial_exit("GPS", (levelEndTime - levelStartTime) / 1000, false);
+          break;
+        default: // Other levels are handled elsewhere
+          break;
+      }
+      game.setScene(3); 
+    });
     clicker.register(menu_button);
     next_button = new ButtonBox(dc.width-100,dc.height-90,80,30,function(){ if(!levels[cur_level].imask.skip || !levels[cur_level].allow_skip_prompt) return; ui_lock = self; self.nextLevel(); });
     clicker.register(next_button);
@@ -2147,7 +2304,14 @@ var GamePlayScene = function(game, stage)
     ga('send', 'event', 'earthquake_level', 'complete', cur_level, 0);
     if(!skip_scene_check) //lazy hack
     {
-      if(levels[cur_level].return_on_complete) { game.setScene(3); return; }
+      if(levels[cur_level].return_on_complete) {
+        if (cur_level < lt.LVL_FREE && !(cur_level == lt.LVL_GPS_INTRO || cur_level == lt.LVL_GPS_OUTRO || cur_level == lt.LVL_GPS_PLAYING)) {
+          levelEndTime = new Date().getTime();
+          log_level_complete((levelEndTime - levelStartTime) / 1000);
+        }
+        game.setScene(3);
+        return;
+      }
     }
     cur_level = (cur_level+1)%levels.length;
     if(levels[cur_level].reset)
@@ -2775,6 +2939,16 @@ var GamePlayScene = function(game, stage)
       self.genLocations();
       self.deleteQuakes();
       self.popGhost();
+      if (self.ghost_quake && cur_level >= lt.LVL_GAME_GUESS_1 && cur_level < lt.LVL_FREE - 1) {
+        for (var prop in lt) {
+          if (cur_level == lt[prop]) {
+            cur_level_name = prop;
+          }
+        }
+        levelStartTime = new Date().getTime();
+        numRingChanges = 0;
+        log_level_begin(cur_level, cur_level_name, self.locations, {x:self.ghost_quake.x, y:self.ghost_quake.y}, self.ghost_quake.location_s_hrts);
+      }
       play_state = STATE_PAUSE;
     }
     self.mouse_quake = new Quake(0,0,0);
@@ -2867,6 +3041,11 @@ var GamePlayScene = function(game, stage)
         }
 
         var q = self.genQuake(self.drag_obj.wx,self.drag_obj.wy);
+
+        numGuesses++;
+        distance = Math.sqrt(Math.pow(q.x-self.ghost_quake.x,2)+Math.pow(q.y-self.ghost_quake.y,2));
+        log_guess_click(numGuesses, numRings, distance);
+
         if(levels[cur_level].deselect_all_on_create) self.deselectQuakes();
         if(levels[cur_level].deselect_known_wrongs_on_create) self.deselectKnownWrongQuakes();
         q.selected = true;
@@ -3274,7 +3453,6 @@ var GamePlayScene = function(game, stage)
     self.cy = self.y+self.h/2;
 
     self.i = i;
-
     self.shape; //sets externally
 
     self.hovering = false;
@@ -3313,6 +3491,7 @@ var GamePlayScene = function(game, stage)
         self.offX = evt.doX-self.x;
         self.offY = evt.doY-self.y;
       }
+      dragRingStartTime = new Date().getTime();
       self.drag(evt);
     }
     self.drag = function(evt)
@@ -3361,10 +3540,26 @@ var GamePlayScene = function(game, stage)
         var x = self.rad_obj.wx-self.wx;
         var y = self.rad_obj.wy-self.wy;
         self.rad = Math.sqrt(x*x+y*y);
+
+        numRings = game_drag_n;
       }
     }
     self.dragFinish = function()
     {
+      var nonDraggableLvls = []; // subset of lt that contains all the "playing" levels
+      for (var prop in lt) {
+        if (prop.includes("PLAYING")) {
+          nonDraggableLvls.push(lt[prop]);
+        }
+      }
+      if (((self.i == 0 && game_drag_a) || (self.i == 1 && game_drag_b) || (self.i == 2 && game_drag_c) || (game_drag_n < game_guesses)) && 
+          nonDraggableLvls.indexOf(cur_level) == -1) {
+        var dragRingEndTime = new Date().getTime();
+        numRingChanges++;
+        var distanceToT = earth.ghost_quake.location_s_ts[self.i] - self.rad / quake_s_rate;
+        log_drag_ring(game_drag_n, numGuesses, (dragRingEndTime - dragRingStartTime) / 1000, distanceToT);
+      }
+
       self.dragging = false;
       if(ui_lock && ui_lock != self) return; ui_lock = self;
       hov_loc = undefined;
