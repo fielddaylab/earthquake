@@ -116,10 +116,10 @@ var GamePlayScene = function(game, stage)
   {
     var log_data =
     {
-      levelIndex:selectedLevel,
-      levelName:selectedLevelName,
+      level:selectedLevel,
       event:"BEGIN",
       event_data_complex:{
+        levelName:selectedLevelName,
         cityLocations:{},
         correctEpicenter:corrEpicenter,
         timelineLocations:timelineLocs
@@ -137,8 +137,11 @@ var GamePlayScene = function(game, stage)
   {
     var log_data =
     {
-      event:"GUESS_CLICK",
+      level:cur_level,
+      event:"CUSTOM",
+      event_custom:1,
       event_data_complex:{
+        event_custom:"GUESS_CLICK",
         guessNumber:guessNum,
         numRings:ringNum,
         distanceToEpicenter:distToEpi
@@ -153,8 +156,12 @@ var GamePlayScene = function(game, stage)
   {
     var log_data =
     {
-      event:"DRAG_RING",
+      level:cur_level,
+      event:"CUSTOM",
+      event_custom:2,
       event_data_complex:{
+        event_custom:"DRAG_RING",
+        levelName:cur_level_name,
         ringNumber:ringNum,
         numGuesses:numGuesses,
         dragTime:time,
@@ -171,9 +178,9 @@ var GamePlayScene = function(game, stage)
     var log_data =
     {
       level:cur_level,
-      levelName:cur_level_name,
       event:"COMPLETE",
       event_data_complex:{
+        levelName:cur_level_name,
         numGuesses:numGuesses,
         ringChanges:numRingChanges,
         levelTime:time,
@@ -190,9 +197,11 @@ var GamePlayScene = function(game, stage)
     var log_data =
     {
       level:cur_level,
-      levelName:level,
-      event:"TUTORIAL_EXIT",
+      event:"CUSTOM",
+      event_custom:3,
       event_data_complex:{
+        event_custom:"TUTORIAL_EXIT",
+        levelName:cur_level_name,
         levelTime:time,
         finishedLevel:completed
       }
