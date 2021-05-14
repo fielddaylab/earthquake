@@ -395,7 +395,10 @@ var GamePlayScene = function(game, stage)
       ];
       l.chars = [
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() 
+      {
+        setTutPoints(1);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
@@ -475,7 +478,7 @@ var GamePlayScene = function(game, stage)
       l.chars = [
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() { earth.t = 0; play_state = STATE_PAUSE; }
+      l.prePromptEvt = function() { earth.t = 0; play_state = STATE_PAUSE; setTutPoints(2);}
       l.postPromptEvt = function() {}
       l.drawExtra = function() { drawPlayTip("Click the play button",180); }
       l.advanceTest = function(){ return play_state == STATE_PLAY; }
@@ -493,7 +496,10 @@ var GamePlayScene = function(game, stage)
       l.chars = [
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() {}
+      l.postPromptEvt = function() 
+      {
+        setTutPoints(3);
+      }
       l.drawExtra = function()
       {
         drawGeneralTip("Watch the quake!",160);
@@ -535,7 +541,7 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
       ];
       l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("INTRO", (levelEndTime - levelStartTime) / 1000, true); game.intro_complete = true; }
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("INTRO", (levelEndTime - levelStartTime) / 1000, true); game.intro_complete = true;}
       l.drawExtra = function() {}
       l.advanceTest = function(){ return false; }
       lt.LVL_EMPTY_OUTRO = levels.length;
@@ -585,6 +591,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        setTutPoints(4);
         levelStartTime = new Date().getTime();
         earth.t = 0;
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
@@ -608,7 +615,10 @@ var GamePlayScene = function(game, stage)
       ];
       l.chars = [
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() 
+      {
+        setTutPoints(5);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function()
@@ -698,6 +708,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        setTutPoints(6);
         earth.t = 0;
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         speed_normal_button.set(true);
@@ -720,7 +731,10 @@ var GamePlayScene = function(game, stage)
       ];
       l.chars = [
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() 
+      {
+        setTutPoints(7);
+      }
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function()
@@ -806,6 +820,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        setTutPoints(8);
         earth.t = 0;
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         speed_fast_button.set(true);
@@ -828,7 +843,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.chars = [
       ];
-      l.prePromptEvt = function() { speed_fast_button.set(true); }
+      l.prePromptEvt = function() { speed_fast_button.set(true); setTutPoints(9);}
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
@@ -901,8 +916,8 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { earth.t = 0; play_state = STATE_PLAY; }
+      l.prePromptEvt = function() {setTutPoints(10);}
+      l.postPromptEvt = function() { earth.t = 0; play_state = STATE_PLAY;}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_SP_SINGLE_MOVE_OUTRO = levels.length;
@@ -956,6 +971,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        setTutPoints(11);
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         speed_fast_button.set(true);
         play_state = STATE_PAUSE;
@@ -1004,7 +1020,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_ANNOY,
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() {setTutPoints(12);}
       l.postPromptEvt = function() { earth.t = 1; play_state = STATE_PLAY; levelEndTime = new Date().getTime(); log_tutorial_exit("SP", (levelEndTime - levelStartTime) / 1000, true); game.sp_complete = true; }
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
@@ -1067,7 +1083,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() { levelStartTime = new Date().getTime(); }
+      l.prePromptEvt = function() { levelStartTime = new Date().getTime(); setTutPoints(13);}
       l.postPromptEvt = function() {}
       l.drawExtra = function() { ctx.fillText("Click to guess the earthquake's epicenter",100,100); }
       l.advanceTest = function()
@@ -1183,7 +1199,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.drawExtra = function() { ctx.fillText("Try to find another plausible epicenter",100,100); }
+      l.drawExtra = function() { ctx.fillText("Try to find another plausible epicenter",100,100); setTutPoints(14);}
       l.advanceTest = function()
       {
         var n_correct = 0;
@@ -1238,6 +1254,7 @@ var GamePlayScene = function(game, stage)
           var q = earth.quakes[i];
           if(earth.t > q.location_s_ts[0] && q.location_s_cs[0]) n_correct++;
         }
+        setTutPoints(13 + min(5,n_correct));
         if(n_correct >= 5)
         {
           play_state = STATE_PAUSE;
@@ -1286,7 +1303,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.drawExtra = function() { ctx.fillText("Click and Drag out a pattern from Square City",100,100); }
+      l.drawExtra = function() { ctx.fillText("Click and Drag out a pattern from Square City",100,100); setTutPoints(19);}
       l.advanceTest = function()
       {
         return (!earth.locations[0].dragging && Math.abs(Math.round(earth.locations[0].rad/quake_s_rate)-earth.ghost_quake.location_s_ts[0]) < 30);
@@ -1323,7 +1340,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.drawExtra = function() {}
+      l.drawExtra = function() {setTutPoints(20);}
       l.advanceTest = function() { return false; }
       lt.LVL_DRAG_PATTERN_OUTRO = levels.length;
       levels.push(l);
@@ -1366,7 +1383,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() {setTutPoints(21);}
       l.postPromptEvt = function() {}
       l.drawExtra = function()
       {
@@ -1385,6 +1402,7 @@ var GamePlayScene = function(game, stage)
           var q = earth.quakes[i];
           if(earth.t > q.location_s_ts[0] && q.location_s_cs[0]) n_correct++;
         }
+        setTutPoints(21 + min(3,n_correct));
         if(n_correct >= 3)
         {
           play_state = STATE_PAUSE;
@@ -1455,7 +1473,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() {setTutPoints(25);}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function()
@@ -1471,6 +1489,7 @@ var GamePlayScene = function(game, stage)
             )
             n_correct++;
         }
+        setTutPoints(25 + min(2,n_correct));
         if(n_correct >= 2)
         {
           play_state = STATE_PAUSE;
@@ -1553,7 +1572,7 @@ var GamePlayScene = function(game, stage)
       l.chars = [
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function() {}
+      l.prePromptEvt = function() {setTutPoints(28);}
       l.postPromptEvt = function() {}
       l.drawExtra = function() {}
       l.advanceTest = function()
@@ -1606,7 +1625,8 @@ var GamePlayScene = function(game, stage)
         CHAR_ANNOY,
         CHAR_GIRL,
       ];
-      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("TRIANGULATE", (levelEndTime - levelStartTime) / 1000, true); game.triangulate_complete = true; }
+      l.prePromptEvt = function() {setTutPoints(29);};
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("TRIANGULATE", (levelEndTime - levelStartTime) / 1000, true); game.triangulate_complete = true;}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_TRIANGULATION_CONCLUSION = levels.length;
@@ -1668,6 +1688,7 @@ var GamePlayScene = function(game, stage)
       ];
       l.prePromptEvt = function()
       {
+        setTutPoints(30);
         levelStartTime = new Date().getTime();
         earth.assumed_start_t = levels[cur_level].quake_start_range_s;
         earth.genQuake(earth.ghost_quake.wx,earth.ghost_quake.wy);
@@ -1729,8 +1750,8 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_ANNOY,
       ];
-      l.prePromptEvt = function() {}
-      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("GPS", (levelEndTime - levelStartTime) / 1000, true); game.gps_complete = true; }
+      l.prePromptEvt = function() {setTutPoints(31);}
+      l.postPromptEvt = function() { levelEndTime = new Date().getTime(); log_tutorial_exit("GPS", (levelEndTime - levelStartTime) / 1000, true); game.gps_complete = true; setTutPoints(32);}
       l.drawExtra = function() {}
       l.advanceTest = function() { return false; }
       lt.LVL_GPS_OUTRO = levels.length;
@@ -1768,7 +1789,7 @@ var GamePlayScene = function(game, stage)
         CHAR_GIRL,
         CHAR_GIRL,
       ];
-      l.prePromptEvt = function(){ game_guesses = 0; game_known_locs = 0; game_drag_a = 0; game_drag_b = 0; game_drag_c = 0; if(game.heard_game_prompt) levels[lt.LVL_GAME_GUESS_1].lines = []; };
+      l.prePromptEvt = function(){ game_guesses = 0; game_known_locs = 0; game_drag_a = 0; game_drag_b = 0; game_drag_c = 0; if(game.heard_game_prompt) levels[lt.LVL_GAME_GUESS_1].lines = []; addedPoints = false;};
       l.postPromptEvt = function(){ game.heard_game_prompt = true; };
       l.drawExtra = function()
       {
@@ -2127,6 +2148,12 @@ var GamePlayScene = function(game, stage)
       {
         ctx.fillText("Number of guesses: "+game_guesses,100,100);
         ctx.fillText("You've guessed correctly in "+game_guesses+" turns!",100,120);
+        //Increase progress points by # of guesses
+        if (!addedPoints)
+        {
+            addPlayPoints(game_guesses);
+            addedPoints = true; //only increase points once per play, not every frame
+        }
       }
       l.advanceTest = function()
       {
@@ -2399,6 +2426,8 @@ var GamePlayScene = function(game, stage)
   }
   self.tick = function()
   {
+    if (gameIsPaused)
+      return;
     n_ticks++;
 
     canvdom_clicker.flush();
@@ -2457,6 +2486,8 @@ var GamePlayScene = function(game, stage)
 
   self.draw = function()
   {
+    if (gameIsPaused)
+      return;
     ctx.font = "18px Open Sans";
     ctx.fillStyle = white;
     ctx.drawImage(bg_img,0,0,dc.width,dc.height);

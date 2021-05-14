@@ -24,6 +24,7 @@ var ChooseScene = function(game, stage)
 
   self.ready = function()
   {
+    checkGameEnd();
     clicker = new Clicker({source:stage.dispCanv.canvas});
 
     var n_x_btns = 4;
