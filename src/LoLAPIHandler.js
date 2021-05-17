@@ -2,11 +2,25 @@
 
 //Send messages
 function LoLApi (messageName, payloadObj) {
-    parent.postMessage({
-        message: messageName,
-        payload: JSON.stringify(payloadObj)
-    }, 
-'*')};
+    let msg={
+        "message": messageName,
+        "payload": JSON.stringify(payloadObj)
+    };
+
+    parent.postMessage(msg,'*');
+}
+
+//Called when the game starts, tells LoL API game is ready
+function gameStart()
+{
+    LoLApi("gameIsReady", 
+    { 
+        aspectRatio: "16:9",
+        resolution: "880x660",
+    });
+
+	console.log("gameIsReady sent"); 
+}
 
 //Listen for messages
 window.addEventListener("message", function (msg) {
@@ -24,18 +38,6 @@ window.addEventListener("message", function (msg) {
 });
 
 var gameIsPaused = false;
-
-//Called when loading screen starts
-function gameStart()
-{
-    LoLApi('gameIsReady', 
-    { 
-        aspectRatio: "16:9",
-        resolution: "1024x576",
-    });
-
-	console.log("Game is ready"); 
-}
 
 //Progress Handling
   var tutProgressPoints = 0;

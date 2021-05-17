@@ -40,6 +40,7 @@ var LoadingScene = function(game, stage)
   {
     //Tell LoL API game is loading
     gameStart();
+    console.log("gameStart has been called");
 
     allow_play = true;
 
