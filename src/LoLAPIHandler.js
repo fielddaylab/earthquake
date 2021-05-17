@@ -63,14 +63,14 @@ var gameIsPaused = false;
   function addPlayPoints(numTurns)
   {
     var pointsToAdd = 24/numTurns;
-    playProgressPoints = min(playProgressPoints + pointsToAdd, maxPlayPoints);
+    playProgressPoints = Math.min(playProgressPoints + pointsToAdd, maxPlayPoints);
     sendProgress();
   }
 
   //Send new progress to LoL API
   function sendProgress()
   {
-    currProgress = min((tutProgressPoints + playProgressPoints), maxProgress);
+    currProgress = Math.min((tutProgressPoints + playProgressPoints), maxProgress);
     LoLApi('progress', {score: 0, currentProgress: currProgress, maximumProgress: maxProgress});
 
     console.log("progress: " + currProgress + "/"+maxProgress);

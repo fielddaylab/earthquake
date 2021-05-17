@@ -2486,8 +2486,6 @@ var GamePlayScene = function(game, stage)
 
   self.draw = function()
   {
-    if (gameIsPaused)
-      return;
     ctx.font = "18px Open Sans";
     ctx.fillStyle = white;
     ctx.drawImage(bg_img,0,0,dc.width,dc.height);
